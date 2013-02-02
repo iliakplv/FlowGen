@@ -17,8 +17,8 @@ public class FlowGenMain {
 		ports.add(4);
 
 		Object[] portsArr = ports.toArray();
-		for(int i = 0; i < portsArr.length; i++) {
-			System.out.println(portsArr[i].toString());
+		for (Object aPortsArr : portsArr) {
+			System.out.println(aPortsArr.toString());
 		}
 
 		OneIfaceFirewallRule rule = new OneIfaceFirewallRule("00:00:82:39:d8:7f:90:4c", 1, ports);

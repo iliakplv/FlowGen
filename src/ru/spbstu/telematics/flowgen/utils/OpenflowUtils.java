@@ -61,7 +61,7 @@ public class OpenflowUtils {
 		}
 
 		for(Integer port : ports) {
-			if (!validatePortNumber(port.intValue())) {
+			if (!validatePortNumber(port)) {
 				return false;
 			}
 		}
