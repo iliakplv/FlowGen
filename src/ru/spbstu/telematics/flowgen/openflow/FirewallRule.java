@@ -68,7 +68,7 @@ public abstract class FirewallRule {
 	}
 
 	public String getOutPortsString() {
-        Object[] ports = mOutPorts.toArray();
+		Object[] ports = mOutPorts.toArray();
 		String[] portsStrings = new String[ports.length];
 
 		for (int i = 0; i < ports.length; i++) {
