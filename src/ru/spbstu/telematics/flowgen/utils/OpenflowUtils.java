@@ -1,8 +1,6 @@
 package ru.spbstu.telematics.flowgen.utils;
 
 
-import java.util.Set;
-
 public class OpenflowUtils {
 
 	public static final int MIN_PORT = 1;

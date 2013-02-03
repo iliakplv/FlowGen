@@ -3,6 +3,7 @@ package ru.spbstu.telematics.flowgen.openflow;
 
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
+
 public class OutOneIfaceFirewallRule extends  OneIfaceFirewallRule {
 
 	private String mVmMac;
