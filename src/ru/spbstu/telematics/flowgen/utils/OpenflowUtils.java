@@ -11,9 +11,9 @@ public class OpenflowUtils {
 	public static final int DPID_BYTES = 8;
 	public static final int MAC_BYTES = 6;
 
-	public static final String DPID_DELIMITER = ":";
-	public static final String MAC_DELIMITER = ":";
-	public static final String PORTS_DELIMITER = ",";
+	public static final char DPID_DELIMITER = ':';
+	public static final char MAC_DELIMITER = ':';
+	public static final char PORTS_DELIMITER = ',';
 
 
 	public static boolean validateDpid(String dpid) {
@@ -24,18 +24,28 @@ public class OpenflowUtils {
 		return validateHexByteString(mac, MAC_BYTES, MAC_DELIMITER);
 	}
 
-	public static boolean validateHexByteString(String string, int bytesNumber, String delimiter) {
+	public static boolean validateHexByteString(String string, int bytesNumber, char delimiter) {
 		final int HEX_BYTE_LENGTH = 2;
 
 		if (StringUtils.isNullOrEmpty(string)) {
+			throw new IllegalArgumentException("String is null");
+		}
+
+		if (bytesNumber < 1) {
+			throw new IllegalArgumentException("Wrong bytes number");
+		}
+
+		if (StringUtils.isHexDigit(delimiter)) {
+			throw new IllegalArgumentException("Delimiter equals to hexadecimal number");
+		}
+
+		String delimiterString = Character.valueOf(delimiter).toString();
+
+		if (string.startsWith(delimiterString) || string.endsWith(delimiterString)) {
 			return false;
 		}
 
-		if (string.startsWith(delimiter) || string.endsWith(delimiter)) {
-			return false;
-		}
-
-		String[] bytes = string.split(delimiter);
+		String[] bytes = string.split(delimiterString);
 		if (bytes.length != bytesNumber) {
 			return false;
 		}
@@ -55,23 +65,9 @@ public class OpenflowUtils {
 		return true;
 	}
 
-	public static boolean validatePortsSet(Set<Integer> ports) {
-		if (ports.isEmpty()) {
-			return false;
-		}
-
-		for(Integer port : ports) {
-			if (!validatePortNumber(port)) {
-				return false;
-			}
-		}
-
-		return true;
-
-	}
-
 	public static boolean validatePortNumber(int port) {
 		return port >= MIN_PORT && port <= MAX_PORT;
 
 	}
+
 }
