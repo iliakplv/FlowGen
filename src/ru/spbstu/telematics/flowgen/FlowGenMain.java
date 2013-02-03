@@ -1,29 +1,18 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import ru.spbstu.telematics.flowgen.openflow.OneIfaceFirewallRule;
+import ru.spbstu.telematics.flowgen.openflow.InOneIfaceFirewallRule;
+import ru.spbstu.telematics.flowgen.openflow.OutOneIfaceFirewallRule;
 
-import java.util.Set;
-import java.util.TreeSet;
 
 public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-		Set<Integer> ports = new TreeSet<Integer>();
-		ports.add(2);
-		ports.add(3);
-		ports.add(5);
-		ports.add(4);
+		InOneIfaceFirewallRule inRule = new InOneIfaceFirewallRule("00:00:82:39:d8:7f:90:4c", 2, 1);
 
-		Object[] portsArr = ports.toArray();
-		for (Object aPortsArr : portsArr) {
-			System.out.println(aPortsArr.toString());
-		}
+		OutOneIfaceFirewallRule outRule = new OutOneIfaceFirewallRule("00:00:82:39:d8:7f:90:4c", 2, 1, "08:00:27:69:82:bc");
 
-		OneIfaceFirewallRule rule = new OneIfaceFirewallRule("00:00:82:39:d8:7f:90:4c", 1, ports);
-
-		System.out.println(rule.getOutPortsString());
 
 	}
 }
