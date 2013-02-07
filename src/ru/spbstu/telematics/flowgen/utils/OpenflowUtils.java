@@ -13,6 +13,12 @@ public class OpenflowUtils {
 	public static final char MAC_DELIMITER = ':';
 	public static final char PORTS_DELIMITER = ',';
 
+	// TODO check these values
+	public static final int DEFAULT_RULE_PRIORITY = 32000;
+	public static final int MAX_RULE_PRIORITY = 32000;
+	public static final int MIN_RULE_PRIORITY = 0;
+
+
 
 	public static boolean validateDpid(String dpid) {
         return validateHexByteString(dpid, DPID_BYTES, DPID_DELIMITER);
@@ -65,6 +71,11 @@ public class OpenflowUtils {
 
 	public static boolean validatePortNumber(int port) {
 		return port >= MIN_PORT && port <= MAX_PORT;
+
+	}
+
+	public static boolean validatePriority(int priority) {
+		return priority >= MIN_RULE_PRIORITY && priority <= MAX_RULE_PRIORITY;
 
 	}
 
