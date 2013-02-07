@@ -21,7 +21,7 @@ public class OpenflowUtils {
 
 
 	public static boolean validateDpid(String dpid) {
-        return validateHexByteString(dpid, DPID_BYTES, DPID_DELIMITER);
+    	return validateHexByteString(dpid, DPID_BYTES, DPID_DELIMITER);
 	}
 
 	public static boolean validateMac(String mac) {
@@ -32,7 +32,7 @@ public class OpenflowUtils {
 		final int HEX_BYTE_LENGTH = 2;
 
 		if (StringUtils.isNullOrEmpty(string)) {
-			throw new IllegalArgumentException("String is null");
+			throw new IllegalArgumentException("String is null or empty");
 		}
 
 		if (bytesNumber < 1) {
@@ -40,7 +40,7 @@ public class OpenflowUtils {
 		}
 
 		if (StringUtils.isHexDigit(delimiter)) {
-			throw new IllegalArgumentException("Delimiter equals to hexadecimal number");
+			throw new IllegalArgumentException("No difference between delimiter and hexadecimal digit");
 		}
 
 		String delimiterString = Character.valueOf(delimiter).toString();

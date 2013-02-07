@@ -21,7 +21,7 @@ public class StringUtils {
 
 	public static String buildFromParts(String[] parts, String delimiter) {
 		if (parts == null || parts.length == 0) {
-			throw new IllegalArgumentException("Wrong parts array");
+			throw new IllegalArgumentException("Parts array is null or empty");
 		}
 
 		delimiter = getNotNull(delimiter);
