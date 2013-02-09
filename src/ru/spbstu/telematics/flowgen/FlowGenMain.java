@@ -3,8 +3,8 @@ package ru.spbstu.telematics.flowgen;
 
 import ru.spbstu.telematics.flowgen.openflow.InOneIfaceFirewallRule;
 import ru.spbstu.telematics.flowgen.openflow.OutOneIfaceFirewallRule;
-import ru.spbstu.telematics.flowgen.openflow.OvsInRule;
-import ru.spbstu.telematics.flowgen.openflow.OvsOutRule;
+import ru.spbstu.telematics.flowgen.openflow.ovs.OvsInRule;
+import ru.spbstu.telematics.flowgen.openflow.ovs.OvsOutRule;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 

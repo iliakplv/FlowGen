@@ -1,19 +1,23 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.ovs;
 
 
+import ru.spbstu.telematics.flowgen.openflow.InOneIfaceFirewallRule;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
-public class OvsOutRule extends OutOneIfaceFirewallRule {
+public class OvsInRule extends InOneIfaceFirewallRule {
 
 	private String mDatapathName;
 	private int mPriority;
 	private boolean mActive;
 
 
-	public OvsOutRule(String dpid, String datapathName, int priority, boolean active,
-					  int inPort, int firewallPort, String vmMac) {
-		super(dpid, inPort, firewallPort, vmMac);
+	public OvsInRule(String dpid, String datapathName, int priority,
+					 boolean active, int inPort, int firewallPort) {
+		super(dpid, inPort, firewallPort);
+		setDatapathName(datapathName);
+		setPriority(priority);
+		setActive(active);
 	}
 
 
