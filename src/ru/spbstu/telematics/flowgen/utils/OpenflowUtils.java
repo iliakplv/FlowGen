@@ -3,28 +3,19 @@ package ru.spbstu.telematics.flowgen.utils;
 
 public class OpenflowUtils {
 
-	// Rule components labels
-	public static final String RULE_DPID = 				"switch";
-	public static final String RULE_FLOW_NAME = 		"name";
-	public static final String RULE_PRIORITY = 			"priority";
-	public static final String RULE_ACTIVE = 			"active";
-	public static final String RULE_IN_PORT = 			"ingress_port";
-	public static final String RULE_ACTIONS = 			"actions";
-	public static final String RULE_OUT_PORTS_PREFIX =	"output=";
-
-	// Ports
-	public static final int MIN_PORT = 1;
-	public static final int MAX_PORT = 255;
-
 	// Rule priority
 	public static final int DEFAULT_RULE_PRIORITY = 32767;
 	public static final int MAX_RULE_PRIORITY = 32767;
 	public static final int MIN_RULE_PRIORITY = 0;
 
+	// Ports
+	public static final int MIN_PORT = 1;
+	public static final int MAX_PORT = 255;
 
 	// Other
 	public static final int DPID_BYTES = 8;
 	public static final int MAC_BYTES = 6;
+
 	public static final char DPID_DELIMITER = ':';
 	public static final char MAC_DELIMITER = ':';
 	public static final char PORTS_DELIMITER = ',';
