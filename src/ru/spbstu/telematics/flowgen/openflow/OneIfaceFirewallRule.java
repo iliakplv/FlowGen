@@ -184,13 +184,13 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	 */
 
 	@Override
-	public JSONObject ovsRuleAddCommand() {
+	public JSONObject ovsFlowAddCommand() {
 		// TODO implement
 		return null;
 	}
 
 	@Override
-	public JSONObject ovsRuleRemoveCommand() {
+	public JSONObject ovsFlowRemoveCommand() {
 		// TODO implement
 		return null;
 	}

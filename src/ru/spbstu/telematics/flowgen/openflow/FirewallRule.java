@@ -6,8 +6,8 @@ import org.json.JSONObject;
 
 public interface FirewallRule {
 
-	public JSONObject ovsRuleAddCommand();
+	public JSONObject ovsFlowAddCommand();
 
-	public JSONObject ovsRuleRemoveCommand();
+	public JSONObject ovsFlowRemoveCommand();
 
 }
