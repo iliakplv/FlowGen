@@ -29,6 +29,14 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	private String mHostMac;
 
 
+	/**
+	 * Constructors
+	 */
+
+	public OneIfaceFirewallRule(String dpid, int firewallPort, int hostPort, String hostMac) {
+		this(dpid, true, OpenflowUtils.DEFAULT_RULE_PRIORITY, firewallPort, hostPort, hostMac);
+	}
+
 	public OneIfaceFirewallRule(String dpid, boolean active, int priority,
 								int firewallPort, int hostPort, String hostMac) {
 		setDpid(dpid);
@@ -177,12 +185,14 @@ public class OneIfaceFirewallRule implements FirewallRule {
 
 	@Override
 	public JSONObject ovsRuleAddCommand() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		// TODO implement
+		return null;
 	}
 
 	@Override
 	public JSONObject ovsRuleRemoveCommand() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		// TODO implement
+		return null;
 	}
 
 
@@ -216,7 +226,35 @@ public class OneIfaceFirewallRule implements FirewallRule {
 
 	@Override
 	public String toString() {
-		// TODO implement it
-		return null;
+		final String EQUALS = "=";
+		final String DELIMITER = ", ";
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("DPID");
+		sb.append(EQUALS);
+		sb.append(mDpid);
+		sb.append(DELIMITER);
+		sb.append("ACTIVE");
+		sb.append(EQUALS);
+		sb.append(mActive);
+		sb.append(DELIMITER);
+		sb.append("PRIORITY");
+		sb.append(EQUALS);
+		sb.append(mPriority);
+		sb.append(DELIMITER);
+		sb.append("FIREWALL_PORT");
+		sb.append(EQUALS);
+		sb.append(mFirewallPort);
+		sb.append(DELIMITER);
+		sb.append("HOST_PORT");
+		sb.append(EQUALS);
+		sb.append(mHostPort);
+		sb.append(DELIMITER);
+		sb.append("HOST_MAC");
+		sb.append(EQUALS);
+		sb.append(mHostMac);
+
+		return sb.toString();
 	}
 }
