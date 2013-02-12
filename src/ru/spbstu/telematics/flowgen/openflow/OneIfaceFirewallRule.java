@@ -13,6 +13,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	private static final String RULE_PRIORITY = 		"priority";
 	private static final String RULE_ACTIVITY =			"active";
 	private static final String RULE_IN_PORT = 			"ingress-port";
+	private static final String RULE_DST_MAC = 			"dst-mac";
 	private static final String RULE_ACTIONS = 			"actions";
 	private static final String RULE_OUT_PORTS_PREFIX =	"output=";
 
@@ -186,26 +187,69 @@ public class OneIfaceFirewallRule implements FirewallRule {
 
 	@Override
 	public JSONObject ovsInFlowAddCommand() {
-		// TODO implement
-		return null;
+		JSONObject command = new JSONObject();
+
+		try {
+			command.put(RULE_DPID,		mDpid);
+			command.put(RULE_FLOW_NAME,	getInFlowName());
+			command.put(RULE_PRIORITY,	OpenflowUtils.DEFAULT_RULE_PRIORITY);
+			command.put(RULE_ACTIVITY,	true);
+			command.put(RULE_IN_PORT,	mHostPort);
+			command.put(RULE_ACTIONS,	RULE_OUT_PORTS_PREFIX + mFirewallPort);
+		} catch (JSONException e) {
+			// TODO
+			e.printStackTrace();
+		}
+
+		return command;
 	}
 
 	@Override
 	public JSONObject ovsOutFlowAddCommand() {
-		// TODO implement
-		return null;
+		JSONObject command = new JSONObject();
+
+		try {
+			command.put(RULE_DPID,		mDpid);
+			command.put(RULE_FLOW_NAME,	getOutFlowName());
+			command.put(RULE_PRIORITY,	OpenflowUtils.DEFAULT_RULE_PRIORITY);
+			command.put(RULE_ACTIVITY,	true);
+			command.put(RULE_IN_PORT,	mFirewallPort);
+			command.put(RULE_DST_MAC,	mHostMac);
+			command.put(RULE_ACTIONS,	RULE_OUT_PORTS_PREFIX + mHostPort);
+		} catch (JSONException e) {
+			// TODO
+			e.printStackTrace();
+		}
+
+		return command;
 	}
 
 	@Override
 	public JSONObject ovsInFlowRemoveCommand() {
-		// TODO implement
-		return null;
+		JSONObject command = new JSONObject();
+
+		try {
+			command.put(RULE_FLOW_NAME,	getInFlowName());
+		} catch (JSONException e) {
+			// TODO
+			e.printStackTrace();
+		}
+
+		return command;
 	}
 
 	@Override
 	public JSONObject ovsOutFlowRemoveCommand() {
-		// TODO implement
-		return null;
+		JSONObject command = new JSONObject();
+
+		try {
+			command.put(RULE_FLOW_NAME,	getOutFlowName());
+		} catch (JSONException e) {
+			// TODO
+			e.printStackTrace();
+		}
+
+		return command;
 	}
 
 
