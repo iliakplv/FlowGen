@@ -192,8 +192,8 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		try {
 			command.put(RULE_DPID,		mDpid);
 			command.put(RULE_FLOW_NAME,	getInFlowName());
-			command.put(RULE_PRIORITY,	OpenflowUtils.DEFAULT_RULE_PRIORITY);
-			command.put(RULE_ACTIVITY,	true);
+			command.put(RULE_PRIORITY,	mPriority);
+			command.put(RULE_ACTIVITY,	mActive);
 			command.put(RULE_IN_PORT,	mHostPort);
 			command.put(RULE_ACTIONS,	RULE_OUT_PORTS_PREFIX + mFirewallPort);
 		} catch (JSONException e) {
@@ -211,8 +211,8 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		try {
 			command.put(RULE_DPID,		mDpid);
 			command.put(RULE_FLOW_NAME,	getOutFlowName());
-			command.put(RULE_PRIORITY,	OpenflowUtils.DEFAULT_RULE_PRIORITY);
-			command.put(RULE_ACTIVITY,	true);
+			command.put(RULE_PRIORITY,	mPriority);
+			command.put(RULE_ACTIVITY,	mActive);
 			command.put(RULE_IN_PORT,	mFirewallPort);
 			command.put(RULE_DST_MAC,	mHostMac);
 			command.put(RULE_ACTIONS,	RULE_OUT_PORTS_PREFIX + mHostPort);
