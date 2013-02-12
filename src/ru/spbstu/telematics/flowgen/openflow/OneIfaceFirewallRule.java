@@ -1,6 +1,7 @@
 package ru.spbstu.telematics.flowgen.openflow;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
@@ -184,13 +185,25 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	 */
 
 	@Override
-	public JSONObject ovsFlowAddCommand() {
+	public JSONObject ovsInFlowAddCommand() {
 		// TODO implement
 		return null;
 	}
 
 	@Override
-	public JSONObject ovsFlowRemoveCommand() {
+	public JSONObject ovsOutFlowAddCommand() {
+		// TODO implement
+		return null;
+	}
+
+	@Override
+	public JSONObject ovsInFlowRemoveCommand() {
+		// TODO implement
+		return null;
+	}
+
+	@Override
+	public JSONObject ovsOutFlowRemoveCommand() {
 		// TODO implement
 		return null;
 	}
