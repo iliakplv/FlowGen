@@ -22,7 +22,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	public static final char FLOW_NAME_DELIMITER = '-';
 
 
-	private String mFlowName;
+	private String mRuleId;
 	private String mDpid;
 	private boolean mActive;
 	private int mPriority;
@@ -52,7 +52,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		sb.append(mDpid);
 		sb.append(FLOW_NAME_DELIMITER);
 		sb.append(mHostMac);
-		mFlowName = sb.toString();
+		mRuleId = sb.toString();
 	}
 
 
@@ -60,14 +60,14 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	 * Flow names
 	 */
 
-	public String getFlowName() {
-		return mFlowName;
+	public String getRuleId() {
+		return mRuleId;
 
 	}
 
 	public String getInFlowName() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(mFlowName);
+		sb.append(mRuleId);
 		sb.append(FLOW_NAME_DELIMITER);
 		sb.append(FLOW_NAME_IN_SUFFIX);
 		return sb.toString();
@@ -75,7 +75,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 
 	public String getOutFlowName() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(mFlowName);
+		sb.append(mRuleId);
 		sb.append(FLOW_NAME_DELIMITER);
 		sb.append(FLOW_NAME_OUT_SUFFIX);
 		return sb.toString();
@@ -259,7 +259,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 
 	@Override
 	public int hashCode() {
-		return mFlowName.hashCode();
+		return mRuleId.hashCode();
 	}
 
 	@Override
@@ -274,7 +274,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 			if (this == rule) {
 				return true;
 			} else {
-				return mFlowName.equals(rule.getFlowName());
+				return mRuleId.equals(rule.getRuleId());
 			}
 		}
 
