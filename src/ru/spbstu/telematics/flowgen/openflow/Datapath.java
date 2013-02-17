@@ -196,24 +196,6 @@ public class Datapath {
 		return rule;
 	}
 
-	public FirewallRule disconnectVm(int port) {
-		if (!OpenflowUtils.validatePortNumber(port)) {
-			throw new IllegalArgumentException("Wrong port number: " + port);
-		}
-		if (port == mTrunkPort) {
-			throw new IllegalArgumentException("VM port equals to trunk port of datapath " + toString());
-		}
-		if (port == mFirewallPort) {
-			throw new IllegalArgumentException("VM port equals to firewall port of datapath " + toString());
-		}
-		if (!isVmPort(port)) {
-			throw new IllegalArgumentException("No VM connected to port " + port + " of datapath " + toString());
-		}
-
-		// TODO implement VM removing by port number
-		return null;
-	}
-
 
 	/**
 	 * Other
