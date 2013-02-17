@@ -79,10 +79,7 @@ public class Datapath {
 	 */
 
 	public boolean isVmPort(int port) {
-		if (mVmPorts != null) {
-			return mVmPorts.values().contains(port);
-		}
-		return false;
+		return mVmPorts != null && mVmPorts.values().contains(port);
 	}
 
 	/**
@@ -213,11 +210,7 @@ public class Datapath {
 		}
 		if (obj instanceof Datapath) {
 			Datapath other = (Datapath) obj;
-			if (this == other) {
-				return true;
-			} else {
-				return mDpid.equals(other.getDpid());
-			}
+			return this == other || mDpid.equals(other.getDpid());
 		}
 		return false;
 	}

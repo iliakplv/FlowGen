@@ -272,11 +272,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 
 		if (obj instanceof OneIfaceFirewallRule) {
 			OneIfaceFirewallRule other = (OneIfaceFirewallRule) obj;
-			if (this == other) {
-				return true;
-			} else {
-				return mRuleId.equals(other.getRuleId());
-			}
+			return this == other || mRuleId.equals(other.getRuleId());
 		}
 
 		return false;
