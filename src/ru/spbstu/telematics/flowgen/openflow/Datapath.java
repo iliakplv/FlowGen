@@ -54,7 +54,7 @@ public class Datapath {
 		if (!OpenflowUtils.validateDpid(dpid)) {
 			throw new IllegalArgumentException("Wrong DPID: " + dpid);
 		}
-		mDpid = dpid;
+		mDpid = dpid.toLowerCase();
 	}
 
 
@@ -73,6 +73,7 @@ public class Datapath {
 		mName = name;
 	}
 
+
 	/**
 	 * Ports
 	 */
@@ -83,7 +84,6 @@ public class Datapath {
 		}
 		return false;
 	}
-
 
 	/**
 	 * Trunk port
