@@ -18,7 +18,6 @@ public class OpenflowUtils {
 
 	public static final char DPID_DELIMITER = ':';
 	public static final char MAC_DELIMITER = ':';
-	public static final char PORTS_DELIMITER = ',';
 
 
 	public static boolean validateDpid(String dpid) {

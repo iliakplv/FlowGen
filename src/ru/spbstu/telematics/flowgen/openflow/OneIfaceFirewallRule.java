@@ -4,6 +4,7 @@ package ru.spbstu.telematics.flowgen.openflow;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
+import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 
 public class OneIfaceFirewallRule implements FirewallRule {
@@ -49,9 +50,9 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		setHostMac(hostMac);
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(mDpid);
+		sb.append(StringUtils.omitDelimiters(mDpid, OpenflowUtils.DPID_DELIMITER).toLowerCase());
 		sb.append(FLOW_NAME_DELIMITER);
-		sb.append(mHostMac);
+		sb.append(StringUtils.omitDelimiters(mHostMac, OpenflowUtils.MAC_DELIMITER).toLowerCase());
 		mRuleId = sb.toString();
 	}
 

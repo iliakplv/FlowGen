@@ -37,4 +37,19 @@ public class StringUtils {
 		return sb.toString();
 	}
 
+	public static String omitDelimiters(String string, char delimiter) {
+		if (isNullOrEmpty(string)) {
+			throw new IllegalArgumentException("String is null or empty");
+		}
+
+		String[] parts = string.split(String.valueOf(delimiter));
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < parts.length; i++) {
+			sb.append(parts[i]);
+		}
+
+		return sb.toString();
+
+	}
+
 }
