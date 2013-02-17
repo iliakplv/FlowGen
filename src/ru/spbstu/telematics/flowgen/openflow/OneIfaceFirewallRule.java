@@ -95,7 +95,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		if (!OpenflowUtils.validateDpid(dpid)) {
 			throw new IllegalArgumentException("Wrong DPID value");
 		}
-		mDpid = dpid;
+		mDpid = dpid.toLowerCase();
 	}
 
 
@@ -178,7 +178,7 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		if (!OpenflowUtils.validateMac(hostMac)) {
 			throw new IllegalArgumentException("Wrong host MAC");
 		}
-		mHostMac = hostMac;
+		mHostMac = hostMac.toLowerCase();
 	}
 
 
@@ -271,11 +271,11 @@ public class OneIfaceFirewallRule implements FirewallRule {
 		}
 
 		if (obj instanceof OneIfaceFirewallRule) {
-			OneIfaceFirewallRule rule = (OneIfaceFirewallRule) obj;
-			if (this == rule) {
+			OneIfaceFirewallRule other = (OneIfaceFirewallRule) obj;
+			if (this == other) {
 				return true;
 			} else {
-				return mRuleId.equals(rule.getRuleId());
+				return mRuleId.equals(other.getRuleId());
 			}
 		}
 
