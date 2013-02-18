@@ -17,10 +17,10 @@ public class Datapath {
 
 	private static final String NOT_INITIALIZED = "<not_initialized>";
 
-	private String mDpid = NOT_INITIALIZED;
-	private String mName = NOT_INITIALIZED;
-	private int mTrunkPort = 0;
-	private int mFirewallPort = 0;
+	private String mDpid =			NOT_INITIALIZED;
+	private String mName =			NOT_INITIALIZED;
+	private int mTrunkPort =		INTERNAL_DATAPATH_TRUNK_PORT_NUMBER;
+	private int mFirewallPort =		NO_FIREWALL_PORT_NUMBER;
 	private List<String> mVmMacs;
 	private List<String> mExternalMacs;
 	private Map<String, Integer> mVmPorts;
