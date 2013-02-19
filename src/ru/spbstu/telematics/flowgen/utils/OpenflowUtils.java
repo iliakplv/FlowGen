@@ -4,9 +4,9 @@ package ru.spbstu.telematics.flowgen.utils;
 public class OpenflowUtils {
 
 	// Rule priority
-	public static final int DEFAULT_RULE_PRIORITY = 32767;
-	public static final int MAX_RULE_PRIORITY = 32767;
-	public static final int MIN_RULE_PRIORITY = 0;
+	public static final int DEFAULT_FLOW_PRIORITY = 32768;
+	public static final int MAX_FLOW_PRIORITY = 32768;
+	public static final int MIN_FLOW_PRIORITY = 0;
 
 	// Ports
 	public static final int MIN_PORT = 1;
@@ -75,7 +75,7 @@ public class OpenflowUtils {
 	}
 
 	public static boolean validatePriority(int priority) {
-		return priority >= MIN_RULE_PRIORITY && priority <= MAX_RULE_PRIORITY;
+		return priority >= MIN_FLOW_PRIORITY && priority <= MAX_FLOW_PRIORITY;
 
 	}
 
