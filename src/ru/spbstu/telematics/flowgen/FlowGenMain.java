@@ -6,8 +6,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import ru.spbstu.telematics.flowgen.openflow.FirewallRule;
-import ru.spbstu.telematics.flowgen.openflow.OneIfaceFirewallRule;
+import ru.spbstu.telematics.flowgen.openflow.OneIfaceFirewallVmRule;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -27,7 +26,7 @@ public class FlowGenMain {
 		HttpClient httpClient = new DefaultHttpClient();
 		try {
 			for (int i = 0; i < vmPorts.length; i++) {
-				OneIfaceFirewallRule rule = new OneIfaceFirewallRule(dpid, fwPort, vmPorts[i], vmMacs[i]);
+				OneIfaceFirewallVmRule rule = new OneIfaceFirewallVmRule(dpid, fwPort, vmPorts[i], vmMacs[i]);
 
 				HttpPost inRequest = new HttpPost(sfpUrl);
 				inRequest.addHeader("content-type", "application/x-www-form-urlencoded");

@@ -7,7 +7,7 @@ import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 
-public class OneIfaceFirewallRule implements FirewallRule {
+public class OneIfaceFirewallVmRule implements FirewallRule {
 
 	private static final String RULE_DPID = 			"switch";
 	private static final String RULE_FLOW_NAME = 		"name";
@@ -36,11 +36,11 @@ public class OneIfaceFirewallRule implements FirewallRule {
 	 * Constructors
 	 */
 
-	public OneIfaceFirewallRule(String dpid, int firewallPort, int hostPort, String hostMac) {
+	public OneIfaceFirewallVmRule(String dpid, int firewallPort, int hostPort, String hostMac) {
 		this(dpid, true, OpenflowUtils.DEFAULT_RULE_PRIORITY, firewallPort, hostPort, hostMac);
 	}
 
-	public OneIfaceFirewallRule(String dpid, boolean active, int priority,
+	public OneIfaceFirewallVmRule(String dpid, boolean active, int priority,
 								int firewallPort, int hostPort, String hostMac) {
 		setDpid(dpid);
 		setActive(active);
@@ -270,8 +270,8 @@ public class OneIfaceFirewallRule implements FirewallRule {
 			return false;
 		}
 
-		if (obj instanceof OneIfaceFirewallRule) {
-			OneIfaceFirewallRule other = (OneIfaceFirewallRule) obj;
+		if (obj instanceof OneIfaceFirewallVmRule) {
+			OneIfaceFirewallVmRule other = (OneIfaceFirewallVmRule) obj;
 			return this == other || mRuleId.equals(other.getRuleId());
 		}
 
