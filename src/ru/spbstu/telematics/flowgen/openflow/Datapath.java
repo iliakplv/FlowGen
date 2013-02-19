@@ -167,9 +167,9 @@ public class Datapath {
 		mVmPorts.put(mac, port);
 		mVmMacs.add(mac);
 
-		OneIfaceFirewallRule rule = null;
+		OneIfaceFirewallVmRule rule = null;
 		if (containsFirewallPort()) {
-			rule = new OneIfaceFirewallRule(mDpid, mFirewallPort, port, mac);
+			rule = new OneIfaceFirewallVmRule(mDpid, mFirewallPort, port, mac);
 		}
 		return rule;
 	}
@@ -186,9 +186,9 @@ public class Datapath {
 		mVmPorts.remove(mac);
 		mVmMacs.remove(mac);
 
-		OneIfaceFirewallRule rule = null;
+		OneIfaceFirewallVmRule rule = null;
 		if (containsFirewallPort()) {
-			rule = new OneIfaceFirewallRule(mDpid, mFirewallPort, mVmPorts.get(mac), mac);
+			rule = new OneIfaceFirewallVmRule(mDpid, mFirewallPort, mVmPorts.get(mac), mac);
 		}
 		return rule;
 	}
