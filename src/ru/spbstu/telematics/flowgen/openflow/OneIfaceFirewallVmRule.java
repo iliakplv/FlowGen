@@ -37,7 +37,7 @@ public class OneIfaceFirewallVmRule implements FirewallRule {
 	 */
 
 	public OneIfaceFirewallVmRule(String dpid, int firewallPort, int hostPort, String hostMac) {
-		this(dpid, true, OpenflowUtils.DEFAULT_FLOW_PRIORITY, firewallPort, hostPort, hostMac);
+		this(dpid, true, OpenflowUtils.VM_FLOW_PRIORITY, firewallPort, hostPort, hostMac);
 	}
 
 	public OneIfaceFirewallVmRule(String dpid, boolean active, int priority,
