@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
+// TODO write interface
 public class Datapath {
 
 	public static final int INTERNAL_DATAPATH_TRUNK_PORT_NUMBER = 0;
@@ -137,7 +137,9 @@ public class Datapath {
 	/**
 	 * Virtual Machines
 	 */
-	// TODO rules for external hosts ?
+	// TODO rules for VMs
+	// TODO rules for Gateway
+	// TODO rules for Subnet
 
 	public FirewallRule connectVm(int port, String mac) {
 		if (!OpenflowUtils.validatePortNumber(port)) {
@@ -167,10 +169,10 @@ public class Datapath {
 		mVmPorts.put(mac, port);
 		mVmMacs.add(mac);
 
-		OneIfaceFirewallVmRule rule = null;
-		if (containsFirewallPort()) {
-			rule = new OneIfaceFirewallVmRule(mDpid, mFirewallPort, port, mac);
-		}
+		OnePortFirewallRule rule = null;
+//		if (containsFirewallPort()) {
+//			rule = new OnePortFirewallRule(mDpid, true, OpenflowUtils.MAX_FLOW_PRIORITY, mFirewallPort, port, mac);
+//		}
 		return rule;
 	}
 
@@ -186,10 +188,10 @@ public class Datapath {
 		mVmPorts.remove(mac);
 		mVmMacs.remove(mac);
 
-		OneIfaceFirewallVmRule rule = null;
-		if (containsFirewallPort()) {
-			rule = new OneIfaceFirewallVmRule(mDpid, mFirewallPort, mVmPorts.get(mac), mac);
-		}
+		OnePortFirewallRule rule = null;
+//		if (containsFirewallPort()) {
+//			rule = new OnePortFirewallRule(mDpid, true, OpenflowUtils.MAX_FLOW_PRIORITY, mFirewallPort, mVmPorts.get(mac), mac);
+//		}
 		return rule;
 	}
 

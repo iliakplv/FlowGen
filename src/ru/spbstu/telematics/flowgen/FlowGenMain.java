@@ -5,8 +5,9 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-		// TODO refactor OpenFlow engine
-		// TODO write test
+		// TODO write tests for Rules
+		// TODO refactor Datapath
+		// TODO write tests for Datapath
 //		String sfpUrl =	"http://192.168.168.24:8080/wm/staticflowentrypusher/json";
 //		String dpid = "00:00:b6:60:ff:e5:93:4f";
 //		int fwPort = 1;
@@ -17,7 +18,7 @@ public class FlowGenMain {
 //		HttpClient httpClient = new DefaultHttpClient();
 //		try {
 //			for (int i = 0; i < vmPorts.length; i++) {
-//				OneIfaceFirewallVmRule rule = new OneIfaceFirewallVmRule(dpid, fwPort, vmPorts[i], vmMacs[i]);
+//				OnePortFirewallRule rule = new OnePortFirewallRule(dpid, fwPort, vmPorts[i], vmMacs[i]);
 //
 //				HttpPost inRequest = new HttpPost(sfpUrl);
 //				inRequest.addHeader("content-type", "application/x-www-form-urlencoded");
