@@ -72,7 +72,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(mGatewayMac);
+		sb.append(StringUtils.omitDelimiters(mGatewayMac, OpenflowUtils.MAC_DELIMITER));
 		return sb.toString();
 	}
 

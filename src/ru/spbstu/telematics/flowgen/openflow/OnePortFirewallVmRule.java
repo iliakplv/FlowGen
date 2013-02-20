@@ -68,7 +68,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(mVmMac);
+		sb.append(StringUtils.omitDelimiters(mVmMac, OpenflowUtils.MAC_DELIMITER));
 		return sb.toString();
 	}
 
