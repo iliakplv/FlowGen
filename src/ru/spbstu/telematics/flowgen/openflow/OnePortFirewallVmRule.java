@@ -16,14 +16,14 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 	 */
 
 	public OnePortFirewallVmRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
-								 int firewallPort, int targetPort, String vmMac) {
-		super(dpid, active, inFlowPriority, outFlowPriority, firewallPort, targetPort);
+								 int firewallPort, int vmPort, String vmMac) {
+		super(dpid, active, inFlowPriority, outFlowPriority, firewallPort, vmPort);
 		setVmMac(vmMac);
 	}
 
-	public OnePortFirewallVmRule(String dpid, int firewallPort, int targetPort, String vmMac) {
+	public OnePortFirewallVmRule(String dpid, int firewallPort, int vmPort, String vmMac) {
 		this(dpid, true, OpenflowUtils.IN_FLOW_PRIORITY, OpenflowUtils.OUT_VM_FLOW_PRIORITY,
-				firewallPort, targetPort, vmMac);
+				firewallPort, vmPort, vmMac);
 	}
 
 	/**

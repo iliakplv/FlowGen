@@ -6,40 +6,24 @@ import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
-public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
+public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 
-	private String mGatewayMac;
-
+	private static final int IN_FLOW_PRIORITY = OpenflowUtils.MIN_FLOW_PRIORITY;
+	private static final String FLOW_NAME_SUBNET_LABEL = "subnet";
 
 	/**
 	 * Constructors
 	 */
 
-	public OnePortFirewallGatewayRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
-								 int firewallPort, int gatewayPort, String gatewayMac) {
-		super(dpid, active, inFlowPriority, outFlowPriority, firewallPort, gatewayPort);
-		setGatewayMac(gatewayMac);
+	public OnePortFirewallSubnetRule(String dpid, boolean active, int outFlowPriority,
+									 int firewallPort, int trunkPort) {
+		super(dpid, active, IN_FLOW_PRIORITY, outFlowPriority, firewallPort, trunkPort);
 	}
 
-	public OnePortFirewallGatewayRule(String dpid, int firewallPort, int gatewayPort, String gatewayMac) {
-		this(dpid, true, OpenflowUtils.IN_FLOW_PRIORITY, OpenflowUtils.OUT_GATEWAY_FLOW_PRIORITY,
-				firewallPort, gatewayPort, gatewayMac);
+	public OnePortFirewallSubnetRule(String dpid, int firewallPort, int trunkPort) {
+		this(dpid, true, OpenflowUtils.OUT_SUBNET_FLOW_PRIORITY, firewallPort, trunkPort);
 	}
 
-	/**
-	 * Gateway MAC
-	 */
-
-	public String getmGatewayMac() {
-		return mGatewayMac;
-	}
-
-	public void setGatewayMac(String mac) {
-		if (!OpenflowUtils.validateMac(mac)) {
-			throw new IllegalArgumentException("Wrong gateway MAC");
-		}
-		mGatewayMac = mac.toLowerCase();
-	}
 
 	/**
 	 * RULE
@@ -50,7 +34,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(mGatewayMac);
+		sb.append(FLOW_NAME_SUBNET_LABEL);
 		return sb.toString();
 	}
 
@@ -74,18 +58,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 
 	@Override
 	public JSONObject ovsInFlowAddCommand() {
-		JSONObject command = new JSONObject();
-		try {
-			command.put(FLOW_DPID,		getDpid());
-			command.put(FLOW_NAME,		getInFlowName());
-			command.put(FLOW_PRIORITY,	getInFlowPriority());
-			command.put(FLOW_ACTIVITY,	isActive());
-			command.put(FLOW_IN_PORT,	getTargetPort());
-			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getFirewallPort());
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return command;
+		return null;
 	}
 
 	@Override
@@ -97,7 +70,6 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 			command.put(FLOW_PRIORITY,	getOutFlowPriority());
 			command.put(FLOW_ACTIVITY,	isActive());
 			command.put(FLOW_IN_PORT,	getFirewallPort());
-			command.put(FLOW_DST_MAC,	getmGatewayMac());
 			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getTargetPort());
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -107,13 +79,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 
 	@Override
 	public JSONObject ovsInFlowRemoveCommand() {
-		JSONObject command = new JSONObject();
-		try {
-			command.put(FLOW_NAME,	getInFlowName());
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return command;
+		return null;
 	}
 
 	@Override
