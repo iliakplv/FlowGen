@@ -4,7 +4,7 @@ package ru.spbstu.telematics.flowgen.openflow;
 import org.json.JSONObject;
 
 
-public interface FirewallRule {
+public interface IFirewallRule {
 
 	/**
 	 * JSON commands to add flows to Open vSwitch

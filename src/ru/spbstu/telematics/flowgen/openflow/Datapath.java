@@ -141,7 +141,7 @@ public class Datapath {
 	// TODO rules for Gateway
 	// TODO rules for Subnet
 
-	public FirewallRule connectVm(int port, String mac) {
+	public IFirewallRule connectVm(int port, String mac) {
 		if (!OpenflowUtils.validatePortNumber(port)) {
 			throw new IllegalArgumentException("Wrong port number: " + port);
 		}
@@ -176,7 +176,7 @@ public class Datapath {
 		return rule;
 	}
 
-	public FirewallRule disconnectVm(String mac) {
+	public IFirewallRule disconnectVm(String mac) {
 		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong MAC: " + mac);

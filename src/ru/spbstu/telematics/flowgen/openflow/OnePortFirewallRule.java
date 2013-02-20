@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 
-public abstract class OnePortFirewallRule implements FirewallRule {
+public abstract class OnePortFirewallRule implements IFirewallRule {
 
 	protected static final char NAME_DELIMITER = '-';
 	protected static final String FLOW_NAME_IN_LABEL = "i";
@@ -148,7 +148,7 @@ public abstract class OnePortFirewallRule implements FirewallRule {
 
 
 	/**
-	 * FirewallRule Interface
+	 * IFirewallRule Interface
 	 */
 
 	@Override

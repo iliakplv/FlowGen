@@ -1,7 +1,7 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import ru.spbstu.telematics.flowgen.openflow.FirewallRule;
+import ru.spbstu.telematics.flowgen.openflow.IFirewallRule;
 import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallGatewayRule;
 import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallSubnetRule;
 import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallVmRule;
@@ -17,9 +17,9 @@ public class FlowGenMain {
 		int firewallPort = 2;
 		int vmPort = 3;
 
-		FirewallRule vm = new OnePortFirewallVmRule(dpid, firewallPort, vmPort, vmMac);
-		FirewallRule gw = new OnePortFirewallGatewayRule(dpid, firewallPort, trunkPort, gwMac);
-		FirewallRule sn = new OnePortFirewallSubnetRule("00:00:b6:60:ff:e5:93:4f", firewallPort, trunkPort);
+		IFirewallRule vm = new OnePortFirewallVmRule(dpid, firewallPort, vmPort, vmMac);
+		IFirewallRule gw = new OnePortFirewallGatewayRule(dpid, firewallPort, trunkPort, gwMac);
+		IFirewallRule sn = new OnePortFirewallSubnetRule("00:00:b6:60:ff:e5:93:4f", firewallPort, trunkPort);
 
 		System.out.println(vm.ovsInFlowAddCommand().toString());
 		System.out.println(vm.ovsOutFlowAddCommand().toString());
