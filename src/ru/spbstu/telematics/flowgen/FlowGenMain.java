@@ -10,9 +10,16 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-		FirewallRule vm = new OnePortFirewallVmRule("00:00:b6:60:ff:e5:93:4f", 2, 3, "12:34:65:78:9A:B0");
-		FirewallRule gw = new OnePortFirewallGatewayRule("00:00:b6:60:ff:e5:93:4f", 2, 1, "12:34:65:78:9A:B0");
-		FirewallRule sn = new OnePortFirewallSubnetRule("00:00:b6:60:ff:e5:93:4f", 2, 1);
+		String dpid = "00:00:b6:60:ff:e5:93:4f";
+		String gwMac = "FF:FF:FF:FF:FF:AA";
+		String vmMac = "00:00:00:00:00:11";
+		int trunkPort = 1;
+		int firewallPort = 2;
+		int vmPort = 3;
+
+		FirewallRule vm = new OnePortFirewallVmRule(dpid, firewallPort, vmPort, vmMac);
+		FirewallRule gw = new OnePortFirewallGatewayRule(dpid, firewallPort, trunkPort, gwMac);
+		FirewallRule sn = new OnePortFirewallSubnetRule("00:00:b6:60:ff:e5:93:4f", firewallPort, trunkPort);
 
 		System.out.println(vm.ovsInFlowAddCommand().toString());
 		System.out.println(vm.ovsOutFlowAddCommand().toString());
