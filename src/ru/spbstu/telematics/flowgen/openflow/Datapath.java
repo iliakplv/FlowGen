@@ -20,9 +20,17 @@ public class Datapath implements IDatapath {
 	private String mName =			NOT_INITIALIZED;
 	private int mTrunkPort =		INTERNAL_DATAPATH_TRUNK_PORT_NUMBER;
 	private int mFirewallPort =		NO_FIREWALL_PORT_NUMBER;
+
+	// TODO 0 store MACs, ports, MAC-port associations
+	private String mGatewayMac;
 	private List<String> mVmMacs;
 	private List<String> mExternalMacs;
 	private Map<String, Integer> mVmPorts;
+
+	// TODO 1 get_Rule()
+	// TODO 2 connect_() + disconnect_()
+	// TODO 3 getAllVmRules()
+	// TODO 4 getAllRules()
 
 
 	public Datapath(String dpid, String name, int trunkPort, int firewallPort) {
@@ -134,13 +142,13 @@ public class Datapath implements IDatapath {
 
 
 	/**
-	 * Virtual Machines
+	 * IDatapath
 	 */
-	// TODO rules for VMs
-	// TODO rules for Gateway
-	// TODO rules for Subnet
 
-	public IFirewallRule connectVm(int port, String mac) {
+	// TODO VMs
+
+	@Override
+	public IFirewallRule connectVm(String mac, int port) {
 		if (!OpenflowUtils.validatePortNumber(port)) {
 			throw new IllegalArgumentException("Wrong port number: " + port);
 		}
@@ -175,6 +183,7 @@ public class Datapath implements IDatapath {
 		return rule;
 	}
 
+	@Override
 	public IFirewallRule disconnectVm(String mac) {
 		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
@@ -194,31 +203,65 @@ public class Datapath implements IDatapath {
 		return rule;
 	}
 
-
-	/**
-	 * Other
-	 */
-
 	@Override
-	public String toString() {
-		return  mName + " (" + mDpid + ")";
+	public IFirewallRule disconnectVm(int port) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj instanceof Datapath) {
-			Datapath other = (Datapath) obj;
-			return this == other || mDpid.equals(other.getDpid());
-		}
-		return false;
+	public IFirewallRule getVmRule(String mac) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
-	public int hashCode() {
-		return mDpid.hashCode();
+	public IFirewallRule getVmRule(int port) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public List<IFirewallRule> getAllVmRules() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	// TODO Gateway
+
+	@Override
+	public IFirewallRule connectGateway(String mac) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public IFirewallRule disconnectGateway() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public IFirewallRule getGatewayRule() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	// TODO Subnet
+
+	@Override
+	public IFirewallRule connectSubnet() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public IFirewallRule disconnectSubnet() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
+	public IFirewallRule getSubnetRule() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	// TODO all
+
+	@Override
+	public List<IFirewallRule> getAllRules() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 }
