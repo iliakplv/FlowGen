@@ -6,6 +6,14 @@ import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
+/**
+ * Rule for processing external network traffic forwarded by gateway.
+ * This rule doesn't affects outgoing traffic to broadcast domain
+ * in case of analyzing destination MACs of ethernet frames.
+ * (As you know, outgoing frames for broadcast domain use MACs of hosts (not MAC of gateway) as frame's destination MAC)
+ * To process traffic for broadcast domain use OnePortFirewallSubnetRule class.
+ */
+
 public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 
 	private String mGatewayMac;
@@ -22,7 +30,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 	}
 
 	public OnePortFirewallGatewayRule(String dpid, int firewallPort, int gatewayPort, String gatewayMac) {
-		this(dpid, true, OpenflowUtils.IN_FLOW_PRIORITY, OpenflowUtils.OUT_GATEWAY_FLOW_PRIORITY,
+		this(dpid, true, OpenflowUtils.IN_TRUNK_FLOW_PRIORITY, OpenflowUtils.OUT_TRUNK_FLOW_PRIORITY,
 				firewallPort, gatewayPort, gatewayMac);
 	}
 
@@ -40,6 +48,20 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 		}
 		mGatewayMac = mac.toLowerCase();
 	}
+
+
+	/**
+	 * Gateway port
+	 */
+
+	public int getGatewayPort() {
+		return getTargetPort();
+	}
+
+	public void setGatewayPort(int port) {
+		setTargetPort(port);
+	}
+
 
 	/**
 	 * RULE

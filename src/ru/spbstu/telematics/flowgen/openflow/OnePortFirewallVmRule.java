@@ -6,6 +6,10 @@ import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
+/**
+ * Rule for processing all VM traffic.
+ */
+
 public class OnePortFirewallVmRule extends OnePortFirewallRule {
 
 	private String mVmMac;
@@ -22,7 +26,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 	}
 
 	public OnePortFirewallVmRule(String dpid, int firewallPort, int vmPort, String vmMac) {
-		this(dpid, true, OpenflowUtils.IN_FLOW_PRIORITY, OpenflowUtils.OUT_VM_FLOW_PRIORITY,
+		this(dpid, true, OpenflowUtils.IN_VM_FLOW_PRIORITY, OpenflowUtils.OUT_VM_FLOW_PRIORITY,
 				firewallPort, vmPort, vmMac);
 	}
 
@@ -40,6 +44,20 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 		}
 		mVmMac = mac.toLowerCase();
 	}
+
+
+	/**
+	 * VM port
+	 */
+
+	public int getVmPort() {
+		return getTargetPort();
+	}
+
+	public void setVmPort(int port) {
+		setTargetPort(port);
+	}
+
 
 	/**
 	 * RULE

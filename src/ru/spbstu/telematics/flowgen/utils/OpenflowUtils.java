@@ -6,8 +6,11 @@ public class OpenflowUtils {
 	// Rule priority
 	public static final int MAX_FLOW_PRIORITY = 			32768; // 0x8000
 	public static final int MIN_FLOW_PRIORITY = 			0;
-	public static final int IN_FLOW_PRIORITY =				MAX_FLOW_PRIORITY;
-	public static final int OUT_GATEWAY_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
+
+	public static final int IN_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
+	public static final int IN_VM_FLOW_PRIORITY =			MAX_FLOW_PRIORITY / 2;
+
+	public static final int OUT_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
 	public static final int OUT_VM_FLOW_PRIORITY =			MAX_FLOW_PRIORITY / 2;
 	public static final int OUT_SUBNET_FLOW_PRIORITY =		MAX_FLOW_PRIORITY / 4;
 
