@@ -9,8 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-// TODO write interface
-public class Datapath {
+public class Datapath implements IDatapath {
 
 	public static final int INTERNAL_DATAPATH_TRUNK_PORT_NUMBER = 0;
 	public static final int NO_FIREWALL_PORT_NUMBER = 0;
