@@ -1,44 +1,38 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import ru.spbstu.telematics.flowgen.openflow.IFirewallRule;
-import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallGatewayRule;
-import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallSubnetRule;
-import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallVmRule;
+import ru.spbstu.telematics.flowgen.openflow.*;
+
+import java.util.List;
 
 public class FlowGenMain {
 
 	public static void main(String[] args) {
 
 		String dpid = "00:00:b6:60:ff:e5:93:4f";
-		String gwMac = "FF:FF:FF:FF:FF:AA";
-		String vmMac = "00:00:00:00:00:11";
+		String gwMac = "FF:FF:AA:AA:FF:FF";
 		int trunkPort = 1;
 		int firewallPort = 2;
+		IDatapath dp = new Datapath(dpid,"ovs-network", trunkPort, firewallPort, gwMac);
+
 		int vmPort = 3;
+		dp.connectVm("00:00:00:00:00:11", ++vmPort);
+		dp.connectVm("00:00:00:00:00:12", ++vmPort);
+		dp.connectVm("00:00:00:00:00:13", ++vmPort);
 
-		IFirewallRule vm = new OnePortFirewallVmRule(dpid, firewallPort, vmPort, vmMac);
-		IFirewallRule gw = new OnePortFirewallGatewayRule(dpid, firewallPort, trunkPort, gwMac);
-		IFirewallRule sn = new OnePortFirewallSubnetRule("00:00:b6:60:ff:e5:93:4f", firewallPort, trunkPort);
-
-		System.out.println(vm.ovsInFlowAddCommand().toString());
-		System.out.println(vm.ovsOutFlowAddCommand().toString());
-		System.out.println(vm.ovsInFlowRemoveCommand().toString());
-		System.out.println(vm.ovsOutFlowRemoveCommand().toString());
-		System.out.println();
-		System.out.println(gw.ovsInFlowAddCommand().toString());
-		System.out.println(gw.ovsOutFlowAddCommand().toString());
-		System.out.println(gw.ovsInFlowRemoveCommand().toString());
-		System.out.println(gw.ovsOutFlowRemoveCommand().toString());
-		System.out.println();
-		System.out.println(sn.ovsInFlowAddCommand());
-		System.out.println(sn.ovsOutFlowAddCommand().toString());
-		System.out.println(sn.ovsInFlowRemoveCommand());
-		System.out.println(sn.ovsOutFlowRemoveCommand().toString());
+		List<IFirewallRule> rules = dp.getAllVmRules();
+		for (IFirewallRule rule : rules) {
+			System.out.println(rule.ovsInFlowAddCommand().toString());
+			System.out.println(rule.ovsOutFlowAddCommand().toString());
+			System.out.println(rule.ovsInFlowRemoveCommand().toString());
+			System.out.println(rule.ovsOutFlowRemoveCommand().toString());
+			System.out.println();
+		}
 
 
 		// TODO refactor Datapath
-		// TODO write tests for Datapath
+		// TODO Exceptions + LOG
+
 //		String sfpUrl =	"http://192.168.168.24:8080/wm/staticflowentrypusher/json";
 //		String dpid = "00:00:b6:60:ff:e5:93:4f";
 //		int fwPort = 1;

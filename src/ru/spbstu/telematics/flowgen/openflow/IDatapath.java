@@ -15,7 +15,7 @@ public interface IDatapath {
 	public List<IFirewallRule> getAllVmRules();
 
 	// Gateway
-	public IFirewallRule connectGateway(String mac);
+	public IFirewallRule connectGateway();
 	public IFirewallRule disconnectGateway();
 	public IFirewallRule getGatewayRule();
 

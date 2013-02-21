@@ -101,7 +101,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 			command.put(FLOW_IN_PORT,	getTargetPort());
 			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getFirewallPort());
 		} catch (JSONException e) {
-			e.printStackTrace();
+			command = null;
 		}
 		return command;
 	}
@@ -118,7 +118,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 			command.put(FLOW_DST_MAC,	getVmMac());
 			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getTargetPort());
 		} catch (JSONException e) {
-			e.printStackTrace();
+			command = null;
 		}
 		return command;
 	}
@@ -129,7 +129,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 		try {
 			command.put(FLOW_NAME,	getInFlowName());
 		} catch (JSONException e) {
-			e.printStackTrace();
+			command = null;
 		}
 		return command;
 	}
@@ -140,7 +140,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 		try {
 			command.put(FLOW_NAME,	getOutFlowName());
 		} catch (JSONException e) {
-			e.printStackTrace();
+			command = null;
 		}
 		return command;
 	}
