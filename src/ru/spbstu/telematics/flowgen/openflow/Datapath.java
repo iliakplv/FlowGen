@@ -253,7 +253,7 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public IFirewallRule getGatewayRule() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return new OnePortFirewallGatewayRule(mDpid,mFirewallPort, mTrunkPort, mGatewayMac);
 	}
 
 	// TODO Subnet
@@ -270,14 +270,17 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public IFirewallRule getSubnetRule() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return new OnePortFirewallSubnetRule(mDpid, mFirewallPort, mTrunkPort);
 	}
 
 	// TODO all
 
 	@Override
 	public List<IFirewallRule> getAllRules() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		List<IFirewallRule> rules = getAllVmRules();
+		rules.add(getGatewayRule());
+		rules.add(getSubnetRule());
+		return rules;
 	}
 
 

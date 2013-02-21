@@ -1,7 +1,9 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import ru.spbstu.telematics.flowgen.openflow.*;
+import ru.spbstu.telematics.flowgen.openflow.Datapath;
+import ru.spbstu.telematics.flowgen.openflow.IDatapath;
+import ru.spbstu.telematics.flowgen.openflow.IFirewallRule;
 
 import java.util.List;
 
@@ -15,13 +17,14 @@ public class FlowGenMain {
 		int firewallPort = 2;
 		IDatapath dp = new Datapath(dpid,"ovs-network", trunkPort, firewallPort, gwMac);
 
-		int vmPort = 3;
+		int vmPort = 2;
 		dp.connectVm("00:00:00:00:00:11", ++vmPort);
 		dp.connectVm("00:00:00:00:00:12", ++vmPort);
 		dp.connectVm("00:00:00:00:00:13", ++vmPort);
 
-		List<IFirewallRule> rules = dp.getAllVmRules();
+		List<IFirewallRule> rules = dp.getAllRules();
 		for (IFirewallRule rule : rules) {
+			// TODO NPE here!
 			System.out.println(rule.ovsInFlowAddCommand().toString());
 			System.out.println(rule.ovsOutFlowAddCommand().toString());
 			System.out.println(rule.ovsInFlowRemoveCommand().toString());
