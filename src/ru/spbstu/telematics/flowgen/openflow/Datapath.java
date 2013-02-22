@@ -46,7 +46,7 @@ public class Datapath implements IDatapath {
 
 	private void setDpid(String dpid) {
 		if (!OpenflowUtils.validateDpid(dpid)) {
-			throw new IllegalArgumentException("Wrong DPID: " + dpid);
+			throw new IllegalArgumentException("Wrong DPID (" + dpid + ") of datapath with mane " + mName);
 		}
 		mDpid = dpid.toLowerCase();
 	}
@@ -62,7 +62,7 @@ public class Datapath implements IDatapath {
 
 	public void setName(String name) {
 		if (StringUtils.isNullOrEmpty(name)) {
-			throw new IllegalArgumentException("Datapath name is null or empty");
+			throw new IllegalArgumentException("Name of datapath " + mDpid + " is null or empty");
 		}
 		mName = name;
 	}
@@ -86,13 +86,13 @@ public class Datapath implements IDatapath {
 
 	public void setTrunkPort(int trunkPort) {
 		if (!OpenflowUtils.validatePortNumber(trunkPort)) {
-			throw new IllegalArgumentException("Wrong trunk port number in datapath " + toString());
+			throw new IllegalArgumentException("Wrong trunk port (" + trunkPort + ") in datapath " + toString());
 		}
 		if (trunkPort == mFirewallPort) {
-			throw new IllegalArgumentException("Trunk port equals to firewall port of datapath " + toString());
+			throw new IllegalArgumentException("New trunk port equals to firewall port (" + mFirewallPort + ") of datapath " + toString());
 		}
 		if (isVmPort(trunkPort)) {
-			throw new IllegalArgumentException("Trunk port equals to one of VM ports of datapath " + toString());
+			throw new IllegalArgumentException("New trunk port (" + trunkPort + ") equals to one of VM ports of datapath " + toString());
 		}
 		mTrunkPort = trunkPort;
 	}
@@ -108,13 +108,13 @@ public class Datapath implements IDatapath {
 
 	public void setFirewallPort(int firewallPort) {
 		if (!OpenflowUtils.validatePortNumber(firewallPort)) {
-			throw new IllegalArgumentException("Wrong firewall port number in datapath " + toString());
+			throw new IllegalArgumentException("Wrong firewall port (" + firewallPort + ") in datapath " + toString());
 		}
 		if (firewallPort == mTrunkPort) {
-			throw new IllegalArgumentException("Firewall port equals to trunk port of datapath " + toString());
+			throw new IllegalArgumentException("New firewall port equals to trunk port (" + mTrunkPort + ") of datapath " + toString());
 		}
 		if (isVmPort(firewallPort)) {
-			throw new IllegalArgumentException("Firewall port equals to one of VM ports of datapath " + toString());
+			throw new IllegalArgumentException("New firewall port (" + firewallPort + ") equals to one of VM ports of datapath " + toString());
 		}
 		mFirewallPort = firewallPort;
 	}
@@ -145,24 +145,24 @@ public class Datapath implements IDatapath {
 			throw new IllegalArgumentException("Wrong gateway MAC (" + mac + ") in datapath " + toString());
 		}
 		if (isVmMac(mac)) {
-			throw new IllegalArgumentException("Gateway MAC equals to one of the VM MACs of datapath " + toString());
+			throw new IllegalArgumentException("New gateway MAC (" + mac + ") equals to one of the VM MACs of datapath " + toString());
 		}
 		mGatewayMac = mac.toLowerCase();
 	}
 
 
 	/**
-	 * IDatapath
+	 * IDatapath implementation
 	 */
 
 	@Override
 	public JSONObject[] connectVm(String mac, int port) {
 		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
-			throw new IllegalArgumentException("Wrong VM MAC in datapath " + toString());
+			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in datapath " + toString());
 		}
 		if (isGatewayMac(mac)) {
-			throw new IllegalArgumentException("VM MAC equals to gateway MAC of datapath " + toString());
+			throw new IllegalArgumentException("New VM MAC equals to gateway MAC (" + mGatewayMac + ") of datapath " + toString());
 		}
 		if (isVmMac(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") already connected to port " +
@@ -170,22 +170,22 @@ public class Datapath implements IDatapath {
 		}
 
 		if (!OpenflowUtils.validatePortNumber(port)) {
-			throw new IllegalArgumentException("Wrong port number: " + port);
+			throw new IllegalArgumentException("Wrong port number (" + port + ") to VM with MAC " + mac + " in datapath " + toString());
 		}
 		if (port == mTrunkPort) {
-			throw new IllegalArgumentException("VM port equals to trunk port of datapath " + toString());
+			throw new IllegalArgumentException("New VM port equals to trunk port (" + mTrunkPort + ") of datapath " + toString());
 		}
 		if (port == mFirewallPort) {
-			throw new IllegalArgumentException("VM port equals to firewall port of datapath " + toString());
+			throw new IllegalArgumentException("New VM port equals to firewall port (" + mFirewallPort + ") of datapath " + toString());
 		}
 		if (isVmPort(port)) {
-			throw new IllegalArgumentException("VM already connected to port " + port + " of datapath " + toString());
+			throw new IllegalArgumentException("Trying to connect VM with MAC " + mac + " to port " + port +
+					". VM with MAC " + mPortMacMap.get(port) + " already connected to this port of datapath " + toString());
 		}
 
 		mPortMacMap.put(port, mac);
 		mMacPortMap.put(mac, port);
 		IFirewallRule rule = getVmRule(port);
-
 		return getCommands(rule, true);
 	}
 
@@ -194,7 +194,10 @@ public class Datapath implements IDatapath {
 		if(!isVmMac(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
-		return disconnectVm(mMacPortMap.get(mac));
+		IFirewallRule rule = getVmRule(mac);
+		mPortMacMap.remove(mMacPortMap.get(mac));
+		mMacPortMap.remove(mac);
+		return getCommands(rule, false);
 	}
 
 	@Override
@@ -206,7 +209,6 @@ public class Datapath implements IDatapath {
 		IFirewallRule rule = getVmRule(port);
 		mMacPortMap.remove(mPortMacMap.get(port));
 		mPortMacMap.remove(port);
-
 		return getCommands(rule, false);
 	}
 
