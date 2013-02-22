@@ -10,7 +10,7 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
  * Default rule for processing outgoing broadcast domain traffic.
  * This rule doesn't generate add/remove JSON commands (returns null) for incoming flow.
  * This flow already processed by OnePortFirewallGatewayRule.
- * Use this rule only if you want VM's to be able to communicate with other hosts in broadcast domain.
+ * Use this rule only if you want VMs to be able to communicate with other hosts in broadcast domain.
  */
 
 public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
