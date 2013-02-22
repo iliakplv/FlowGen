@@ -60,7 +60,7 @@ public class Datapath implements IDatapath {
 	}
 
 	public void setName(String name) {
-		if (OpenflowUtils.validateDatapathName(name)) {
+		if (!OpenflowUtils.validateDatapathName(name)) {
 			throw new IllegalArgumentException("Wrong name (" + name + ") of datapath with ID " + mDpid);
 		}
 		mName = name;
