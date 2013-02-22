@@ -65,7 +65,7 @@ public class FlowGenMain {
 			System.out.println(snCommands[i].toString());
 		}
 
-		// TODO Exceptions + LOG
+		// TODO LOG
 
 //		String sfpUrl =	"http://192.168.168.24:8080/wm/staticflowentrypusher/json";
 //		String dpid = "00:00:b6:60:ff:e5:93:4f";
