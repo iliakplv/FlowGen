@@ -21,7 +21,7 @@ public class FlowGenMain {
 		int vmMacLastByte = 13;
 
 
-		System.out.println(" ===== Connect all =====\n");
+		System.out.println(" ===== Connect all to " + dp.toString() + " =====\n");
 
 		for (int i = 0; i < 3; i++) {
 			JSONObject[] commands = dp.connectVm("00:00:00:00:00:" + vmMacLastByte++, vmPort++);
@@ -43,7 +43,7 @@ public class FlowGenMain {
 		}
 
 
-		System.out.println("\n ===== Disconnect all =====\n");
+		System.out.println("\n ===== Disconnect all from " + dp.toString() + " =====\n");
 
 		for (int i = 0; i < 3; i++) {
 //			JSONObject[] commands = dp.disconnectVm("00:00:00:00:00:" + --vmMacLastByte);
