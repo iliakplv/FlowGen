@@ -3,7 +3,6 @@ package ru.spbstu.telematics.flowgen.openflow;
 
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
-import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,8 +60,8 @@ public class Datapath implements IDatapath {
 	}
 
 	public void setName(String name) {
-		if (StringUtils.isNullOrEmpty(name)) {
-			throw new IllegalArgumentException("Name of datapath " + mDpid + " is null or empty");
+		if (OpenflowUtils.validateDatapathName(name)) {
+			throw new IllegalArgumentException("Wrong name (" + name + ") of datapath with ID " + mDpid);
 		}
 		mName = name;
 	}
@@ -281,7 +280,7 @@ public class Datapath implements IDatapath {
 	 * Other
 	 */
 
-	private JSONObject[] getCommands(IFirewallRule rule, boolean connect) {
+	private static JSONObject[] getCommands(IFirewallRule rule, boolean connect) {
 		JSONObject[] commands;
 		if (rule instanceof OnePortFirewallSubnetRule) {
 			commands = new JSONObject[1];

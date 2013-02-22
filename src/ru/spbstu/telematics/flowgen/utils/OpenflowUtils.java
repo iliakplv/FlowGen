@@ -38,11 +38,11 @@ public class OpenflowUtils {
 		final int HEX_BYTE_LENGTH = 2;
 
 		if (StringUtils.isNullOrEmpty(string)) {
-			throw new IllegalArgumentException("String is null or empty");
+			return false;
 		}
 
 		if (bytesNumber < 1) {
-			throw new IllegalArgumentException("Wrong bytes number");
+			throw new IllegalArgumentException("Bytes number not positive");
 		}
 
 		if (StringUtils.isHexDigit(delimiter)) {
@@ -82,6 +82,20 @@ public class OpenflowUtils {
 
 	public static boolean validatePriority(int priority) {
 		return priority >= MIN_FLOW_PRIORITY && priority <= MAX_FLOW_PRIORITY;
+
+	}
+
+	public static boolean validateDatapathName(String name) {
+		if (StringUtils.isNullOrEmpty(name)) {
+			return false;
+		}
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if (!(Character.isLetterOrDigit(c) || c == '-' || c == '_')) {
+				return false;
+			}
+		}
+		return true;
 
 	}
 
