@@ -1,6 +1,7 @@
 package ru.spbstu.telematics.flowgen.openflow;
 
 
+import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
@@ -22,11 +23,6 @@ public class Datapath implements IDatapath {
 	private String mGatewayMac;
 	private Map<Integer, String> mPortMacMap;
 	private Map<String, Integer> mMacPortMap;
-
-	// TODO 1 get_Rule()
-	// TODO 2 connect_() + disconnect_()
-	// TODO 3 getAllVmRules()
-	// TODO 4 getAllRules()
 
 
 	public Datapath(String dpid, String name, int trunkPort, int firewallPort, String gatewayMac) {
@@ -159,10 +155,8 @@ public class Datapath implements IDatapath {
 	 * IDatapath
 	 */
 
-	// TODO VMs
-
 	@Override
-	public IFirewallRule connectVm(String mac, int port) {
+	public JSONObject[] connectVm(String mac, int port) {
 		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong VM MAC in datapath " + toString());
@@ -190,12 +184,13 @@ public class Datapath implements IDatapath {
 
 		mPortMacMap.put(port, mac);
 		mMacPortMap.put(mac, port);
+		IFirewallRule rule = getVmRule(port);
 
-		return getVmRule(port);
+		return getCommands(rule, true);
 	}
 
 	@Override
-	public IFirewallRule disconnectVm(String mac) {
+	public JSONObject[] disconnectVm(String mac) {
 		if(!isVmMac(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
@@ -203,14 +198,16 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public IFirewallRule disconnectVm(int port) {
+	public JSONObject[] disconnectVm(int port) {
 		if (!isVmPort(port)) {
 			throw new IllegalArgumentException("No VM connected to port " + port + " of datapath " + toString());
 		}
+
 		IFirewallRule rule = getVmRule(port);
 		mMacPortMap.remove(mPortMacMap.get(port));
 		mPortMacMap.remove(port);
-		return rule;
+
+		return getCommands(rule, false);
 	}
 
 	@Override
@@ -239,16 +236,14 @@ public class Datapath implements IDatapath {
 		return rules;
 	}
 
-	// TODO Gateway
-
 	@Override
-	public IFirewallRule connectGateway() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	public JSONObject[] connectGateway() {
+		return getCommands(getGatewayRule(), true);
 	}
 
 	@Override
-	public IFirewallRule disconnectGateway() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	public JSONObject[] disconnectGateway() {
+		return getCommands(getGatewayRule(), false);
 	}
 
 	@Override
@@ -256,24 +251,20 @@ public class Datapath implements IDatapath {
 		return new OnePortFirewallGatewayRule(mDpid,mFirewallPort, mTrunkPort, mGatewayMac);
 	}
 
-	// TODO Subnet
-
 	@Override
-	public IFirewallRule connectSubnet() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	public JSONObject[] connectSubnet() {
+		return getCommands(getSubnetRule(), true);
 	}
 
 	@Override
-	public IFirewallRule disconnectSubnet() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	public JSONObject[] disconnectSubnet() {
+		return getCommands(getSubnetRule(), false);
 	}
 
 	@Override
 	public IFirewallRule getSubnetRule() {
 		return new OnePortFirewallSubnetRule(mDpid, mFirewallPort, mTrunkPort);
 	}
-
-	// TODO all
 
 	@Override
 	public List<IFirewallRule> getAllRules() {
@@ -287,6 +278,28 @@ public class Datapath implements IDatapath {
 	/**
 	 * Other
 	 */
+
+	private JSONObject[] getCommands(IFirewallRule rule, boolean connect) {
+		JSONObject[] commands;
+		if (rule instanceof OnePortFirewallSubnetRule) {
+			commands = new JSONObject[1];
+			if (connect) {
+				commands[0] = rule.ovsOutFlowAddCommand();
+			} else {
+				commands[0] = rule.ovsOutFlowRemoveCommand();
+			}
+		} else {
+			commands = new JSONObject[2];
+			if (connect) {
+				commands[0] = rule.ovsInFlowAddCommand();
+				commands[1] = rule.ovsOutFlowAddCommand();
+			} else {
+				commands[0] = rule.ovsInFlowRemoveCommand();
+				commands[1] = rule.ovsOutFlowRemoveCommand();
+			}
+		}
+		return commands;
+	}
 
 	@Override
 	public String toString() {

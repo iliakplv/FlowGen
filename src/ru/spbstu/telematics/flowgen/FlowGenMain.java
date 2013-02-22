@@ -1,9 +1,9 @@
 package ru.spbstu.telematics.flowgen;
 
 
+import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.openflow.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.IDatapath;
-import ru.spbstu.telematics.flowgen.openflow.IFirewallRule;
 
 import java.util.List;
 
@@ -17,23 +17,54 @@ public class FlowGenMain {
 		int firewallPort = 2;
 		IDatapath dp = new Datapath(dpid,"ovs-network", trunkPort, firewallPort, gwMac);
 
-		int vmPort = 2;
-		dp.connectVm("00:00:00:00:00:11", ++vmPort);
-		dp.connectVm("00:00:00:00:00:12", ++vmPort);
-		dp.connectVm("00:00:00:00:00:13", ++vmPort);
+		int vmPort = 3;
+		int vmMacLastByte = 13;
 
-		List<IFirewallRule> rules = dp.getAllRules();
-		for (IFirewallRule rule : rules) {
-			// TODO NPE here!
-			System.out.println(rule.ovsInFlowAddCommand().toString());
-			System.out.println(rule.ovsOutFlowAddCommand().toString());
-			System.out.println(rule.ovsInFlowRemoveCommand().toString());
-			System.out.println(rule.ovsOutFlowRemoveCommand().toString());
+
+		System.out.println(" ===== Connect all =====\n");
+
+		for (int i = 0; i < 3; i++) {
+			JSONObject[] commands = dp.connectVm("00:00:00:00:00:" + vmMacLastByte++, vmPort++);
+			for (int j = 0; j < commands.length; j++) {
+				System.out.println(commands[j].toString());
+			}
 			System.out.println();
 		}
 
+		JSONObject[] gwCommands = dp.connectGateway();
+		for (int i = 0; i < gwCommands.length; i++) {
+			System.out.println(gwCommands[i].toString());
+		}
+		System.out.println();
 
-		// TODO refactor Datapath
+		JSONObject[] snCommands = dp.connectSubnet();
+		for (int i = 0; i < snCommands.length; i++) {
+			System.out.println(snCommands[i].toString());
+		}
+
+
+		System.out.println("\n ===== Disconnect all =====\n");
+
+		for (int i = 0; i < 3; i++) {
+			JSONObject[] commands = dp.disconnectVm("00:00:00:00:00:" + --vmMacLastByte);
+//			JSONObject[] commands = dp.disconnectVm(--vmPort);
+			for (int j = 0; j < commands.length; j++) {
+				System.out.println(commands[j].toString());
+			}
+			System.out.println();
+		}
+
+		gwCommands = dp.disconnectGateway();
+		for (int i = 0; i < gwCommands.length; i++) {
+			System.out.println(gwCommands[i].toString());
+		}
+		System.out.println();
+
+		snCommands = dp.disconnectSubnet();
+		for (int i = 0; i < snCommands.length; i++) {
+			System.out.println(snCommands[i].toString());
+		}
+
 		// TODO Exceptions + LOG
 
 //		String sfpUrl =	"http://192.168.168.24:8080/wm/staticflowentrypusher/json";
