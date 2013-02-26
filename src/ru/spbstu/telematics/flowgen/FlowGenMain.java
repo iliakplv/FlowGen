@@ -1,24 +1,21 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
-import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
 import ru.spbstu.telematics.flowgen.openflow.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.IDatapath;
+import ru.spbstu.telematics.flowgen.openflow.IStaticFlowPusherClient;
+import ru.spbstu.telematics.flowgen.openflow.StaticFlowPusherClient;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public class FlowGenMain {
 
 	// TODO LOG
 
 	public static void main(String[] args) {
+
+		IStaticFlowPusherClient sfpClient = new StaticFlowPusherClient("127.0.0.1", 8080);
+		System.out.println("\nSFP at " + ((StaticFlowPusherClient)sfpClient).getStaticFlowPusherUrl() + "\n");
 
 		String dpid = "00:00:b6:60:ff:e5:93:4f";
 		String gwMac = "FF:FF:AA:AA:FF:FF";
@@ -74,41 +71,6 @@ public class FlowGenMain {
 			System.out.println(snCommands[i].toString());
 		}
 
-	}
-
-
-	private static final String SFP_URL = "http://192.168.168.24:8080/wm/staticflowentrypusher/json";
-	private static final String HEADER_CONTENT_TYPE_NAME = "content-type";
-	private static final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
-
-	public static void executeAdd(JSONObject command) {
-		executeCommand(command, true);
-	}
-
-	public static void executeRemove(JSONObject command) {
-		executeCommand(command, false);
-	}
-
-	private static void executeCommand(JSONObject command, boolean add) {
-		HttpClient httpClient = new DefaultHttpClient();
-
-		try {
-			HttpEntityEnclosingRequestBase request =  add ?
-					new HttpPost(SFP_URL) :
-					new HttpDeleteWithBody(SFP_URL);
-
-			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
-			StringEntity params = new StringEntity(command.toString());
-			request.setEntity(params);
-			httpClient.execute(request);
-
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			httpClient.getConnectionManager().shutdown();
-		}
 	}
 
 }
