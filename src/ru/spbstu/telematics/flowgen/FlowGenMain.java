@@ -91,12 +91,17 @@ public class FlowGenMain {
 
 	private static void executeCommand(JSONObject command, boolean add) {
 		HttpClient httpClient = new DefaultHttpClient();
+
 		try {
-			HttpEntityEnclosingRequestBase request =  add ? new HttpPost(SFP_URL) : new HttpDeleteWithBody(SFP_URL);
+			HttpEntityEnclosingRequestBase request =  add ?
+					new HttpPost(SFP_URL) :
+					new HttpDeleteWithBody(SFP_URL);
+
 			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
 			StringEntity params = new StringEntity(command.toString());
 			request.setEntity(params);
 			httpClient.execute(request);
+
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
