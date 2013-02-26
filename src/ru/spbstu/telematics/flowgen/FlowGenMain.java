@@ -6,13 +6,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
+import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
 import ru.spbstu.telematics.flowgen.openflow.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.IDatapath;
-import ru.spbstu.telematics.flowgen.openflow.OnePortFirewallRule;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 public class FlowGenMain {
 
@@ -76,14 +75,32 @@ public class FlowGenMain {
 
 	}
 
-	public static void executePost(JSONObject command) {
-		final String url =	"http://192.168.168.24:8080/wm/staticflowentrypusher/json";
-		final String HEADER_CONTENT_TYPE_NAME = "content-type";
-		final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
+	private static final String SFP_URL = "http://192.168.168.24:8080/wm/staticflowentrypusher/json";
+	private static final String HEADER_CONTENT_TYPE_NAME = "content-type";
+	private static final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
+
+	public static void executePost(JSONObject command) {
 		HttpClient httpClient = new DefaultHttpClient();
 		try {
-			HttpPost request = new HttpPost(url);
+			HttpPost request = new HttpPost(SFP_URL);
+			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
+			StringEntity params = new StringEntity(command.toString());
+			request.setEntity(params);
+			httpClient.execute(request);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			httpClient.getConnectionManager().shutdown();
+		}
+	}
+
+	public static void executeDelete(JSONObject command) {
+		HttpClient httpClient = new DefaultHttpClient();
+		try {
+			HttpDeleteWithBody request = new HttpDeleteWithBody(SFP_URL);
 			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
 			StringEntity params = new StringEntity(command.toString());
 			request.setEntity(params);
