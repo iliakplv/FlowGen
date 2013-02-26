@@ -44,8 +44,8 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 		return mControllerAddress;
 	}
 
-	public void setControllerAddress(InetSocketAddress conrollerAddress) {
-		mControllerAddress = conrollerAddress;
+	public void setControllerAddress(InetSocketAddress controllerAddress) {
+		mControllerAddress = controllerAddress;
 	}
 
 	public void setControllerHostname(String hostname) {
