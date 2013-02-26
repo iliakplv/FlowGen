@@ -85,8 +85,8 @@ public class FlowGenMain {
 		try {
 			HttpPost request = new HttpPost(url);
 			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
-			StringEntity inParams = new StringEntity(command.toString());
-			request.setEntity(inParams);
+			StringEntity params = new StringEntity(command.toString());
+			request.setEntity(params);
 			httpClient.execute(request);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
