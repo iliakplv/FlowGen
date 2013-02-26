@@ -78,11 +78,13 @@ public class FlowGenMain {
 
 	public static void executePost(JSONObject command) {
 		final String url =	"http://192.168.168.24:8080/wm/staticflowentrypusher/json";
+		final String HEADER_CONTENT_TYPE_NAME = "content-type";
+		final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
 		HttpClient httpClient = new DefaultHttpClient();
 		try {
 			HttpPost request = new HttpPost(url);
-			request.addHeader("content-type", "application/x-www-form-urlencoded");
+			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
 			StringEntity inParams = new StringEntity(command.toString());
 			request.setEntity(inParams);
 			httpClient.execute(request);
