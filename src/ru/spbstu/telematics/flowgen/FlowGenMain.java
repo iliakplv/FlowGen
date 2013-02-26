@@ -2,6 +2,7 @@ package ru.spbstu.telematics.flowgen;
 
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -80,27 +81,18 @@ public class FlowGenMain {
 	private static final String HEADER_CONTENT_TYPE_NAME = "content-type";
 	private static final String HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
-	public static void executePost(JSONObject command) {
-		HttpClient httpClient = new DefaultHttpClient();
-		try {
-			HttpPost request = new HttpPost(SFP_URL);
-			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
-			StringEntity params = new StringEntity(command.toString());
-			request.setEntity(params);
-			httpClient.execute(request);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			httpClient.getConnectionManager().shutdown();
-		}
+	public static void executeAdd(JSONObject command) {
+		executeCommand(command, true);
 	}
 
-	public static void executeDelete(JSONObject command) {
+	public static void executeRemove(JSONObject command) {
+		executeCommand(command, false);
+	}
+
+	private static void executeCommand(JSONObject command, boolean add) {
 		HttpClient httpClient = new DefaultHttpClient();
 		try {
-			HttpDeleteWithBody request = new HttpDeleteWithBody(SFP_URL);
+			HttpEntityEnclosingRequestBase request =  add ? new HttpPost(SFP_URL) : new HttpDeleteWithBody(SFP_URL);
 			request.addHeader(HEADER_CONTENT_TYPE_NAME, HEADER_CONTENT_TYPE_VALUE);
 			StringEntity params = new StringEntity(command.toString());
 			request.setEntity(params);
