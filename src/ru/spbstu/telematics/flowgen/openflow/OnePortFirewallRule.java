@@ -20,12 +20,12 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	protected static final String FLOW_ACTIONS = 			"actions";
 	protected static final String FLOW_OUT_PORTS_PREFIX =	"output=";
 
-	private String mDpid;
-	private boolean mActive;
-	private int mInFlowPriority;
-	private int mOutFlowPriority;
-	private int mFirewallPort	= -1;
-	private int mTargetPort		= -1;
+	private String dpid;
+	private boolean active;
+	private int inFlowPriority;
+	private int outFlowPriority;
+	private int firewallPort = -1;
+	private int targetPort = -1;
 
 
 	/**
@@ -48,14 +48,14 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	 */
 
 	public String getDpid() {
-		return mDpid;
+		return dpid;
 	}
 
 	public void setDpid(String dpid) {
 		if (!OpenflowUtils.validateDpid(dpid)) {
 			throw new IllegalArgumentException("Wrong DPID value");
 		}
-		mDpid = dpid.toLowerCase();
+		this.dpid = dpid.toLowerCase();
 	}
 
 
@@ -64,11 +64,11 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	 */
 
 	public boolean isActive() {
-		return mActive;
+		return active;
 	}
 
 	public void setActive(boolean active) {
-		mActive = active;
+		this.active = active;
 	}
 
 
@@ -77,25 +77,25 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	 */
 
 	public int getInFlowPriority() {
-		return mInFlowPriority;
+		return inFlowPriority;
 	}
 
 	public void setInFlowPriority(int priority) {
 		if (!OpenflowUtils.validatePriority(priority)) {
 			throw new IllegalArgumentException("Wrong in flow priority value");
 		}
-		mInFlowPriority = priority;
+		inFlowPriority = priority;
 	}
 
 	public int getOutFlowPriority() {
-		return mOutFlowPriority;
+		return outFlowPriority;
 	}
 
 	public void setOutFlowPriority(int priority) {
 		if (!OpenflowUtils.validatePriority(priority)) {
 			throw new IllegalArgumentException("Wrong out flow priority value");
 		}
-		mOutFlowPriority = priority;
+		outFlowPriority = priority;
 	}
 
 
@@ -104,17 +104,17 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	 */
 
 	public int getFirewallPort() {
-		return mFirewallPort;
+		return firewallPort;
 	}
 
 	public void setFirewallPort(int port) {
 		if (!OpenflowUtils.validatePortNumber(port)) {
 			throw new IllegalArgumentException("Wrong firewall port");
 		}
-		if (port == mTargetPort) {
+		if (port == targetPort) {
 			throw new IllegalArgumentException("New firewall port equals to current target port");
 		}
-		mFirewallPort = port;
+		firewallPort = port;
 	}
 
 	/**
@@ -122,17 +122,17 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	 */
 
 	public int getTargetPort() {
-		return mTargetPort;
+		return targetPort;
 	}
 
 	public void setTargetPort(int port) {
 		if (!OpenflowUtils.validatePortNumber(port)) {
 			throw new IllegalArgumentException("Wrong target port");
 		}
-		if (port == mFirewallPort) {
+		if (port == firewallPort) {
 			throw new IllegalArgumentException("New target port equals to current firewall port");
 		}
-		mTargetPort = port;
+		targetPort = port;
 	}
 
 

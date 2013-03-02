@@ -12,7 +12,7 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 public class OnePortFirewallVmRule extends OnePortFirewallRule {
 
-	private String mVmMac;
+	private String vmMac;
 
 
 	/**
@@ -35,14 +35,14 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 	 */
 
 	public String getVmMac() {
-		return mVmMac;
+		return vmMac;
 	}
 
 	public void setVmMac(String mac) {
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong VM MAC");
 		}
-		mVmMac = mac.toLowerCase();
+		vmMac = mac.toLowerCase();
 	}
 
 
@@ -68,7 +68,7 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(StringUtils.omitDelimiters(mVmMac, OpenflowUtils.MAC_DELIMITER));
+		sb.append(StringUtils.omitDelimiters(vmMac, OpenflowUtils.MAC_DELIMITER));
 		return sb.toString();
 	}
 

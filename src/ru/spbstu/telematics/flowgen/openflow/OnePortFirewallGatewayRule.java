@@ -16,7 +16,7 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 
-	private String mGatewayMac;
+	private String gatewayMac;
 
 
 	/**
@@ -38,15 +38,15 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 	 * Gateway MAC
 	 */
 
-	public String getmGatewayMac() {
-		return mGatewayMac;
+	public String getGatewayMac() {
+		return gatewayMac;
 	}
 
 	public void setGatewayMac(String mac) {
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong gateway MAC");
 		}
-		mGatewayMac = mac.toLowerCase();
+		gatewayMac = mac.toLowerCase();
 	}
 
 
@@ -72,7 +72,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(StringUtils.omitDelimiters(mGatewayMac, OpenflowUtils.MAC_DELIMITER));
+		sb.append(StringUtils.omitDelimiters(gatewayMac, OpenflowUtils.MAC_DELIMITER));
 		return sb.toString();
 	}
 
@@ -119,7 +119,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 			command.put(FLOW_PRIORITY,	getOutFlowPriority());
 			command.put(FLOW_ACTIVITY,	isActive());
 			command.put(FLOW_IN_PORT,	getFirewallPort());
-			command.put(FLOW_DST_MAC,	getmGatewayMac());
+			command.put(FLOW_DST_MAC,	getGatewayMac());
 			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getTargetPort());
 		} catch (JSONException e) {
 			e.printStackTrace();
