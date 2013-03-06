@@ -298,7 +298,9 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public synchronized void registerListener(IDatapathListener listener) {
-		listeners.add(listener);
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
 	}
 
 	@Override
