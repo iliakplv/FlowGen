@@ -32,9 +32,9 @@ public class FlowGenMain {
 		vmPortMacMap.put(5, "fa:16:3e:38:0f:e9");
 
 
-		// Adding flows
-
 		IStaticFlowPusherClient sfpClient = new StaticFlowPusherClient("localhost", 8080);
+
+		// Adding flows
 
 		sfpClient.addFlows(datapath.connectGateway());
 		sfpClient.addFlows(datapath.connectSubnet());
@@ -44,6 +44,14 @@ public class FlowGenMain {
 			sfpClient.addFlows(datapath.connectVm(vmPortMacMap.get(port), port));
 		}
 
+		// Removing flows
+
+//		for (int port : ports) {
+//			sfpClient.removeFlows(datapath.disconnectVm(port));
+//		}
+//
+//		sfpClient.removeFlows(datapath.disconnectSubnet());
+//		sfpClient.removeFlows(datapath.disconnectGateway());
 
 	}
 
