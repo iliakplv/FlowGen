@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 
-public class StaticFlowPusherClient implements IStaticFlowPusherClient {
+public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapathListener {
 
 	private static final String URL_SCHEME = "http:";
 	private static final String URL_STATIC_FLOW_PUSHER = "/wm/staticflowentrypusher/json";
@@ -72,7 +72,7 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 	}
 
 
-	private void executeCommand(JSONObject command, CommandType commandType) {
+	private synchronized void executeCommand(JSONObject command, CommandType commandType) {
 		HttpClient httpClient = new DefaultHttpClient();
 
 		try {
@@ -129,4 +129,18 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 		}
 	}
 
+
+	/**
+	 * IDatapathListener implementation
+	 */
+
+	@Override
+	public void onConnection(JSONObject[] commands) {
+		addFlows(commands);
+	}
+
+	@Override
+	public void onDisconnection(JSONObject[] commands) {
+		removeFlows(commands);
+	}
 }
