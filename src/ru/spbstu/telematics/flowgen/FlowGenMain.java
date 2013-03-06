@@ -80,16 +80,19 @@ public class FlowGenMain {
 		// SFP client
 
 		datapath.registerListener(new IDatapathListener() {
+			private final static String SPACE = " ";
 			@Override
 			public void onConnection(JSONObject[] commands) {
+				System.out.println("Connecting:");
 				for (JSONObject command : commands) {
-					System.out.println(command.toString());
+					System.out.println(SPACE + command.toString());
 				}
 			}
 			@Override
 			public void onDisconnection(JSONObject[] commands) {
+				System.out.println("Disconnecting:");
 				for (JSONObject command : commands) {
-					System.out.println(command.toString());
+					System.out.println(SPACE + command.toString());
 				}
 			}
 		});
