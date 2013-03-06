@@ -19,10 +19,11 @@ public class FlowGenMain {
 		// Datapath, Gateway
 
 		String dpid = "00:00:a6:49:24:26:a5:40";
+		String name = "qbr1dee26dc-b0";
 		int trunkPort = 1;
 		int firewallPort = 3;
 		String gwMac = "fa:16:3e:15:2d:df";
-		IDatapath datapath = new Datapath(dpid, "qbr1dee26dc-b0", trunkPort, firewallPort, gwMac);
+		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
 
 		// VMs
 
