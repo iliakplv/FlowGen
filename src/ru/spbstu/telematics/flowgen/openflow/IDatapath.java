@@ -1,31 +1,34 @@
 package ru.spbstu.telematics.flowgen.openflow;
 
 
-import org.json.JSONObject;
 import java.util.List;
 
 
 public interface IDatapath {
 
 	// Virtual Machines
-	public JSONObject[] connectVm(String mac, int port);
-	public JSONObject[] disconnectVm(String mac);
-	public JSONObject[] disconnectVm(int port);
+	public void connectVm(String mac, int port);
+	public void disconnectVm(String mac);
+	public void disconnectVm(int port);
 	public IFirewallRule getVmRule(String mac);
 	public IFirewallRule getVmRule(int port);
 	public List<IFirewallRule> getAllVmRules();
 
 	// Gateway
-	public JSONObject[] connectGateway();
-	public JSONObject[] disconnectGateway();
+	public void connectGateway();
+	public void disconnectGateway();
 	public IFirewallRule getGatewayRule();
 
 	// Subnet
-	public JSONObject[] connectSubnet();
-	public JSONObject[] disconnectSubnet();
+	public void connectSubnet();
+	public void disconnectSubnet();
 	public IFirewallRule getSubnetRule();
 
 	// All rules
 	public List<IFirewallRule> getAllRules();
+
+	// Listeners
+	public void registerListener(IDatapathListener listener);
+	public void unregisterListener(IDatapathListener listener);
 
 }

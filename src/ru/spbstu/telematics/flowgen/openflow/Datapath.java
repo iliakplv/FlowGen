@@ -6,6 +6,7 @@ import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class Datapath implements IDatapath {
 	private String gatewayMac;
 	private Map<Integer, String> portMacMap;
 	private Map<String, Integer> macPortMap;
+	private LinkedList<IDatapathListener> listeners;
 
 
 	public Datapath(String dpid, String name, int trunkPort, int firewallPort, String gatewayMac) {
@@ -32,6 +34,7 @@ public class Datapath implements IDatapath {
 		setGatewayMac(gatewayMac);
 		portMacMap = new HashMap<Integer, String>();
 		macPortMap = new HashMap<String, Integer>();
+		listeners = new LinkedList<IDatapathListener>();
 	}
 
 
@@ -39,11 +42,11 @@ public class Datapath implements IDatapath {
 	 * DPID
 	 */
 
-	public String getDpid() {
+	public synchronized String getDpid() {
 		return dpid;
 	}
 
-	private void setDpid(String dpid) {
+	private synchronized void setDpid(String dpid) {
 		if (!OpenflowUtils.validateDpid(dpid)) {
 			throw new IllegalArgumentException("Wrong DPID (" + dpid + ") of datapath with mane " + name);
 		}
@@ -55,11 +58,11 @@ public class Datapath implements IDatapath {
 	 * Name
 	 */
 
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public synchronized void setName(String name) {
 		if (!OpenflowUtils.validateDatapathName(name)) {
 			throw new IllegalArgumentException("Wrong name (" + name + ") of datapath with ID " + dpid);
 		}
@@ -71,7 +74,7 @@ public class Datapath implements IDatapath {
 	 * Ports
 	 */
 
-	public boolean isVmPort(int port) {
+	public synchronized boolean isVmPort(int port) {
 		return portMacMap != null && portMacMap.keySet().contains(port);
 	}
 
@@ -79,11 +82,11 @@ public class Datapath implements IDatapath {
 	 * Trunk port
 	 */
 
-	public int getTrunkPort() {
+	public synchronized int getTrunkPort() {
 		return trunkPort;
 	}
 
-	public void setTrunkPort(int trunkPort) {
+	public synchronized void setTrunkPort(int trunkPort) {
 		if (!OpenflowUtils.validatePortNumber(trunkPort)) {
 			throw new IllegalArgumentException("Wrong trunk port (" + trunkPort + ") in datapath " + toString());
 		}
@@ -101,11 +104,11 @@ public class Datapath implements IDatapath {
 	 * Firewall port
 	 */
 
-	public int getFirewallPort() {
+	public synchronized int getFirewallPort() {
 		return firewallPort;
 	}
 
-	public void setFirewallPort(int firewallPort) {
+	public synchronized void setFirewallPort(int firewallPort) {
 		if (!OpenflowUtils.validatePortNumber(firewallPort)) {
 			throw new IllegalArgumentException("Wrong firewall port (" + firewallPort + ") in datapath " + toString());
 		}
@@ -122,11 +125,11 @@ public class Datapath implements IDatapath {
 	 * MACs
 	 */
 
-	public boolean isVmMac(String mac) {
+	public synchronized boolean isVmMac(String mac) {
 		return macPortMap != null && macPortMap.keySet().contains(mac.toLowerCase());
 	}
 
-	public boolean isGatewayMac(String mac) {
+	public synchronized boolean isGatewayMac(String mac) {
 		return gatewayMac.equalsIgnoreCase(mac);
 	}
 
@@ -135,11 +138,11 @@ public class Datapath implements IDatapath {
 	 * Gateway MAC
 	 */
 
-	public String getGatewayMac() {
+	public synchronized String getGatewayMac() {
 		return gatewayMac;
 	}
 
-	public void setGatewayMac(String mac) {
+	public synchronized void setGatewayMac(String mac) {
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong gateway MAC (" + mac + ") in datapath " + toString());
 		}
@@ -155,7 +158,9 @@ public class Datapath implements IDatapath {
 	 */
 
 	@Override
-	public JSONObject[] connectVm(String mac, int port) {
+	public synchronized void connectVm(String mac, int port) {
+		final CommandType commandType = CommandType.FLOW_ADD;
+
 		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in datapath " + toString());
@@ -184,23 +189,29 @@ public class Datapath implements IDatapath {
 
 		portMacMap.put(port, mac);
 		macPortMap.put(mac, port);
-		IFirewallRule rule = getVmRule(port);
-		return getCommands(rule, true);
+		JSONObject[] commands = createCommands(getVmRule(port), commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
-	public JSONObject[] disconnectVm(String mac) {
+	public synchronized void disconnectVm(String mac) {
+		final CommandType commandType = CommandType.FLOW_REMOVE;
+
 		if(!isVmMac(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
+
 		IFirewallRule rule = getVmRule(mac);
 		portMacMap.remove(macPortMap.get(mac));
 		macPortMap.remove(mac);
-		return getCommands(rule, false);
+		JSONObject[] commands = createCommands(rule, commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
-	public JSONObject[] disconnectVm(int port) {
+	public synchronized void disconnectVm(int port) {
+		final CommandType commandType = CommandType.FLOW_REMOVE;
+
 		if (!isVmPort(port)) {
 			throw new IllegalArgumentException("No VM connected to port " + port + " of datapath " + toString());
 		}
@@ -208,7 +219,8 @@ public class Datapath implements IDatapath {
 		IFirewallRule rule = getVmRule(port);
 		macPortMap.remove(portMacMap.get(port));
 		portMacMap.remove(port);
-		return getCommands(rule, false);
+		JSONObject[] commands = createCommands(rule, commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
@@ -238,13 +250,17 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public JSONObject[] connectGateway() {
-		return getCommands(getGatewayRule(), true);
+	public synchronized void connectGateway() {
+		final CommandType commandType = CommandType.FLOW_ADD;
+		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
-	public JSONObject[] disconnectGateway() {
-		return getCommands(getGatewayRule(), false);
+	public synchronized void disconnectGateway() {
+		final CommandType commandType = CommandType.FLOW_REMOVE;
+		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
@@ -253,13 +269,17 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public JSONObject[] connectSubnet() {
-		return getCommands(getSubnetRule(), true);
+	public synchronized void connectSubnet() {
+		final CommandType commandType = CommandType.FLOW_ADD;
+		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
-	public JSONObject[] disconnectSubnet() {
-		return getCommands(getSubnetRule(), false);
+	public synchronized void disconnectSubnet() {
+		final CommandType commandType = CommandType.FLOW_REMOVE;
+		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
+		notifyListeners(commands, commandType);
 	}
 
 	@Override
@@ -276,27 +296,61 @@ public class Datapath implements IDatapath {
 	}
 
 
+	@Override
+	public synchronized void registerListener(IDatapathListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public synchronized void unregisterListener(IDatapathListener listener) {
+		listeners.remove(listener);
+	}
+
+	private void notifyListeners(JSONObject[] commands, CommandType commandType) {
+		if (listeners != null && !listeners.isEmpty()) {
+			switch (commandType) {
+				case FLOW_ADD:
+					for (IDatapathListener listener : listeners) {
+						listener.onConnection(commands);
+					}
+					break;
+				case FLOW_REMOVE:
+					for (IDatapathListener listener : listeners) {
+						listener.onDisconnection(commands);
+					}
+					break;
+				default:
+					throw new IllegalArgumentException("Unknown command type " + commandType);
+			}
+		}
+	}
+
+
 	/**
 	 * Other
 	 */
 
-	private static JSONObject[] getCommands(IFirewallRule rule, boolean connect) {
+	private static JSONObject[] createCommands(IFirewallRule rule, CommandType commandType) {
 		JSONObject[] commands;
 		if (rule instanceof OnePortFirewallSubnetRule) {
 			commands = new JSONObject[1];
-			if (connect) {
+			if (commandType == CommandType.FLOW_ADD) {
 				commands[0] = rule.ovsOutFlowAddCommand();
-			} else {
+			} else if (commandType == CommandType.FLOW_REMOVE) {
 				commands[0] = rule.ovsOutFlowRemoveCommand();
+			} else {
+				throw new IllegalArgumentException("Unknown command type " + commandType);
 			}
 		} else {
 			commands = new JSONObject[2];
-			if (connect) {
+			if (commandType == CommandType.FLOW_ADD) {
 				commands[0] = rule.ovsInFlowAddCommand();
 				commands[1] = rule.ovsOutFlowAddCommand();
-			} else {
+			} else if (commandType == CommandType.FLOW_REMOVE) {
 				commands[0] = rule.ovsInFlowRemoveCommand();
 				commands[1] = rule.ovsOutFlowRemoveCommand();
+			} else {
+				throw new IllegalArgumentException("Unknown command type " + commandType);
 			}
 		}
 		return commands;

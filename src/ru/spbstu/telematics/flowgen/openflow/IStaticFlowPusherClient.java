@@ -12,11 +12,4 @@ public interface IStaticFlowPusherClient {
 	public void removeFlow(JSONObject command);
 	public void removeFlows(JSONObject[] commands);
 
-
-	/***** Inner classes *****/
-
-	public enum CommandType {
-		FLOW_ADD,
-		FLOW_REMOVE
-	}
 }
