@@ -20,7 +20,7 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 	private static final String HTTP_HEADER_CONTENT_TYPE_NAME = "content-type";
 	private static final String HTTP_HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
-	private InetSocketAddress mControllerAddress;
+	private InetSocketAddress controllerAddress;
 
 
 	/**
@@ -28,7 +28,7 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 	 */
 
 	public StaticFlowPusherClient(InetSocketAddress controllerAdress) {
-		mControllerAddress = controllerAdress;
+		controllerAddress = controllerAdress;
 	}
 
 	public StaticFlowPusherClient(String controllerHostname, int controllerPort) {
@@ -41,19 +41,19 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 	 */
 
 	public InetSocketAddress getControllerAddress() {
-		return mControllerAddress;
+		return controllerAddress;
 	}
 
 	public void setControllerAddress(InetSocketAddress controllerAddress) {
-		mControllerAddress = controllerAddress;
+		this.controllerAddress = controllerAddress;
 	}
 
 	public void setControllerHostname(String hostname) {
-		mControllerAddress = new InetSocketAddress(hostname, mControllerAddress.getPort());
+		controllerAddress = new InetSocketAddress(hostname, controllerAddress.getPort());
 	}
 
 	public void setControllerPort(int port) {
-		mControllerAddress = new InetSocketAddress(mControllerAddress.getAddress(), port);
+		controllerAddress = new InetSocketAddress(controllerAddress.getAddress(), port);
 	}
 
 
@@ -62,7 +62,7 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient {
 	 */
 
 	public String getStaticFlowPusherUrl() {
-		String controllerAddress = mControllerAddress.toString();
+		String controllerAddress = this.controllerAddress.toString();
 		StringBuilder sb = new StringBuilder();
 		sb.append(URL_SCHEME);
 		sb.append(controllerAddress.startsWith("/") ? "/" : "//");
