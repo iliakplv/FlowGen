@@ -1,15 +1,12 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.openflow.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.IStaticFlowPusherClient;
 import ru.spbstu.telematics.flowgen.openflow.StaticFlowPusherClient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 
