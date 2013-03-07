@@ -4,15 +4,16 @@ package ru.spbstu.telematics.flowgen.utils;
 public class OpenflowUtils {
 
 	// Rule priority
-	public static final int MAX_FLOW_PRIORITY = 			32767;
-	public static final int MIN_FLOW_PRIORITY = 			0;
+	public static final int MAX_FLOW_PRIORITY = 			0;
+	public static final int MIN_FLOW_PRIORITY = 			32767;
+	public static final int FLOW_PRIORITY_LEVEL = 			128;
 
 	public static final int IN_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
-	public static final int IN_VM_FLOW_PRIORITY =			MAX_FLOW_PRIORITY / 2;
+	public static final int IN_VM_FLOW_PRIORITY =			MAX_FLOW_PRIORITY + FLOW_PRIORITY_LEVEL;
 
 	public static final int OUT_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
-	public static final int OUT_VM_FLOW_PRIORITY =			MAX_FLOW_PRIORITY / 2;
-	public static final int OUT_SUBNET_FLOW_PRIORITY =		MAX_FLOW_PRIORITY / 4;
+	public static final int OUT_VM_FLOW_PRIORITY =			MAX_FLOW_PRIORITY + FLOW_PRIORITY_LEVEL;
+	public static final int OUT_SUBNET_FLOW_PRIORITY =		MAX_FLOW_PRIORITY + 2 * FLOW_PRIORITY_LEVEL;
 
 	// Ports
 	public static final int MIN_PORT = 1;

@@ -59,12 +59,12 @@ public class FlowGenMain {
 		// Removing flows
 
 //		datapath.registerListener(sfpClient);
-//
-//		for (int port : ports) {
-//			datapath.disconnectVm(port);
-//		}
-//		datapath.disconnectSubnet();
-//		datapath.disconnectGateway();
+
+		for (int port : ports) {
+			datapath.disconnectVm(port);
+		}
+		datapath.disconnectSubnet();
+		datapath.disconnectGateway();
 	}
 
 	public static void fakeTest() {
