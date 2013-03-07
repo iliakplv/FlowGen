@@ -14,8 +14,6 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-//		fakeTest();
-
 		testVn0();
 
 	}
@@ -47,64 +45,27 @@ public class FlowGenMain {
 
 		// Adding flows
 
-		datapath.registerListener(sfpClient);
-
-		datapath.connectGateway();
-		datapath.connectSubnet();
-		for (int port : ports) {
-			datapath.connectVm(vmPortMacMap.get(port), port);
-		}
-
-
-		// Removing flows
-
 //		datapath.registerListener(sfpClient);
 
-		for (int port : ports) {
-			datapath.disconnectVm(port);
-		}
-		datapath.disconnectSubnet();
-		datapath.disconnectGateway();
-	}
-
-	public static void fakeTest() {
-		// Datapath, Gateway
-
-		String dpid = "00:00:00:00:00:00:00:FF";
-		String name = "ololo";
-		int trunkPort = 1;
-		int firewallPort = 2;
-		String gwMac = "00:00:00:00:00:FF";
-		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
-		datapath.registerListener(new DatapathLogger());
-
-		// VMs
-
-		HashMap<Integer, String> vmPortMacMap = new HashMap<Integer, String>();
-		vmPortMacMap.put(3, "11:11:11:11:11:11");
-		vmPortMacMap.put(4, "22:22:22:22:22:22");
-
-
-		// Adding flows
-
 		datapath.connectGateway();
 		datapath.connectSubnet();
-
-		Set<Integer> ports = vmPortMacMap.keySet();
 		for (int port : ports) {
 			datapath.connectVm(vmPortMacMap.get(port), port);
 		}
 
 
+//		datapath.unregisterListener(sfpClient);
+
+
 		// Removing flows
+
+		datapath.registerListener(sfpClient);
 
 		for (int port : ports) {
 			datapath.disconnectVm(port);
 		}
-
 		datapath.disconnectSubnet();
 		datapath.disconnectGateway();
-
 	}
 
 }

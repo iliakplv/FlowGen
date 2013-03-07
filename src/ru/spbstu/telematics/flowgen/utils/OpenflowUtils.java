@@ -3,6 +3,8 @@ package ru.spbstu.telematics.flowgen.utils;
 
 public class OpenflowUtils {
 
+	// TODO flow priorities !
+
 	// Rule priority
 	public static final int MAX_FLOW_PRIORITY = 			0;
 	public static final int MIN_FLOW_PRIORITY = 			32767;
@@ -82,8 +84,9 @@ public class OpenflowUtils {
 	}
 
 	public static boolean validatePriority(int priority) {
-		return priority >= MIN_FLOW_PRIORITY && priority <= MAX_FLOW_PRIORITY;
-
+//		return priority >= MIN_FLOW_PRIORITY && priority <= MAX_FLOW_PRIORITY;
+//		TODO stub !
+		return true;
 	}
 
 	public static boolean validateDatapathName(String name) {
