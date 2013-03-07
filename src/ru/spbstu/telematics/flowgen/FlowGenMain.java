@@ -1,11 +1,10 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.openflow.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.IDatapath;
-import ru.spbstu.telematics.flowgen.openflow.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.StaticFlowPusherClient;
+import ru.spbstu.telematics.flowgen.utils.DatapathLogger;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -13,13 +12,11 @@ import java.util.Set;
 
 public class FlowGenMain {
 
-	// TODO LOG
-
 	public static void main(String[] args) {
 
-		fakeTest();
+//		fakeTest();
 
-//		testVn0();
+		testVn0();
 
 	}
 
@@ -33,36 +30,39 @@ public class FlowGenMain {
 		int firewallPort = 3;
 		String gwMac = "fa:16:3e:15:2d:df";
 		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
+		datapath.registerListener(new DatapathLogger());
 
 		// SFP client
 
-		StaticFlowPusherClient sfpClient = new StaticFlowPusherClient("localhost", 8080);
-		datapath.registerListener(sfpClient);
+		StaticFlowPusherClient sfpClient = new StaticFlowPusherClient("127.0.0.1", 8080);
 
 		// VMs
 
 		HashMap<Integer, String> vmPortMacMap = new HashMap<Integer, String>();
 		vmPortMacMap.put(4, "fa:16:3e:69:ab:bf");
 		vmPortMacMap.put(5, "fa:16:3e:38:0f:e9");
+		Set<Integer> ports = vmPortMacMap.keySet();
+
 
 
 		// Adding flows
 
+		datapath.registerListener(sfpClient);
+
 		datapath.connectGateway();
 		datapath.connectSubnet();
-
-		Set<Integer> ports = vmPortMacMap.keySet();
 		for (int port : ports) {
 			datapath.connectVm(vmPortMacMap.get(port), port);
 		}
 
 
 		// Removing flows
+
+//		datapath.registerListener(sfpClient);
 //
 //		for (int port : ports) {
 //			datapath.disconnectVm(port);
 //		}
-//
 //		datapath.disconnectSubnet();
 //		datapath.disconnectGateway();
 	}
@@ -76,26 +76,7 @@ public class FlowGenMain {
 		int firewallPort = 2;
 		String gwMac = "00:00:00:00:00:FF";
 		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
-
-		// SFP client
-
-		datapath.registerListener(new IDatapathListener() {
-			private final static String SPACE = " ";
-			@Override
-			public void onConnection(JSONObject[] commands) {
-				System.out.println("Connecting:");
-				for (JSONObject command : commands) {
-					System.out.println(SPACE + command.toString());
-				}
-			}
-			@Override
-			public void onDisconnection(JSONObject[] commands) {
-				System.out.println("Disconnecting:");
-				for (JSONObject command : commands) {
-					System.out.println(SPACE + command.toString());
-				}
-			}
-		});
+		datapath.registerListener(new DatapathLogger());
 
 		// VMs
 

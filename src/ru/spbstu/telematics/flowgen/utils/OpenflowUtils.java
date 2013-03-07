@@ -4,7 +4,7 @@ package ru.spbstu.telematics.flowgen.utils;
 public class OpenflowUtils {
 
 	// Rule priority
-	public static final int MAX_FLOW_PRIORITY = 			32768; // 0x8000
+	public static final int MAX_FLOW_PRIORITY = 			32767;
 	public static final int MIN_FLOW_PRIORITY = 			0;
 
 	public static final int IN_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
