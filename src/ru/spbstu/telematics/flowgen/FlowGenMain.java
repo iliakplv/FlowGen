@@ -1,9 +1,8 @@
 package ru.spbstu.telematics.flowgen;
 
 
-import ru.spbstu.telematics.flowgen.openflow.Datapath;
-import ru.spbstu.telematics.flowgen.openflow.IDatapath;
-import ru.spbstu.telematics.flowgen.openflow.StaticFlowPusherClient;
+import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.StaticFlowPusherClient;
 import ru.spbstu.telematics.flowgen.utils.DatapathLogger;
 
 import java.util.HashMap;

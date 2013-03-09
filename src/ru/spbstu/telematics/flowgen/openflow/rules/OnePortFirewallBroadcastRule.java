@@ -1,4 +1,4 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.rules;
 
 
 import org.json.JSONException;
@@ -10,7 +10,7 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
  * Rule for processing outgoing broadcast traffic.
  * This rule doesn't generate add/remove JSON commands (returns null) for incoming flow.
  * This flow already processed by other rules (OnePortFirewallGatewayRule and OnePortFirewallVmRule).
- * Use this rule to process broadcast traffic (with destination MAC = FF:FF:FF:FF:FF:FF, e.g. ARP requests)
+ * Use this rule to process broadcast traffic (with destination MAC = FF:FF:FF:FF:FF:FF, e.g. ARP requests).
  */
 
 public class OnePortFirewallBroadcastRule extends OnePortFirewallRule {

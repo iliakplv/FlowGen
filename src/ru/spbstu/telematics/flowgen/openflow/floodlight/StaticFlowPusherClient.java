@@ -1,4 +1,4 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.floodlight;
 
 
 import org.apache.http.client.HttpClient;
@@ -8,6 +8,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
+import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
+import ru.spbstu.telematics.flowgen.openflow.rules.CommandType;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

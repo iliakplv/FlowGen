@@ -1,4 +1,4 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.rules;
 
 
 import org.json.JSONException;
@@ -7,58 +7,54 @@ import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 /**
- * Rule for processing external network traffic forwarded by gateway.
- * This rule doesn't affects outgoing traffic to broadcast domain
- * in case of analyzing destination MACs of ethernet frames.
- * (As you know, outgoing frames for broadcast domain use MACs of hosts (not MAC of gateway) as frame's destination MAC)
- * To process traffic for broadcast domain use OnePortFirewallSubnetRule class.
+ * Rule for processing VM traffic.
  */
 
-public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
+public class OnePortFirewallVmRule extends OnePortFirewallRule {
 
-	private String gatewayMac;
+	private String vmMac;
 
 
 	/**
 	 * Constructors
 	 */
 
-	public OnePortFirewallGatewayRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
-								 int firewallPort, int gatewayPort, String gatewayMac) {
-		super(dpid, active, inFlowPriority, outFlowPriority, firewallPort, gatewayPort);
-		setGatewayMac(gatewayMac);
+	public OnePortFirewallVmRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
+								 int firewallPort, int vmPort, String vmMac) {
+		super(dpid, active, inFlowPriority, outFlowPriority, firewallPort, vmPort);
+		setVmMac(vmMac);
 	}
 
-	public OnePortFirewallGatewayRule(String dpid, int firewallPort, int gatewayPort, String gatewayMac) {
-		this(dpid, true, OpenflowUtils.IN_TRUNK_FLOW_PRIORITY, OpenflowUtils.OUT_TRUNK_FLOW_PRIORITY,
-				firewallPort, gatewayPort, gatewayMac);
+	public OnePortFirewallVmRule(String dpid, int firewallPort, int vmPort, String vmMac) {
+		this(dpid, true, OpenflowUtils.IN_VM_FLOW_PRIORITY, OpenflowUtils.OUT_VM_FLOW_PRIORITY,
+				firewallPort, vmPort, vmMac);
 	}
 
 	/**
-	 * Gateway MAC
+	 * VM MAC
 	 */
 
-	public String getGatewayMac() {
-		return gatewayMac;
+	public String getVmMac() {
+		return vmMac;
 	}
 
-	public void setGatewayMac(String mac) {
+	public void setVmMac(String mac) {
 		if (!OpenflowUtils.validateMac(mac)) {
-			throw new IllegalArgumentException("Wrong gateway MAC");
+			throw new IllegalArgumentException("Wrong VM MAC");
 		}
-		gatewayMac = mac.toLowerCase();
+		vmMac = mac.toLowerCase();
 	}
 
 
 	/**
-	 * Gateway port
+	 * VM port
 	 */
 
-	public int getGatewayPort() {
+	public int getVmPort() {
 		return getTargetPort();
 	}
 
-	public void setGatewayPort(int port) {
+	public void setVmPort(int port) {
 		setTargetPort(port);
 	}
 
@@ -72,7 +68,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(StringUtils.omitDelimiters(gatewayMac, OpenflowUtils.MAC_DELIMITER));
+		sb.append(StringUtils.omitDelimiters(vmMac, OpenflowUtils.MAC_DELIMITER));
 		return sb.toString();
 	}
 
@@ -119,7 +115,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 			command.put(FLOW_PRIORITY,	getOutFlowPriority());
 			command.put(FLOW_ACTIVITY,	isActive());
 			command.put(FLOW_IN_PORT,	getFirewallPort());
-			command.put(FLOW_DST_MAC,	getGatewayMac());
+			command.put(FLOW_DST_MAC,	getVmMac());
 			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getTargetPort());
 		} catch (JSONException e) {
 			e.printStackTrace();

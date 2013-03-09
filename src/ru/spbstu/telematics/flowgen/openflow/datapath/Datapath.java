@@ -1,7 +1,13 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.datapath;
 
 
 import org.json.JSONObject;
+import ru.spbstu.telematics.flowgen.openflow.rules.CommandType;
+import ru.spbstu.telematics.flowgen.openflow.rules.IFirewallRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallBroadcastRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallGatewayRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallSubnetRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallVmRule;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 import java.util.ArrayList;
@@ -310,6 +316,7 @@ public class Datapath implements IDatapath {
 	public List<IFirewallRule> getAllRules() {
 		List<IFirewallRule> rules = getAllVmRules();
 		rules.add(getGatewayRule());
+		rules.add(getBroadcastRule());
 		rules.add(getSubnetRule());
 		return rules;
 	}

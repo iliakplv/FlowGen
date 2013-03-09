@@ -1,5 +1,7 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.datapath;
 
+
+import ru.spbstu.telematics.flowgen.openflow.rules.IFirewallRule;
 
 import java.util.List;
 

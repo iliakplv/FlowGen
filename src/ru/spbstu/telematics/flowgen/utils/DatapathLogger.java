@@ -2,7 +2,7 @@ package ru.spbstu.telematics.flowgen.utils;
 
 
 import org.json.JSONObject;
-import ru.spbstu.telematics.flowgen.openflow.IDatapathListener;
+import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

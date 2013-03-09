@@ -1,4 +1,4 @@
-package ru.spbstu.telematics.flowgen.openflow;
+package ru.spbstu.telematics.flowgen.openflow.floodlight;
 
 
 import org.json.JSONObject;
