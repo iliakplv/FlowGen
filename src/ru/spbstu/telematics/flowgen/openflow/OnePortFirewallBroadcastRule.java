@@ -16,9 +16,11 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 public class OnePortFirewallBroadcastRule extends OnePortFirewallRule {
 
 	// Not used for generating JSON commands
-	private static final int BROADCAST_TRUNK_PORT = OpenflowUtils.MAX_PORT;
+	private static final int BROADCAST_IN_FLOW_PRIORITY_STUB = OpenflowUtils.MIN_FLOW_PRIORITY;
+	private static final int BROADCAST_TRUNK_PORT_STUB = OpenflowUtils.MAX_PORT;
 
 	private static final String FLOW_NAME_BROADCAST_LABEL = "broadcast";
+
 	private static final String BROADCAST_MAC = "ff:ff:ff:ff:ff:ff";
 	private static final String BROADCAST_OUT_PORTS = "all";
 
@@ -28,7 +30,7 @@ public class OnePortFirewallBroadcastRule extends OnePortFirewallRule {
 	 */
 
 	public OnePortFirewallBroadcastRule(String dpid, boolean active, int outFlowPriority, int firewallPort) {
-		super(dpid, active, OpenflowUtils.IN_BROADCAST_FLOW_PRIORITY, outFlowPriority, firewallPort, BROADCAST_TRUNK_PORT);
+		super(dpid, active, BROADCAST_IN_FLOW_PRIORITY_STUB, outFlowPriority, firewallPort, BROADCAST_TRUNK_PORT_STUB);
 	}
 
 	public OnePortFirewallBroadcastRule(String dpid, int firewallPort) {

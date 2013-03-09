@@ -46,7 +46,7 @@ public class FlowGenMain {
 		// Adding flows
 
 //		REGISTER TO ADD
-		datapath.registerListener(sfpClient);
+//		datapath.registerListener(sfpClient);
 
 		datapath.connectGateway();
 		datapath.connectBroadcast();
@@ -56,7 +56,7 @@ public class FlowGenMain {
 		}
 
 //		UNREGISTER TO KEEP
-		datapath.unregisterListener(sfpClient);
+//		datapath.unregisterListener(sfpClient);
 
 
 

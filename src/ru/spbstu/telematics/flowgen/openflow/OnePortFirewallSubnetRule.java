@@ -15,6 +15,9 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 
+	// Not used for generating JSON commands
+	private static final int SUBNET_IN_FLOW_PRIORITY_STUB = OpenflowUtils.MIN_FLOW_PRIORITY;
+
 	private static final String FLOW_NAME_SUBNET_LABEL = "subnet";
 
 	/**
@@ -23,7 +26,7 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 
 	public OnePortFirewallSubnetRule(String dpid, boolean active, int outFlowPriority,
 									 int firewallPort, int trunkPort) {
-		super(dpid, active, OpenflowUtils.IN_SUBNET_FLOW_PRIORITY, outFlowPriority, firewallPort, trunkPort);
+		super(dpid, active, SUBNET_IN_FLOW_PRIORITY_STUB, outFlowPriority, firewallPort, trunkPort);
 	}
 
 	public OnePortFirewallSubnetRule(String dpid, int firewallPort, int trunkPort) {
