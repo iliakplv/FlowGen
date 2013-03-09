@@ -269,6 +269,25 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
+	public synchronized void connectBroadcast() {
+		final CommandType commandType = CommandType.FLOW_ADD;
+		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
+		notifyListeners(commands, commandType);
+	}
+
+	@Override
+	public synchronized void disconnectBroadcast() {
+		final CommandType commandType = CommandType.FLOW_REMOVE;
+		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
+		notifyListeners(commands, commandType);
+	}
+
+	@Override
+	public IFirewallRule getBroadcastRule() {
+		return new OnePortFirewallBroadcastRule(dpid, firewallPort);
+	}
+
+	@Override
 	public synchronized void connectSubnet() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
@@ -334,7 +353,8 @@ public class Datapath implements IDatapath {
 
 	private static JSONObject[] createCommands(IFirewallRule rule, CommandType commandType) {
 		JSONObject[] commands;
-		if (rule instanceof OnePortFirewallSubnetRule) {
+		if (rule instanceof OnePortFirewallBroadcastRule ||
+				rule instanceof OnePortFirewallSubnetRule) {
 			commands = new JSONObject[1];
 			if (commandType == CommandType.FLOW_ADD) {
 				commands[0] = rule.ovsOutFlowAddCommand();

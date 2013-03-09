@@ -7,40 +7,32 @@ import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 /**
- * Default rule for processing outgoing broadcast domain traffic.
+ * Rule for processing outgoing broadcast traffic.
  * This rule doesn't generate add/remove JSON commands (returns null) for incoming flow.
- * This flow already processed by OnePortFirewallGatewayRule.
- * Use this rule only if you want VMs to be able to communicate with other hosts in broadcast domain.
+ * This flow already processed by other rules (OnePortFirewallGatewayRule and OnePortFirewallVmRule).
+ * Use this rule to process broadcast traffic (with destination MAC = FF:FF:FF:FF:FF:FF, e.g. ARP requests)
  */
 
-public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
+public class OnePortFirewallBroadcastRule extends OnePortFirewallRule {
 
-	private static final String FLOW_NAME_SUBNET_LABEL = "subnet";
+	// Not used for generating JSON commands
+	private static final int BROADCAST_TRUNK_PORT = OpenflowUtils.MAX_PORT;
+
+	private static final String FLOW_NAME_BROADCAST_LABEL = "broadcast";
+	private static final String BROADCAST_MAC = "ff:ff:ff:ff:ff:ff";
+	private static final String BROADCAST_OUT_PORTS = "all";
+
 
 	/**
 	 * Constructors
 	 */
 
-	public OnePortFirewallSubnetRule(String dpid, boolean active, int outFlowPriority,
-									 int firewallPort, int trunkPort) {
-		super(dpid, active, OpenflowUtils.IN_SUBNET_FLOW_PRIORITY, outFlowPriority, firewallPort, trunkPort);
+	public OnePortFirewallBroadcastRule(String dpid, boolean active, int outFlowPriority, int firewallPort) {
+		super(dpid, active, OpenflowUtils.IN_BROADCAST_FLOW_PRIORITY, outFlowPriority, firewallPort, BROADCAST_TRUNK_PORT);
 	}
 
-	public OnePortFirewallSubnetRule(String dpid, int firewallPort, int trunkPort) {
-		this(dpid, true, OpenflowUtils.OUT_SUBNET_FLOW_PRIORITY, firewallPort, trunkPort);
-	}
-
-
-	/**
-	 * Trunk port
-	 */
-
-	public int getTrunkPort() {
-		return getTargetPort();
-	}
-
-	public void setTrunkPort(int port) {
-		setTargetPort(port);
+	public OnePortFirewallBroadcastRule(String dpid, int firewallPort) {
+		this(dpid, true, OpenflowUtils.OUT_BROADCAST_FLOW_PRIORITY, firewallPort);
 	}
 
 
@@ -53,7 +45,7 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(FLOW_NAME_SUBNET_LABEL);
+		sb.append(FLOW_NAME_BROADCAST_LABEL);
 		return sb.toString();
 	}
 
@@ -85,7 +77,8 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 			command.put(FLOW_PRIORITY,	getOutFlowPriority());
 			command.put(FLOW_ACTIVITY,	isActive());
 			command.put(FLOW_IN_PORT,	getFirewallPort());
-			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getTargetPort());
+			command.put(FLOW_DST_MAC,	BROADCAST_MAC);
+			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + BROADCAST_OUT_PORTS);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

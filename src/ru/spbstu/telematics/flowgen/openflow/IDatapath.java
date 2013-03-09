@@ -19,6 +19,11 @@ public interface IDatapath {
 	public void disconnectGateway();
 	public IFirewallRule getGatewayRule();
 
+	// Broadcast
+	public void connectBroadcast();
+	public void disconnectBroadcast();
+	public IFirewallRule getBroadcastRule();
+
 	// Subnet
 	public void connectSubnet();
 	public void disconnectSubnet();
