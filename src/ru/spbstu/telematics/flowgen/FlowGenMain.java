@@ -27,8 +27,8 @@ public class FlowGenMain {
 		int trunkPort = 1;
 		int firewallPort = 3;
 		String gwMac = "fa:16:3e:15:2d:df";
-		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
-		datapath.registerListener(new DatapathLogger());
+		Datapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
+		datapath.registerListener(new DatapathLogger(datapath.getDpid(), datapath.getName()));
 
 		// SFP client
 
@@ -45,7 +45,8 @@ public class FlowGenMain {
 
 		// Adding flows
 
-//		datapath.registerListener(sfpClient);
+//		TODO	REGISTER
+		datapath.registerListener(sfpClient);
 
 		datapath.connectGateway();
 		datapath.connectSubnet();
@@ -53,13 +54,15 @@ public class FlowGenMain {
 			datapath.connectVm(vmPortMacMap.get(port), port);
 		}
 
+//		TODO	UNREGISTER
+		datapath.unregisterListener(sfpClient);
 
-//		datapath.unregisterListener(sfpClient);
 
 
 		// Removing flows
 
-		datapath.registerListener(sfpClient);
+//		TODO	REGISTER AGAIN
+//		datapath.registerListener(sfpClient);
 
 		for (int port : ports) {
 			datapath.disconnectVm(port);
