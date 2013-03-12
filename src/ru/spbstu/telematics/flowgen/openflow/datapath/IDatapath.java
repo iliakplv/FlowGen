@@ -16,20 +16,10 @@ public interface IDatapath {
 	public IFirewallRule getVmRule(int port);
 	public List<IFirewallRule> getAllVmRules();
 
-	// Gateway
-	public void connectGateway();
-	public void disconnectGateway();
-	public IFirewallRule getGatewayRule();
-
-	// Broadcast
-	public void connectBroadcast();
-	public void disconnectBroadcast();
-	public IFirewallRule getBroadcastRule();
-
-	// Subnet
-	public void connectSubnet();
-	public void disconnectSubnet();
-	public IFirewallRule getSubnetRule();
+	// Network
+	public void connectToNetwork();
+	public void disconnectFromNetwork();
+	public List<IFirewallRule> getAllNetworkRules();
 
 	// All rules
 	public List<IFirewallRule> getAllRules();

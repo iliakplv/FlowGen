@@ -255,83 +255,84 @@ public class Datapath implements IDatapath {
 		return rules;
 	}
 
-	@Override
 	public synchronized void connectGateway() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	@Override
 	public synchronized void disconnectGateway() {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	@Override
 	public IFirewallRule getGatewayRule() {
 		return new OnePortFirewallGatewayRule(dpid, firewallPort, trunkPort, gatewayMac);
 	}
 
-	@Override
 	public synchronized void connectBroadcast() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	@Override
 	public synchronized void disconnectBroadcast() {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	@Override
 	public IFirewallRule getBroadcastRule() {
 		return new OnePortFirewallBroadcastRule(dpid, firewallPort);
 	}
 
-	@Override
 	public synchronized void connectSubnet() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	@Override
 	public synchronized void disconnectSubnet() {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	@Override
 	public IFirewallRule getSubnetRule() {
 		return new OnePortFirewallSubnetRule(dpid, firewallPort, trunkPort);
 	}
 
 	@Override
-	public List<IFirewallRule> getAllRules() {
-		List<IFirewallRule> rules = getAllVmRules();
-		rules.add(getGatewayRule());
-		rules.add(getBroadcastRule());
-		rules.add(getSubnetRule());
-		return rules;
-	}
-
-
-	public void connectBroadcastDomain() {
+	public void connectToNetwork() {
 		connectGateway();
 		connectBroadcast();
 		connectSubnet();
 	}
 
-	public void disconnectBroadcastDomain() {
+	@Override
+	public void disconnectFromNetwork() {
 		disconnectGateway();
 		disconnectBroadcast();
 		disconnectSubnet();
+	}
+
+	@Override
+	public List<IFirewallRule> getAllNetworkRules() {
+		List<IFirewallRule> rules = new ArrayList<IFirewallRule>();
+		rules.add(getGatewayRule());
+		rules.add(getBroadcastRule());
+		rules.add(getSubnetRule());
+		return rules;
+
+	}
+
+	@Override
+	public List<IFirewallRule> getAllRules() {
+		List<IFirewallRule> rules = getAllNetworkRules();
+		List<IFirewallRule> vmRules = getAllVmRules();
+		rules.addAll(vmRules);
+		return rules;
 	}
 
 
