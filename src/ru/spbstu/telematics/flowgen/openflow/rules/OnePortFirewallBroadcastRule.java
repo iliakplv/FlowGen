@@ -37,7 +37,7 @@ public class OnePortFirewallBroadcastRule extends OnePortFirewallRule {
 
 	@Override
 	public int getTargetPort() {
-		return -1;
+		return OpenflowUtils.DEFAULT_PORT;
 	}
 
 	@Override

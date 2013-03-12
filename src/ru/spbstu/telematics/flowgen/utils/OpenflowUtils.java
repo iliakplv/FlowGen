@@ -17,6 +17,7 @@ public class OpenflowUtils {
 	public static final int OUT_SUBNET_FLOW_PRIORITY =		MIN_FLOW_PRIORITY + FLOW_PRIORITY_LEVEL;
 
 	// Ports
+	public static final int DEFAULT_PORT = 0;
 	public static final int MIN_PORT = 1;
 	public static final int MAX_PORT = 255;
 

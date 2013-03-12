@@ -24,8 +24,8 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	private boolean active;
 	private int inFlowPriority;
 	private int outFlowPriority;
-	private int firewallPort = -1;
-	private int targetPort = -1;
+	private int firewallPort =	OpenflowUtils.DEFAULT_PORT;
+	private int targetPort =	OpenflowUtils.DEFAULT_PORT;
 
 
 	/**

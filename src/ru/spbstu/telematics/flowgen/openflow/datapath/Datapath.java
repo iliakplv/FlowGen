@@ -24,8 +24,8 @@ public class Datapath implements IDatapath {
 
 	private String dpid =		NOT_INITIALIZED;
 	private String name =		NOT_INITIALIZED;
-	private int trunkPort =		-1;
-	private int firewallPort =	-1;
+	private int trunkPort =		OpenflowUtils.DEFAULT_PORT;
+	private int firewallPort =	OpenflowUtils.DEFAULT_PORT;
 	private String gatewayMac;
 	private Map<Integer, String> portMacMap;
 	private Map<String, Integer> macPortMap;
