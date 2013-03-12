@@ -195,7 +195,8 @@ public class Datapath implements IDatapath {
 
 		portMacMap.put(port, mac);
 		macPortMap.put(mac, port);
-		JSONObject[] commands = createCommands(getVmRule(port), commandType);
+		IFirewallRule rule = getVmRule(port);
+		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, commandType);
 	}
 
@@ -255,63 +256,65 @@ public class Datapath implements IDatapath {
 		return rules;
 	}
 
-	public synchronized void connectGateway() {
+	// Network
+
+	private void connectGateway() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	public synchronized void disconnectGateway() {
+	private void disconnectGateway() {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	public IFirewallRule getGatewayRule() {
+	private IFirewallRule getGatewayRule() {
 		return new OnePortFirewallGatewayRule(dpid, firewallPort, trunkPort, gatewayMac);
 	}
 
-	public synchronized void connectBroadcast() {
+	private void connectBroadcast() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	public synchronized void disconnectBroadcast() {
+	private void disconnectBroadcast() {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	public IFirewallRule getBroadcastRule() {
+	private IFirewallRule getBroadcastRule() {
 		return new OnePortFirewallBroadcastRule(dpid, firewallPort);
 	}
 
-	public synchronized void connectSubnet() {
+	private void connectSubnet() {
 		final CommandType commandType = CommandType.FLOW_ADD;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	public synchronized void disconnectSubnet() {
+	private void disconnectSubnet() {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
-	public IFirewallRule getSubnetRule() {
+	private IFirewallRule getSubnetRule() {
 		return new OnePortFirewallSubnetRule(dpid, firewallPort, trunkPort);
 	}
 
 	@Override
-	public void connectToNetwork() {
+	public synchronized void connectToNetwork() {
 		connectGateway();
 		connectBroadcast();
 		connectSubnet();
 	}
 
 	@Override
-	public void disconnectFromNetwork() {
+	public synchronized void disconnectFromNetwork() {
 		disconnectGateway();
 		disconnectBroadcast();
 		disconnectSubnet();
@@ -335,6 +338,7 @@ public class Datapath implements IDatapath {
 		return rules;
 	}
 
+	// Listeners
 
 	@Override
 	public synchronized void registerListener(IDatapathListener listener) {
