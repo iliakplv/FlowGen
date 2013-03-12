@@ -322,6 +322,19 @@ public class Datapath implements IDatapath {
 	}
 
 
+	public void connectBroadcastDomain() {
+		connectGateway();
+		connectBroadcast();
+		connectSubnet();
+	}
+
+	public void disconnectBroadcastDomain() {
+		disconnectGateway();
+		disconnectBroadcast();
+		disconnectSubnet();
+	}
+
+
 	@Override
 	public synchronized void registerListener(IDatapathListener listener) {
 		if (!listeners.contains(listener)) {

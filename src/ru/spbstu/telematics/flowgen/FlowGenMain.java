@@ -47,9 +47,7 @@ public class FlowGenMain {
 //		REGISTER TO ADD
 //		datapath.registerListener(sfpClient);
 
-		datapath.connectGateway();
-		datapath.connectBroadcast();
-		datapath.connectSubnet();
+		datapath.connectBroadcastDomain();
 		for (int port : ports) {
 			datapath.connectVm(vmPortMacMap.get(port), port);
 		}
@@ -67,9 +65,7 @@ public class FlowGenMain {
 		for (int port : ports) {
 			datapath.disconnectVm(port);
 		}
-		datapath.disconnectSubnet();
-		datapath.disconnectBroadcast();
-		datapath.disconnectGateway();
+		datapath.disconnectBroadcastDomain();
 	}
 
 }
