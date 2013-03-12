@@ -34,12 +34,21 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 
 	public OnePortFirewallRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
 							   int firewallPort, int targetPort) {
+		this(dpid, active, outFlowPriority, firewallPort, targetPort);
+		setInFlowPriority(inFlowPriority);
+	}
+
+	public OnePortFirewallRule(String dpid, boolean active, int outFlowPriority,
+							   int firewallPort, int targetPort) {
+		this(dpid, active, outFlowPriority, firewallPort);
+		setTargetPort(targetPort);
+	}
+
+	public OnePortFirewallRule(String dpid, boolean active, int outFlowPriority, int firewallPort) {
 		setDpid(dpid);
 		setActive(active);
-		setInFlowPriority(inFlowPriority);
 		setOutFlowPriority(outFlowPriority);
 		setFirewallPort(firewallPort);
-		setTargetPort(targetPort);
 	}
 
 
