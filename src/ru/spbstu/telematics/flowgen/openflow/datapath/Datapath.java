@@ -315,9 +315,9 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public synchronized void disconnectFromNetwork() {
-		disconnectGateway();
-		disconnectBroadcast();
 		disconnectSubnet();
+		disconnectBroadcast();
+		disconnectGateway();
 	}
 
 	@Override
