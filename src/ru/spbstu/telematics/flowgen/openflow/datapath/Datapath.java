@@ -167,6 +167,9 @@ public class Datapath implements IDatapath {
 	public synchronized void connectVm(String mac, int port) {
 		final CommandType commandType = CommandType.FLOW_ADD;
 
+		if (mac == null) {
+			throw new IllegalArgumentException("VM MAC is null in datapath " + toString());
+		}
 		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in datapath " + toString());
@@ -336,6 +339,20 @@ public class Datapath implements IDatapath {
 		List<IFirewallRule> vmRules = getAllVmRules();
 		rules.addAll(vmRules);
 		return rules;
+	}
+
+	// VM Migration
+
+	@Override
+	public void migrateVm(String vmMac, IDatapath dstDatapath, int dstPort) {
+		dstDatapath.connectVm(vmMac, dstPort);
+		disconnectVm(vmMac);
+	}
+
+	@Override
+	public void migrateVm(int vmPort, IDatapath dstDatapath, int dstPort) {
+		dstDatapath.connectVm(portMacMap.get(vmPort), dstPort);
+		disconnectVm(vmPort);
 	}
 
 	// Listeners
