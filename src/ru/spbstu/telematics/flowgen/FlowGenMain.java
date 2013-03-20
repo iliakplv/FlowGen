@@ -19,15 +19,15 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-		testVn0();
+//		testVn0();
 
-//		try {
-//			testRabbitMQ();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			testRabbitMQ();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -84,28 +84,51 @@ public class FlowGenMain {
 
 	public static void testRabbitMQ() throws IOException, InterruptedException {
 
-		final String EXCHANGE_NAME = "network";
+		final String HOST = "vn0";
+
+		final String EXCHANGE_NAME = "nova";
+		final String EXCHANGE_TYPE = "topic";
+		final boolean EXCHANGE_DURABLE = false;
+		final boolean EXCHANGE_AUTO_DELETE = false;
+		final boolean EXCHANGE_INTERNAL = false;
+
+		final String QUEUE_NAME = "network";
+		final String QUEUE_ROUTING_KEY = "network";
+
+		final String QUEUE_DURABLE_KEY = "durable";
+		final boolean QUEUE_DURABLE_VALUE = false;
+		final String QUEUE_AUTO_DELETE_KEY = "auto_delete";
+		final boolean QUEUE_AUTO_DELETE_VALUE = true;
+
 
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
+		factory.setHost(HOST);
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 
-		channel.exchangeDeclare(EXCHANGE_NAME, "topic");
-		String queueName = channel.queueDeclare().getQueue();
-		System.out.println("Queue: " + queueName);
-		channel.queueBind(queueName, EXCHANGE_NAME, "");
+		channel.exchangeDeclare(EXCHANGE_NAME,
+				EXCHANGE_TYPE,
+				EXCHANGE_DURABLE,
+				EXCHANGE_AUTO_DELETE,
+				EXCHANGE_INTERNAL,
+				null);
 
-		System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+		HashMap<String, Object> queueArguments = new HashMap<String, Object>();
+		queueArguments.put(QUEUE_DURABLE_KEY, QUEUE_DURABLE_VALUE);
+		queueArguments.put(QUEUE_AUTO_DELETE_KEY, QUEUE_AUTO_DELETE_VALUE);
+
+		channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, QUEUE_ROUTING_KEY, queueArguments);
+
+
+		System.out.println("Waiting for messages...");
 
 		QueueingConsumer consumer = new QueueingConsumer(channel);
-		channel.basicConsume(queueName, true, consumer);
+		channel.basicConsume(QUEUE_NAME, true, consumer);
 
 		while (true) {
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String(delivery.getBody());
-
-			System.out.println(" [x] Received '" + message + "'");
+			System.out.println(message);
 		}
 
 	}
