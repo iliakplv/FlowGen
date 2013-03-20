@@ -92,7 +92,7 @@ public class FlowGenMain {
 		final boolean EXCHANGE_AUTO_DELETE = false;
 		final boolean EXCHANGE_INTERNAL = false;
 
-		final String QUEUE_NAME = "network";
+		final String QUEUE_NAME = "ovs.network";
 		final String QUEUE_ROUTING_KEY = "network";
 
 		final String QUEUE_DURABLE_KEY = "durable";
@@ -103,6 +103,8 @@ public class FlowGenMain {
 
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(HOST);
+		factory.setPort(5672);
+		factory.setVirtualHost("/");
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 
@@ -116,15 +118,13 @@ public class FlowGenMain {
 		HashMap<String, Object> queueArguments = new HashMap<String, Object>();
 		queueArguments.put(QUEUE_DURABLE_KEY, QUEUE_DURABLE_VALUE);
 		queueArguments.put(QUEUE_AUTO_DELETE_KEY, QUEUE_AUTO_DELETE_VALUE);
-
 		channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, QUEUE_ROUTING_KEY, queueArguments);
 
-
-		System.out.println("Waiting for messages...");
 
 		QueueingConsumer consumer = new QueueingConsumer(channel);
 		channel.basicConsume(QUEUE_NAME, true, consumer);
 
+		System.out.println("Waiting for messages...");
 		while (true) {
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String(delivery.getBody());
