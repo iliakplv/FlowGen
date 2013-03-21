@@ -100,10 +100,6 @@ public class FlowGenMain {
 		final boolean QUEUE_DURABLE_VALUE = false;
 		final boolean QUEUE_AUTO_DELETE_VALUE = false;
 
-		final String QUEUE_EXCLUSIVE_KEY = "exclusive";
-		final String QUEUE_DURABLE_KEY = "durable";
-		final String QUEUE_AUTO_DELETE_KEY = "auto_delete";
-
 
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(HOST);
@@ -119,10 +115,6 @@ public class FlowGenMain {
 				EXCHANGE_INTERNAL,
 				null);
 
-//		HashMap<String, Object> queueArguments = new HashMap<String, Object>();
-//		queueArguments.put(QUEUE_DURABLE_KEY, QUEUE_DURABLE_VALUE);
-//		queueArguments.put(QUEUE_AUTO_DELETE_KEY, QUEUE_AUTO_DELETE_VALUE);
-
 //		channel.queueDelete(QUEUE_NAME);
 
 		channel.queueDeclare(QUEUE_NAME,
@@ -130,6 +122,7 @@ public class FlowGenMain {
 				QUEUE_EXCLUSIVE_VALUE,
 				QUEUE_AUTO_DELETE_VALUE,
 				null);
+
 		channel.queueBind(QUEUE_NAME,
 				EXCHANGE_NAME,
 				QUEUE_ROUTING_KEY,
