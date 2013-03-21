@@ -105,7 +105,6 @@ public class FlowGenMain {
 		final String QUEUE_AUTO_DELETE_KEY = "auto_delete";
 
 
-
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(HOST);
 //		factory.setPort(5672);
