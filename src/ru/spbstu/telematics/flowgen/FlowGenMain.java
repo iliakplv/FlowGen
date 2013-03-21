@@ -86,6 +86,7 @@ public class FlowGenMain {
 
 		final String HOST = "vn0";
 
+		// Must be exactly the same as params of target exchange
 		final String EXCHANGE_NAME = "nova";
 		final String EXCHANGE_TYPE = "topic";
 		final boolean EXCHANGE_DURABLE = false;
@@ -93,18 +94,22 @@ public class FlowGenMain {
 		final boolean EXCHANGE_INTERNAL = false;
 
 		final String QUEUE_NAME = "ovs.network";
-		final String QUEUE_ROUTING_KEY = "network";
-
-		final String QUEUE_DURABLE_KEY = "durable";
+		// Must be exactly the same as params of target queue
+		final String QUEUE_ROUTING_KEY = "network";	// target queue name
+		final boolean QUEUE_EXCLUSIVE_VALUE = false;
 		final boolean QUEUE_DURABLE_VALUE = false;
+		final boolean QUEUE_AUTO_DELETE_VALUE = false;
+
+		final String QUEUE_EXCLUSIVE_KEY = "exclusive";
+		final String QUEUE_DURABLE_KEY = "durable";
 		final String QUEUE_AUTO_DELETE_KEY = "auto_delete";
-		final boolean QUEUE_AUTO_DELETE_VALUE = true;
+
 
 
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(HOST);
-		factory.setPort(5672);
-		factory.setVirtualHost("/");
+//		factory.setPort(5672);
+//		factory.setVirtualHost("/");
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 
@@ -115,11 +120,21 @@ public class FlowGenMain {
 				EXCHANGE_INTERNAL,
 				null);
 
-		HashMap<String, Object> queueArguments = new HashMap<String, Object>();
-		queueArguments.put(QUEUE_DURABLE_KEY, QUEUE_DURABLE_VALUE);
-		queueArguments.put(QUEUE_AUTO_DELETE_KEY, QUEUE_AUTO_DELETE_VALUE);
-		channel.queueBind(QUEUE_NAME, EXCHANGE_NAME, QUEUE_ROUTING_KEY, queueArguments);
+//		HashMap<String, Object> queueArguments = new HashMap<String, Object>();
+//		queueArguments.put(QUEUE_DURABLE_KEY, QUEUE_DURABLE_VALUE);
+//		queueArguments.put(QUEUE_AUTO_DELETE_KEY, QUEUE_AUTO_DELETE_VALUE);
 
+//		channel.queueDelete(QUEUE_NAME);
+
+		channel.queueDeclare(QUEUE_NAME,
+				QUEUE_DURABLE_VALUE,
+				QUEUE_EXCLUSIVE_VALUE,
+				QUEUE_AUTO_DELETE_VALUE,
+				null);
+		channel.queueBind(QUEUE_NAME,
+				EXCHANGE_NAME,
+				QUEUE_ROUTING_KEY,
+				null);
 
 		QueueingConsumer consumer = new QueueingConsumer(channel);
 		channel.basicConsume(QUEUE_NAME, true, consumer);
