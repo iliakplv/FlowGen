@@ -96,9 +96,9 @@ public class FlowGenMain {
 		final String QUEUE_NAME = "ovs.network";
 		// Must be exactly the same as params of target queue
 		final String QUEUE_ROUTING_KEY = "network";	// target queue name
-		final boolean QUEUE_EXCLUSIVE_VALUE = false;
-		final boolean QUEUE_DURABLE_VALUE = false;
-		final boolean QUEUE_AUTO_DELETE_VALUE = false;
+		final boolean QUEUE_DURABLE = false;
+		final boolean QUEUE_AUTO_DELETE = false;
+		final boolean QUEUE_EXCLUSIVE = false;
 
 
 		ConnectionFactory factory = new ConnectionFactory();
@@ -118,9 +118,9 @@ public class FlowGenMain {
 //		channel.queueDelete(QUEUE_NAME);
 
 		channel.queueDeclare(QUEUE_NAME,
-				QUEUE_DURABLE_VALUE,
-				QUEUE_EXCLUSIVE_VALUE,
-				QUEUE_AUTO_DELETE_VALUE,
+				QUEUE_DURABLE,
+				QUEUE_EXCLUSIVE,
+				QUEUE_AUTO_DELETE,
 				null);
 
 		channel.queueBind(QUEUE_NAME,
