@@ -21,13 +21,7 @@ public class FlowGenMain {
 
 //		testVn0();
 
-		try {
-			testRabbitMQ();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		testRabbitMq();
 
 	}
 
@@ -82,60 +76,113 @@ public class FlowGenMain {
 		datapath.disconnectFromNetwork();
 	}
 
-	public static void testRabbitMQ() throws IOException, InterruptedException {
+	public static void testRabbitMq() {
 
-		final String HOST = "vn0";
+		final String host = "vn0";
+		final String hostPostfix = ".vn0";
+		final String queueNamePrefix = "ovs.";
 
-		// Must be exactly the same as params of target exchange
-		final String EXCHANGE_NAME = "nova";
-		final String EXCHANGE_TYPE = "topic";
-		final boolean EXCHANGE_DURABLE = false;
-		final boolean EXCHANGE_AUTO_DELETE = false;
-		final boolean EXCHANGE_INTERNAL = false;
+		String[] routingKeys = new String[]{"network",
+				"compute",
+				"scheduler"};
 
-		final String QUEUE_NAME = "ovs.network";
-		// Must be exactly the same as params of target queue
-		final String QUEUE_ROUTING_KEY = "network";	// target queue name
-		final boolean QUEUE_DURABLE = false;
-		final boolean QUEUE_AUTO_DELETE = false;
-		final boolean QUEUE_EXCLUSIVE = false;
+		for (String routingKey : routingKeys) {
+			NovaRabbitMqListener listener = new NovaRabbitMqListener(host,
+					queueNamePrefix + routingKey,
+					routingKey,
+					false,
+					false);
+			NovaRabbitMqListener listenerHost = new NovaRabbitMqListener(host,
+					queueNamePrefix + routingKey + hostPostfix,
+					routingKey + hostPostfix,
+					false,
+					false);
+			listener.start();
+			listenerHost.start();
+		}
 
+	}
 
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(HOST);
-//		factory.setPort(5672);
-//		factory.setVirtualHost("/");
-		Connection connection = factory.newConnection();
-		Channel channel = connection.createChannel();
+	/***** Inner classes *****/
 
-		channel.exchangeDeclare(EXCHANGE_NAME,
-				EXCHANGE_TYPE,
-				EXCHANGE_DURABLE,
-				EXCHANGE_AUTO_DELETE,
-				EXCHANGE_INTERNAL,
-				null);
+	private static class NovaRabbitMqListener extends Thread {
 
-//		channel.queueDelete(QUEUE_NAME);
+		private static final String EXCHANGE_NAME = "nova";
+		private static final String EXCHANGE_TYPE = "topic";
+		private static final boolean EXCHANGE_DURABLE = false;
+		private static final boolean EXCHANGE_AUTO_DELETE = false;
+		private static final boolean EXCHANGE_INTERNAL = false;
 
-		channel.queueDeclare(QUEUE_NAME,
-				QUEUE_DURABLE,
-				QUEUE_EXCLUSIVE,
-				QUEUE_AUTO_DELETE,
-				null);
+		private String host;
 
-		channel.queueBind(QUEUE_NAME,
-				EXCHANGE_NAME,
-				QUEUE_ROUTING_KEY,
-				null);
+		private String queueName;
+		private String queueRoutingKey;
+		private boolean queueDurable;
+		private boolean queueAutoDelete;
+		private static final boolean QUEUE_EXCLUSIVE = false;
 
-		QueueingConsumer consumer = new QueueingConsumer(channel);
-		channel.basicConsume(QUEUE_NAME, true, consumer);
+		public NovaRabbitMqListener(String host, String queueName, String queueRoutingKey,
+									boolean queueDurable, boolean queueAutoDelete) {
+			this.host = host;
+			this.queueName = queueName;
+			this.queueRoutingKey = queueRoutingKey;
+			this.queueDurable = queueDurable;
+			this.queueAutoDelete = queueAutoDelete;
+		}
 
-		System.out.println("Waiting for messages...");
-		while (true) {
-			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-			String message = new String(delivery.getBody());
-			System.out.println(message);
+		@Override
+		public void run() {
+
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost(host);
+//			factory.setPort(5672);
+//			factory.setVirtualHost("/");
+
+			Connection connection;
+			Channel channel;
+
+			try {
+				connection = factory.newConnection();
+				channel = connection.createChannel();
+
+				channel.exchangeDeclare(EXCHANGE_NAME,
+						EXCHANGE_TYPE,
+						EXCHANGE_DURABLE,
+						EXCHANGE_AUTO_DELETE,
+						EXCHANGE_INTERNAL,
+						null);
+
+//				channel.queueDelete(QUEUE_NAME);
+
+				channel.queueDeclare(queueName,
+						queueDurable,
+						QUEUE_EXCLUSIVE,
+						queueAutoDelete,
+						null);
+
+				channel.queueBind(queueName,
+						EXCHANGE_NAME,
+						queueRoutingKey,
+						null);
+
+				QueueingConsumer consumer = new QueueingConsumer(channel);
+				channel.basicConsume(queueName, true, consumer);
+
+				System.out.println("Listening for queue \"" + queueName +
+						"\" with routing key \"" + queueRoutingKey + "\"");
+
+				while (true) {
+					QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+					String message = new String(delivery.getBody());
+					System.out.println("\t[ " + queueRoutingKey + " ]\n" + message);
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
 		}
 
 	}
