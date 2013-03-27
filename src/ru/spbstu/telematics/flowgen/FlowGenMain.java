@@ -79,12 +79,15 @@ public class FlowGenMain {
 	public static void testRabbitMq() {
 
 		final String host = "vn0";
-		final String hostPostfix = ".vn0";
 		final String queueNamePrefix = "ovs.";
 
-		String[] routingKeys = new String[]{"network",
+		String[] routingKeys = new String[]{
+				//"network",
+				"network.vn0",
 				"compute",
-				"scheduler"};
+				"compute.vn0",
+				"scheduler",
+				"scheduler.vn0"};
 
 		for (String routingKey : routingKeys) {
 			NovaRabbitMqListener listener = new NovaRabbitMqListener(host,
@@ -92,13 +95,7 @@ public class FlowGenMain {
 					routingKey,
 					false,
 					false);
-			NovaRabbitMqListener listenerHost = new NovaRabbitMqListener(host,
-					queueNamePrefix + routingKey + hostPostfix,
-					routingKey + hostPostfix,
-					false,
-					false);
 			listener.start();
-			listenerHost.start();
 		}
 
 	}
