@@ -19,6 +19,9 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
+		// TODO fix testVn0()
+		// TODO write test for switch with many VM in one port
+
 //		testVn0();
 
 		testRabbitMq();
