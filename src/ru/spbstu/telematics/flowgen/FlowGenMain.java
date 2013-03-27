@@ -19,13 +19,9 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-		// TODO [pre-last] review all !
-		// TODO [last] fix testVn0()
-		// TODO [last] write test for switch with many VM in one port
+		testVn0();
 
-//		testVn0();
-
-		testRabbitMq();
+//		testRabbitMq();
 
 	}
 
@@ -47,10 +43,10 @@ public class FlowGenMain {
 
 		// VMs
 
-		HashMap<Integer, String> vmPortMacMap = new HashMap<Integer, String>();
-		vmPortMacMap.put(4, "fa:16:3e:69:ab:bf");
-		vmPortMacMap.put(5, "fa:16:3e:38:0f:e9");
-		Set<Integer> ports = vmPortMacMap.keySet();
+		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
+		portMacMap.put("fa:16:3e:69:ab:bf", 4);
+		portMacMap.put("fa:16:3e:38:0f:e9", 5);
+		Set<String> macs = portMacMap.keySet();
 
 
 
@@ -60,8 +56,8 @@ public class FlowGenMain {
 //		datapath.registerListener(sfpClient);
 
 		datapath.connectToNetwork();
-		for (int port : ports) {
-			datapath.connectVm(vmPortMacMap.get(port), port);
+		for (String mac : macs) {
+			datapath.connectVm(mac, portMacMap.get(mac));
 		}
 
 //		UNREGISTER TO KEEP
@@ -74,8 +70,8 @@ public class FlowGenMain {
 //		REGISTER TO REMOVE
 //		datapath.registerListener(sfpClient);
 
-		for (int port : ports) {
-			datapath.disconnectVm(port);
+		for (String mac : macs) {
+			datapath.disconnectVm(mac);
 		}
 		datapath.disconnectFromNetwork();
 	}
