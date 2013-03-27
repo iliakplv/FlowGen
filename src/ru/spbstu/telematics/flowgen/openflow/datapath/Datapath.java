@@ -389,6 +389,8 @@ public class Datapath implements IDatapath {
 	 */
 
 	private static JSONObject[] createCommands(IFirewallRule rule, CommandType commandType) {
+		// TODO !!! create methods: isFirstVmInPort(int port) and isLastVmInPort(int port)
+		// TODO !!! create different commands for first and all next VMs when connecting/disconnecting
 		JSONObject[] commands;
 		if (rule instanceof OnePortFirewallBroadcastRule ||
 				rule instanceof OnePortFirewallSubnetRule) {
