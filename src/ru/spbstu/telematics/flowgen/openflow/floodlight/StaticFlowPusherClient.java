@@ -74,18 +74,18 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 	}
 
 
-	private synchronized void executeCommand(JSONObject command, CommandType commandType) {
+	private synchronized void executeCommand(JSONObject command, Command.Action action) {
 		HttpClient httpClient = new DefaultHttpClient();
 
 		try {
 			HttpEntityEnclosingRequestBase request;
 			String url = getStaticFlowPusherUrl();
-			if (commandType == CommandType.FLOW_ADD) {
+			if (action == Command.Action.FLOW_ADD) {
 				request = new HttpPost(url);
-			} else if (commandType == CommandType.FLOW_REMOVE) {
+			} else if (action == Command.Action.FLOW_REMOVE) {
 				request = new HttpDeleteWithBody(url);
 			} else {
-				throw new IllegalArgumentException("Unknown command type " + commandType);
+				throw new IllegalArgumentException("Unknown command action " + action);
 			}
 
 			request.addHeader(HTTP_HEADER_CONTENT_TYPE_NAME, HTTP_HEADER_CONTENT_TYPE_VALUE);
@@ -107,29 +107,27 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 	 * IStaticFlowPusherClient implementation
 	 */
 
-	// TODO [second] fix implementation to use Command.java
-
 	@Override
 	public void addFlow(JSONObject command) {
-		executeCommand(command, CommandType.FLOW_ADD);
+		executeCommand(command, Command.Action.FLOW_ADD);
 	}
 
 	@Override
 	public void addFlows(JSONObject[] commands) {
 		for (JSONObject command : commands) {
-			executeCommand(command, CommandType.FLOW_ADD);
+			executeCommand(command, Command.Action.FLOW_ADD);
 		}
 	}
 
 	@Override
 	public void removeFlow(JSONObject command) {
-		executeCommand(command, CommandType.FLOW_REMOVE);
+		executeCommand(command, Command.Action.FLOW_REMOVE);
 	}
 
 	@Override
 	public void removeFlows(JSONObject[] commands) {
 		for (JSONObject command : commands) {
-			executeCommand(command, CommandType.FLOW_REMOVE);
+			executeCommand(command, Command.Action.FLOW_REMOVE);
 		}
 	}
 
