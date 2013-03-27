@@ -184,7 +184,6 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public synchronized void connectVm(String mac, int port) {
-		final CommandType commandType = CommandType.FLOW_ADD;
 
 		if (mac == null) {
 			throw new IllegalArgumentException("VM MAC is null in datapath " + toString());
@@ -210,9 +209,14 @@ public class Datapath implements IDatapath {
 			throw new IllegalArgumentException("New VM port equals to firewall port (" + firewallPort + ") of datapath " + toString());
 		}
 
+		Command.Type commandType;
+		if (isPortEmpty(port)) {
+			commandType = Command.Type.FLOW_ADD_FIRST_VM;
+		} else {
+			commandType = Command.Type.FLOW_ADD_ANOTHER_VM;
+		}
 		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
-		// TODO [second] isPortEmpty(port)
 		incrementNumberOfVmsConnectedToPort(port);
 		IFirewallRule rule = getVmRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
@@ -221,17 +225,22 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public synchronized void disconnectVm(String mac) {
-		final CommandType commandType = CommandType.FLOW_REMOVE;
 
 		if(!containsVm(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
 
+		int port = getVmPort(mac);
+		Command.Type commandType;
+		if (isLastVmConnectedToPort(port)) {
+			commandType = Command.Type.FLOW_REMOVE_LAST_VM;
+		} else {
+			commandType = Command.Type.FLOW_REMOVE_ANOTHER_VM;
+		}
 		mac = mac.toLowerCase();
 		IFirewallRule rule = getVmRule(mac);
-		// TODO [second] isLastVmConnectedToPort(port)
-		decrementNumberOfVmsConnectedToPort(getVmPort(mac));
 		macPortMap.remove(mac);
+		decrementNumberOfVmsConnectedToPort(port);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, commandType);
 	}
@@ -258,13 +267,13 @@ public class Datapath implements IDatapath {
 	// Network
 
 	private void connectGateway() {
-		final CommandType commandType = CommandType.FLOW_ADD;
+		final Command.Type commandType = Command.Type.FLOW_ADD_GATEWAY;
 		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
 	private void disconnectGateway() {
-		final CommandType commandType = CommandType.FLOW_REMOVE;
+		final Command.Type commandType = Command.Type.FLOW_REMOVE_GATEWAY;
 		JSONObject[] commands = createCommands(getGatewayRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
@@ -274,13 +283,13 @@ public class Datapath implements IDatapath {
 	}
 
 	private void connectBroadcast() {
-		final CommandType commandType = CommandType.FLOW_ADD;
+		final Command.Type commandType = Command.Type.FLOW_ADD_BROADCAST;
 		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
 	private void disconnectBroadcast() {
-		final CommandType commandType = CommandType.FLOW_REMOVE;
+		final Command.Type commandType = Command.Type.FLOW_REMOVE_BROADCAST;
 		JSONObject[] commands = createCommands(getBroadcastRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
@@ -290,13 +299,13 @@ public class Datapath implements IDatapath {
 	}
 
 	private void connectSubnet() {
-		final CommandType commandType = CommandType.FLOW_ADD;
+		final Command.Type commandType = Command.Type.FLOW_ADD_SUBNET;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
 
 	private void disconnectSubnet() {
-		final CommandType commandType = CommandType.FLOW_REMOVE;
+		final Command.Type commandType = Command.Type.FLOW_REMOVE_SUBNET;
 		JSONObject[] commands = createCommands(getSubnetRule(), commandType);
 		notifyListeners(commands, commandType);
 	}
@@ -370,9 +379,10 @@ public class Datapath implements IDatapath {
 		listeners.remove(listener);
 	}
 
-	private void notifyListeners(JSONObject[] commands, CommandType commandType) {
+	private void notifyListeners(JSONObject[] commands, Command.Type commandType) {
 		if (listeners != null && !listeners.isEmpty()) {
-			switch (commandType) {
+			Command.Action action = Command.getAction(commandType);
+			switch (action) {
 				case FLOW_ADD:
 					for (IDatapathListener listener : listeners) {
 						listener.onConnection(commands);
@@ -437,31 +447,49 @@ public class Datapath implements IDatapath {
 	}
 
 
-	private static JSONObject[] createCommands(IFirewallRule rule, CommandType commandType) {
-		// TODO [first] create different commands for first and all next VMs when connecting/disconnecting
+	private static JSONObject[] createCommands(IFirewallRule rule, Command.Type commandType) {
+
+		Command.RuleGroup ruleGroup = Command.getRuleGroup(commandType);
+
+		// For BROADCAST or SUBNET rule only OUT flow needed.
+		// If new VM is connected to port which had one or more other connected VM or
+		// if VM is disconnected from port which had one or more other connected VM only OUT flow needed.
+		// For other cases need to create 2 flows: IN and OUT.
+		boolean onlyOutFlow = ruleGroup == Command.RuleGroup.RULE_BROADCAST ||
+				ruleGroup == Command.RuleGroup.RULE_SUBNET ||
+				(ruleGroup == Command.RuleGroup.RULE_VM &&
+						commandType == Command.Type.FLOW_ADD_ANOTHER_VM ||
+					    commandType == Command.Type.FLOW_REMOVE_ANOTHER_VM);
+
 		JSONObject[] commands;
-		if (rule instanceof OnePortFirewallBroadcastRule ||
-				rule instanceof OnePortFirewallSubnetRule) {
+		Command.Action action = Command.getAction(commandType);
+
+		if (onlyOutFlow) {
+
 			commands = new JSONObject[1];
-			if (commandType == CommandType.FLOW_ADD) {
+			if (action == Command.Action.FLOW_ADD) {
 				commands[0] = rule.ovsOutFlowAddCommand();
-			} else if (commandType == CommandType.FLOW_REMOVE) {
+			} else if (action == Command.Action.FLOW_REMOVE) {
 				commands[0] = rule.ovsOutFlowRemoveCommand();
 			} else {
-				throw new IllegalArgumentException("Unknown command type " + commandType);
+				throw new IllegalArgumentException("Unknown command action of " + commandType);
 			}
+
 		} else {
+
 			commands = new JSONObject[2];
-			if (commandType == CommandType.FLOW_ADD) {
+			if (action == Command.Action.FLOW_ADD) {
 				commands[0] = rule.ovsInFlowAddCommand();
 				commands[1] = rule.ovsOutFlowAddCommand();
-			} else if (commandType == CommandType.FLOW_REMOVE) {
+			} else if (action == Command.Action.FLOW_REMOVE) {
 				commands[0] = rule.ovsInFlowRemoveCommand();
 				commands[1] = rule.ovsOutFlowRemoveCommand();
 			} else {
-				throw new IllegalArgumentException("Unknown command type " + commandType);
+				throw new IllegalArgumentException("Unknown command action of " + commandType);
 			}
+
 		}
+
 		return commands;
 	}
 

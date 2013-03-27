@@ -3,21 +3,28 @@ package ru.spbstu.telematics.flowgen.openflow.rules;
 
 public class Command {
 
-	public enum Group {
+	public enum Action {
 		FLOW_ADD,
 		FLOW_REMOVE
 	}
 
+	public enum RuleGroup {
+		RULE_GATEWAY,
+		RULE_BROADCAST,
+		RULE_SUBNET,
+		RULE_VM
+	}
+
 	public enum Type {
 
-		// FLOW_ADD group
+		// action FLOW_ADD
 		FLOW_ADD_GATEWAY,
 		FLOW_ADD_BROADCAST,
 		FLOW_ADD_SUBNET,
 		FLOW_ADD_FIRST_VM,
 		FLOW_ADD_ANOTHER_VM,
 
-		// FLOW_REMOVE group
+		// action FLOW_REMOVE
 		FLOW_REMOVE_GATEWAY,
 		FLOW_REMOVE_BROADCAST,
 		FLOW_REMOVE_SUBNET,
@@ -25,14 +32,14 @@ public class Command {
 		FLOW_REMOVE_ANOTHER_VM
 	}
 
-	public static Group getGroup(Type type) {
+	public static Action getAction(Type type) {
 		if (type == Type.FLOW_ADD_GATEWAY ||
 				type == Type.FLOW_ADD_BROADCAST ||
 				type == Type.FLOW_ADD_SUBNET ||
 				type == Type.FLOW_ADD_FIRST_VM ||
 				type == Type.FLOW_ADD_ANOTHER_VM) {
 
-			return Group.FLOW_ADD;
+			return Action.FLOW_ADD;
 
 		} else if (type == Type.FLOW_REMOVE_GATEWAY ||
 				type == Type.FLOW_REMOVE_BROADCAST ||
@@ -40,7 +47,37 @@ public class Command {
 				type == Type.FLOW_REMOVE_LAST_VM ||
 				type == Type.FLOW_REMOVE_ANOTHER_VM) {
 
-			return Group.FLOW_REMOVE;
+			return Action.FLOW_REMOVE;
+
+		}
+
+		throw new IllegalArgumentException("Unknown command type");
+	}
+
+	public static RuleGroup getRuleGroup(Type type) {
+		if (type == Type.FLOW_ADD_GATEWAY ||
+				type == Type.FLOW_REMOVE_GATEWAY) {
+
+			return RuleGroup.RULE_GATEWAY;
+
+		} else if (type == Type.FLOW_ADD_BROADCAST ||
+				type == Type.FLOW_REMOVE_BROADCAST) {
+
+			return RuleGroup.RULE_BROADCAST;
+
+		}
+		if (type == Type.FLOW_ADD_SUBNET ||
+				type == Type.FLOW_REMOVE_SUBNET) {
+
+			return RuleGroup.RULE_SUBNET;
+
+		}
+		if (type == Type.FLOW_ADD_FIRST_VM ||
+				type == Type.FLOW_ADD_ANOTHER_VM ||
+				type == Type.FLOW_REMOVE_LAST_VM ||
+				type == Type.FLOW_REMOVE_ANOTHER_VM) {
+
+			return RuleGroup.RULE_VM;
 
 		}
 
