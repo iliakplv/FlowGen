@@ -27,7 +27,7 @@ public class Datapath implements IDatapath {
 	private int trunkPort =		OpenflowUtils.DEFAULT_PORT;
 	private int firewallPort =	OpenflowUtils.DEFAULT_PORT;
 	private String gatewayMac;
-	private Map<Integer, String> portMacMap;
+	private boolean connectedToNetwork = false;
 	private Map<String, Integer> macPortMap;
 	private LinkedList<IDatapathListener> listeners;
 
@@ -38,7 +38,6 @@ public class Datapath implements IDatapath {
 		setTrunkPort(trunkPort);
 		setFirewallPort(firewallPort);
 		setGatewayMac(gatewayMac);
-		portMacMap = new HashMap<Integer, String>();
 		macPortMap = new HashMap<String, Integer>();
 		listeners = new LinkedList<IDatapathListener>();
 	}
@@ -48,11 +47,11 @@ public class Datapath implements IDatapath {
 	 * DPID
 	 */
 
-	public synchronized String getDpid() {
+	public String getDpid() {
 		return dpid;
 	}
 
-	private synchronized void setDpid(String dpid) {
+	private void setDpid(String dpid) {
 		if (!OpenflowUtils.validateDpid(dpid)) {
 			throw new IllegalArgumentException("Wrong DPID (" + dpid + ") of datapath with mane " + name);
 		}
@@ -64,11 +63,11 @@ public class Datapath implements IDatapath {
 	 * Name
 	 */
 
-	public synchronized String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public synchronized void setName(String name) {
+	private void setName(String name) {
 		if (!OpenflowUtils.validateDatapathName(name)) {
 			throw new IllegalArgumentException("Wrong name (" + name + ") of datapath with ID " + dpid);
 		}
@@ -77,30 +76,19 @@ public class Datapath implements IDatapath {
 
 
 	/**
-	 * Ports
-	 */
-
-	public synchronized boolean isVmPort(int port) {
-		return portMacMap != null && portMacMap.keySet().contains(port);
-	}
-
-	/**
 	 * Trunk port
 	 */
 
-	public synchronized int getTrunkPort() {
+	public int getTrunkPort() {
 		return trunkPort;
 	}
 
-	public synchronized void setTrunkPort(int trunkPort) {
+	private void setTrunkPort(int trunkPort) {
 		if (!OpenflowUtils.validatePortNumber(trunkPort)) {
 			throw new IllegalArgumentException("Wrong trunk port (" + trunkPort + ") in datapath " + toString());
 		}
 		if (trunkPort == firewallPort) {
 			throw new IllegalArgumentException("New trunk port equals to firewall port (" + firewallPort + ") of datapath " + toString());
-		}
-		if (isVmPort(trunkPort)) {
-			throw new IllegalArgumentException("New trunk port (" + trunkPort + ") equals to one of VM ports of datapath " + toString());
 		}
 		this.trunkPort = trunkPort;
 	}
@@ -110,33 +98,18 @@ public class Datapath implements IDatapath {
 	 * Firewall port
 	 */
 
-	public synchronized int getFirewallPort() {
+	public int getFirewallPort() {
 		return firewallPort;
 	}
 
-	public synchronized void setFirewallPort(int firewallPort) {
+	private void setFirewallPort(int firewallPort) {
 		if (!OpenflowUtils.validatePortNumber(firewallPort)) {
 			throw new IllegalArgumentException("Wrong firewall port (" + firewallPort + ") in datapath " + toString());
 		}
 		if (firewallPort == trunkPort) {
 			throw new IllegalArgumentException("New firewall port equals to trunk port (" + trunkPort + ") of datapath " + toString());
 		}
-		if (isVmPort(firewallPort)) {
-			throw new IllegalArgumentException("New firewall port (" + firewallPort + ") equals to one of VM ports of datapath " + toString());
-		}
 		this.firewallPort = firewallPort;
-	}
-
-	/**
-	 * MACs
-	 */
-
-	public synchronized boolean isVmMac(String mac) {
-		return macPortMap != null && macPortMap.keySet().contains(mac.toLowerCase());
-	}
-
-	public synchronized boolean isGatewayMac(String mac) {
-		return gatewayMac.equalsIgnoreCase(mac);
 	}
 
 
@@ -144,18 +117,47 @@ public class Datapath implements IDatapath {
 	 * Gateway MAC
 	 */
 
-	public synchronized String getGatewayMac() {
+	public String getGatewayMac() {
 		return gatewayMac;
 	}
 
-	public synchronized void setGatewayMac(String mac) {
+	private boolean isGatewayMac(String mac) {
+		return gatewayMac.equalsIgnoreCase(mac);
+	}
+
+	private void setGatewayMac(String mac) {
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong gateway MAC (" + mac + ") in datapath " + toString());
 		}
-		if (isVmMac(mac)) {
-			throw new IllegalArgumentException("New gateway MAC (" + mac + ") equals to one of the VM MACs of datapath " + toString());
-		}
 		gatewayMac = mac.toLowerCase();
+	}
+
+
+	/**
+	 * VM
+	 */
+
+	@Override
+	public boolean containsVm(String mac) {
+		return macPortMap.containsKey(mac.toLowerCase());
+	}
+
+	@Override
+	public int getVmPort(String mac) {
+		int result;
+
+		if (containsVm(mac)) {
+			result = macPortMap.get(mac.toLowerCase());
+		} else {
+			result = OpenflowUtils.DEFAULT_PORT;
+		}
+
+		return result;
+	}
+
+	@Override
+	public Map<String, Integer> getVmTopology() {
+		return new HashMap<String, Integer>(macPortMap);
 	}
 
 
@@ -177,7 +179,7 @@ public class Datapath implements IDatapath {
 		if (isGatewayMac(mac)) {
 			throw new IllegalArgumentException("New VM MAC equals to gateway MAC (" + gatewayMac + ") of datapath " + toString());
 		}
-		if (isVmMac(mac)) {
+		if (containsVm(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") already connected to port " +
 					macPortMap.get(mac) + " of datapath " + toString());
 		}
@@ -191,14 +193,9 @@ public class Datapath implements IDatapath {
 		if (port == firewallPort) {
 			throw new IllegalArgumentException("New VM port equals to firewall port (" + firewallPort + ") of datapath " + toString());
 		}
-		if (isVmPort(port)) {
-			throw new IllegalArgumentException("Trying to connect VM with MAC " + mac + " to port " + port +
-					". VM with MAC " + portMacMap.get(port) + " already connected to this port of datapath " + toString());
-		}
 
-		portMacMap.put(port, mac);
 		macPortMap.put(mac, port);
-		IFirewallRule rule = getVmRule(port);
+		IFirewallRule rule = getVmRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, commandType);
 	}
@@ -207,44 +204,20 @@ public class Datapath implements IDatapath {
 	public synchronized void disconnectVm(String mac) {
 		final CommandType commandType = CommandType.FLOW_REMOVE;
 
-		if(!isVmMac(mac)) {
+		if(!containsVm(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
 
 		IFirewallRule rule = getVmRule(mac);
-		portMacMap.remove(macPortMap.get(mac));
 		macPortMap.remove(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, commandType);
 	}
 
 	@Override
-	public synchronized void disconnectVm(int port) {
-		final CommandType commandType = CommandType.FLOW_REMOVE;
-
-		if (!isVmPort(port)) {
-			throw new IllegalArgumentException("No VM connected to port " + port + " of datapath " + toString());
-		}
-
-		IFirewallRule rule = getVmRule(port);
-		macPortMap.remove(portMacMap.get(port));
-		portMacMap.remove(port);
-		JSONObject[] commands = createCommands(rule, commandType);
-		notifyListeners(commands, commandType);
-	}
-
-	@Override
 	public IFirewallRule getVmRule(String mac) {
-		if (isVmMac(mac)) {
+		if (containsVm(mac)) {
 			return new OnePortFirewallVmRule(dpid, firewallPort, macPortMap.get(mac), mac);
-		}
-		return null;
-	}
-
-	@Override
-	public IFirewallRule getVmRule(int port) {
-		if (isVmPort(port)) {
-			return new OnePortFirewallVmRule(dpid, firewallPort, port, portMacMap.get(port));
 		}
 		return null;
 	}
@@ -252,9 +225,9 @@ public class Datapath implements IDatapath {
 	@Override
 	public List<IFirewallRule> getAllVmRules() {
 		ArrayList<IFirewallRule> rules = new ArrayList<IFirewallRule>();
-		Set<Integer> ports = portMacMap.keySet();
-		for (int port : ports) {
-			rules.add(getVmRule(port));
+		Set<String> macs = macPortMap.keySet();
+		for (String mac : macs) {
+			rules.add(getVmRule(mac));
 		}
 		return rules;
 	}
@@ -314,13 +287,20 @@ public class Datapath implements IDatapath {
 		connectGateway();
 		connectBroadcast();
 		connectSubnet();
+		connectedToNetwork = true;
 	}
 
 	@Override
 	public synchronized void disconnectFromNetwork() {
+		connectedToNetwork = false;
 		disconnectSubnet();
 		disconnectBroadcast();
 		disconnectGateway();
+	}
+
+	@Override
+	public boolean isConnectedToNetwork() {
+		return connectedToNetwork;
 	}
 
 	@Override
@@ -345,14 +325,12 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public void migrateVm(String vmMac, IDatapath dstDatapath, int dstPort) {
-		dstDatapath.connectVm(vmMac, dstPort);
-		disconnectVm(vmMac);
-	}
-
-	@Override
-	public void migrateVm(int vmPort, IDatapath dstDatapath, int dstPort) {
-		dstDatapath.connectVm(portMacMap.get(vmPort), dstPort);
-		disconnectVm(vmPort);
+		if (containsVm(vmMac)) {
+			dstDatapath.connectVm(vmMac, dstPort);
+			disconnectVm(vmMac);
+		} else {
+			throw new IllegalArgumentException("VM with such MAC (" + vmMac + ") not connected to datapath " + toString());
+		}
 	}
 
 	// Listeners
