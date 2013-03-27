@@ -25,6 +25,7 @@ public interface IDatapath {
 	public boolean isConnectedToNetwork();
 	public int getTrunkPort();
 	public String getGatewayMac();
+	public boolean isGatewayMac(String mac);
 
 	// Firewall
 	public int getFirewallPort();

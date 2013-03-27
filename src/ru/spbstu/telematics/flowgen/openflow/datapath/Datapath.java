@@ -22,15 +22,26 @@ public class Datapath implements IDatapath {
 
 	private static final String NOT_INITIALIZED = "<not_initialized>";
 
-	private String dpid =		NOT_INITIALIZED;
-	private String name =		NOT_INITIALIZED;
-	private int trunkPort =		OpenflowUtils.DEFAULT_PORT;
-	private int firewallPort =	OpenflowUtils.DEFAULT_PORT;
-	private String gatewayMac;
+	// Datapath params
+	private String dpid = NOT_INITIALIZED;
+	private String name = NOT_INITIALIZED;
+	private int firewallPort = OpenflowUtils.DEFAULT_PORT;
+
+	// Network params
 	private boolean connectedToNetwork = false;
+	private String gatewayMac = null;
+	private int trunkPort = OpenflowUtils.DEFAULT_PORT;
+
+	// VM
 	private Map<String, Integer> macPortMap;
+
+	// Listeners
 	private LinkedList<IDatapathListener> listeners;
 
+
+	/**
+	 * Constructors
+	 */
 
 	public Datapath(String dpid, String name, int trunkPort, int firewallPort, String gatewayMac) {
 		setDpid(dpid);
@@ -79,6 +90,7 @@ public class Datapath implements IDatapath {
 	 * Trunk port
 	 */
 
+	@Override
 	public int getTrunkPort() {
 		return trunkPort;
 	}
@@ -98,6 +110,7 @@ public class Datapath implements IDatapath {
 	 * Firewall port
 	 */
 
+	@Override
 	public int getFirewallPort() {
 		return firewallPort;
 	}
@@ -117,11 +130,13 @@ public class Datapath implements IDatapath {
 	 * Gateway MAC
 	 */
 
+	@Override
 	public String getGatewayMac() {
 		return gatewayMac;
 	}
 
-	private boolean isGatewayMac(String mac) {
+	@Override
+	public boolean isGatewayMac(String mac) {
 		return gatewayMac.equalsIgnoreCase(mac);
 	}
 
