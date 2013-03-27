@@ -9,7 +9,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
-import ru.spbstu.telematics.flowgen.openflow.rules.CommandType;
+import ru.spbstu.telematics.flowgen.openflow.rules.Command;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -106,6 +106,8 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 	/**
 	 * IStaticFlowPusherClient implementation
 	 */
+
+	// TODO [second] fix implementation to use Command.java
 
 	@Override
 	public void addFlow(JSONObject command) {

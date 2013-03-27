@@ -2,7 +2,7 @@ package ru.spbstu.telematics.flowgen.openflow.datapath;
 
 
 import org.json.JSONObject;
-import ru.spbstu.telematics.flowgen.openflow.rules.CommandType;
+import ru.spbstu.telematics.flowgen.openflow.rules.Command;
 import ru.spbstu.telematics.flowgen.openflow.rules.IFirewallRule;
 import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallBroadcastRule;
 import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallGatewayRule;
@@ -34,6 +34,7 @@ public class Datapath implements IDatapath {
 
 	// VM
 	private Map<String, Integer> macPortMap;
+	private Map<Integer, Integer> portVmNumberMap;
 
 	// Listeners
 	private LinkedList<IDatapathListener> listeners;
@@ -50,6 +51,7 @@ public class Datapath implements IDatapath {
 		setFirewallPort(firewallPort);
 		setGatewayMac(gatewayMac);
 		macPortMap = new HashMap<String, Integer>();
+		portVmNumberMap = new HashMap<Integer, Integer>();
 		listeners = new LinkedList<IDatapathListener>();
 	}
 
@@ -210,6 +212,8 @@ public class Datapath implements IDatapath {
 
 		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
+		// TODO [second] isPortEmpty(port)
+		incrementNumberOfVmsConnectedToPort(port);
 		IFirewallRule rule = getVmRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, commandType);
@@ -225,6 +229,8 @@ public class Datapath implements IDatapath {
 
 		mac = mac.toLowerCase();
 		IFirewallRule rule = getVmRule(mac);
+		// TODO [second] isLastVmConnectedToPort(port)
+		decrementNumberOfVmsConnectedToPort(getVmPort(mac));
 		macPortMap.remove(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, commandType);
@@ -388,9 +394,51 @@ public class Datapath implements IDatapath {
 	 * Other
 	 */
 
+	private int numberOfVmsConnectedToPort(int port) {
+		if (!OpenflowUtils.validatePortNumber(port)) {
+			throw new IllegalArgumentException("Wrong port number (" + port + ") checked in datapath " + toString());
+		}
+		if (port == trunkPort) {
+			throw new IllegalArgumentException("Checked port equals to trunk port (" + trunkPort + ") of datapath " + toString());
+		}
+		if (port == firewallPort) {
+			throw new IllegalArgumentException("Checked port equals to firewall port (" + firewallPort + ") of datapath " + toString());
+		}
+
+		int result = 0;
+		if (portVmNumberMap.containsKey(port)) {
+			result = portVmNumberMap.get(port);
+		}
+		return result;
+	}
+
+	private void incrementNumberOfVmsConnectedToPort(int port) {
+		int number = numberOfVmsConnectedToPort(port);
+		number++;
+		portVmNumberMap.put(port, number);
+	}
+
+	private void decrementNumberOfVmsConnectedToPort(int port) {
+		int number = numberOfVmsConnectedToPort(port);
+		if (number == 0) {
+			throw new IllegalArgumentException("Port " + port + " of datapath " + toString() + " already empty");
+		} else {
+			number--;
+		}
+		portVmNumberMap.put(port, number);
+	}
+
+	private boolean isPortEmpty(int port) {
+		return numberOfVmsConnectedToPort(port) == 0;
+	}
+
+	private boolean isLastVmConnectedToPort(int port) {
+		return numberOfVmsConnectedToPort(port) == 1;
+	}
+
+
 	private static JSONObject[] createCommands(IFirewallRule rule, CommandType commandType) {
-		// TODO !!! create methods: isFirstVmInPort(int port) and isLastVmInPort(int port)
-		// TODO !!! create different commands for first and all next VMs when connecting/disconnecting
+		// TODO [first] create different commands for first and all next VMs when connecting/disconnecting
 		JSONObject[] commands;
 		if (rule instanceof OnePortFirewallBroadcastRule ||
 				rule instanceof OnePortFirewallSubnetRule) {
