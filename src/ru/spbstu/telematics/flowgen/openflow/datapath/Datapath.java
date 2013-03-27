@@ -60,6 +60,7 @@ public class Datapath implements IDatapath {
 	 * DPID
 	 */
 
+	@Override
 	public String getDpid() {
 		return dpid;
 	}
@@ -76,6 +77,7 @@ public class Datapath implements IDatapath {
 	 * Name
 	 */
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -173,7 +175,7 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public Map<String, Integer> getVmTopology() {
+	public Map<String, Integer> getMacPortMap() {
 		return new HashMap<String, Integer>(macPortMap);
 	}
 
@@ -351,6 +353,7 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public void migrateVm(String vmMac, IDatapath dstDatapath, int dstPort) {
+		// TODO implement safe migration
 		if (containsVm(vmMac)) {
 			dstDatapath.connectVm(vmMac, dstPort);
 			disconnectVm(vmMac);
@@ -495,4 +498,24 @@ public class Datapath implements IDatapath {
 		return name + " (" + dpid + ")";
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		Datapath datapath = (Datapath) o;
+
+		return dpid.equals(datapath.dpid);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return dpid.hashCode();
+	}
 }

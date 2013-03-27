@@ -27,6 +27,8 @@ public class FlowGenMain {
 
 	public static void testVn0() {
 
+		// TODO test cloud
+
 		// Datapath, Gateway
 
 		String dpid = "00:00:a6:49:24:26:a5:40";
@@ -35,7 +37,7 @@ public class FlowGenMain {
 		int firewallPort = 3;
 		String gwMac = "fa:16:3e:15:2d:df";
 		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
-		datapath.registerListener(new DatapathLogger(dpid, name));
+		datapath.registerListener(new DatapathLogger(datapath.toString()));
 
 		// SFP client
 

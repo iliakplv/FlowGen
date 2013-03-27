@@ -9,6 +9,9 @@ import java.util.Map;
 
 public interface IDatapath {
 
+	public String getDpid();
+	public String getName();
+
 	// VM
 	public void connectVm(String mac, int port);
 	public void disconnectVm(String mac);
@@ -16,7 +19,7 @@ public interface IDatapath {
 	public List<IFirewallRule> getAllVmRules();
 	public boolean containsVm(String mac);
 	public int getVmPort(String mac);
-	public Map<String, Integer> getVmTopology();
+	public Map<String, Integer> getMacPortMap();
 
 	// Network
 	public void connectToNetwork();

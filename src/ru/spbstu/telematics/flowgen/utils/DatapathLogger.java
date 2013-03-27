@@ -17,19 +17,14 @@ public class DatapathLogger implements IDatapathListener {
 
 	private DateFormat dateFormat;
 
-	private String datapathLabel;
+	private String logTag;
 
 
-	public DatapathLogger(String dpid, String datapathName) {
+	public DatapathLogger(String logTag) {
 
 		dateFormat = new SimpleDateFormat(LOG_DATE_FORMAT);
 
-		StringBuilder sb = new StringBuilder();
-		sb.append(dpid);
-		sb.append(" (");
-		sb.append(datapathName);
-		sb.append(")");
-		datapathLabel = sb.toString();
+		this.logTag = logTag;
 	}
 
 	@Override
@@ -48,17 +43,17 @@ public class DatapathLogger implements IDatapathListener {
 		}
 	}
 
-	private void printLog(Date date, String tag, String message) {
+	private void printLog(Date date, String label, String message) {
 
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(dateFormat.format(date));
 		sb.append(SPACE);
 
-		sb.append(tag);
+		sb.append(label);
 		sb.append(SPACE);
 
-		sb.append(datapathLabel);
+		sb.append(logTag);
 		sb.append(SPACE);
 
 		sb.append(message);
