@@ -187,7 +187,6 @@ public class Datapath implements IDatapath {
 		if (mac == null) {
 			throw new IllegalArgumentException("VM MAC is null in datapath " + toString());
 		}
-		mac = mac.toLowerCase();
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in datapath " + toString());
 		}
@@ -196,7 +195,7 @@ public class Datapath implements IDatapath {
 		}
 		if (containsVm(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") already connected to port " +
-					macPortMap.get(mac) + " of datapath " + toString());
+					macPortMap.get(mac.toLowerCase()) + " of datapath " + toString());
 		}
 
 		if (!OpenflowUtils.validatePortNumber(port)) {
@@ -209,6 +208,7 @@ public class Datapath implements IDatapath {
 			throw new IllegalArgumentException("New VM port equals to firewall port (" + firewallPort + ") of datapath " + toString());
 		}
 
+		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
 		IFirewallRule rule = getVmRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
@@ -223,6 +223,7 @@ public class Datapath implements IDatapath {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
 
+		mac = mac.toLowerCase();
 		IFirewallRule rule = getVmRule(mac);
 		macPortMap.remove(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
@@ -231,6 +232,7 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public IFirewallRule getVmRule(String mac) {
+		mac = mac.toLowerCase();
 		if (containsVm(mac)) {
 			return new OnePortFirewallVmRule(dpid, firewallPort, macPortMap.get(mac), mac);
 		}
