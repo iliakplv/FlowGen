@@ -6,6 +6,7 @@ import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ public class Cloud implements ICloud {
 	private Map<String, IDatapath> dpidDatapathMap;
 	private Map<String, VmConnectionData> macActiveVmMap;
 	private Map<String, VmConnectionData> macPausedVmMap;
+	private Set<IDatapathListener> listeners;
 
 	/**
 	 * Constructors
@@ -26,6 +28,7 @@ public class Cloud implements ICloud {
 		dpidDatapathMap = new HashMap<String, IDatapath>();
 		macActiveVmMap = new HashMap<String, VmConnectionData>();
 		macPausedVmMap = new HashMap<String, VmConnectionData>();
+		listeners = new HashSet<IDatapathListener>();
 	}
 
 
@@ -56,6 +59,10 @@ public class Cloud implements ICloud {
 			throw new IllegalArgumentException("Cloud " + toString() + " already contains datapath " + datapath.toString());
 		}
 		dpidDatapathMap.put(dpid, datapath);
+
+		for (IDatapathListener listener : listeners) {
+			datapath.registerListener(listener);
+		}
 	}
 
 	@Override
@@ -64,6 +71,12 @@ public class Cloud implements ICloud {
 		if (!dpidDatapathMap.containsKey(dpid)) {
 			throw new IllegalArgumentException("Cloud " + toString() + " has no datapath with DPID " + dpid);
 		}
+
+		IDatapath datapath = getDatapath(dpid);
+		for (IDatapathListener listener : listeners) {
+			datapath.unregisterListener(listener);
+		}
+
 		dpidDatapathMap.remove(dpid);
 	}
 
@@ -77,10 +90,9 @@ public class Cloud implements ICloud {
 		return dpidDatapathMap.keySet();
 	}
 
-	// TODO store listeners, register them to each new datapath
-
 	@Override
 	public void addDatapathListener(IDatapathListener listener) {
+		listeners.add(listener);
 		Collection<IDatapath> datapaths = dpidDatapathMap.values();
 		for (IDatapath datapath : datapaths) {
 			datapath.registerListener(listener);
@@ -93,6 +105,23 @@ public class Cloud implements ICloud {
 		for (IDatapath datapath : datapaths) {
 			datapath.unregisterListener(listener);
 		}
+		listeners.remove(listener);
+	}
+
+	@Override
+	public Set<IDatapathListener> getAllListeners() {
+		return new HashSet<IDatapathListener>(listeners);
+	}
+
+	@Override
+	public void clearListeners() {
+		Collection<IDatapath> datapaths = dpidDatapathMap.values();
+		for (IDatapathListener listener : listeners) {
+			for (IDatapath datapath : datapaths) {
+				datapath.unregisterListener(listener);
+			}
+		}
+		listeners.clear();
 	}
 
 	// TODO check for datapath port availability when waking VM up
@@ -159,7 +188,7 @@ public class Cloud implements ICloud {
 
 	@Override
 	public void migrateVm(String mac, String dstDpid, int dstPort) {
-		// TODO
+		// TODO implement
 	}
 
 	@Override

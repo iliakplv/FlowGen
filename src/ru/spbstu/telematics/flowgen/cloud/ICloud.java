@@ -18,6 +18,8 @@ public interface ICloud {
 	// Listeners
 	public void addDatapathListener(IDatapathListener listener);
 	public void deleteDatapathListener(IDatapathListener listener);
+	public Set<IDatapathListener> getAllListeners();
+	public void clearListeners();
 
 	// Virtual Machines
 	public void launchVm(String mac, String dpid, int port);
