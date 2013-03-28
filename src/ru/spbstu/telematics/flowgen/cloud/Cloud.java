@@ -77,6 +77,8 @@ public class Cloud implements ICloud {
 		return dpidDatapathMap.keySet();
 	}
 
+	// TODO store listeners, register them to each new datapath
+
 	@Override
 	public void addDatapathListener(IDatapathListener listener) {
 		Collection<IDatapath> datapaths = dpidDatapathMap.values();

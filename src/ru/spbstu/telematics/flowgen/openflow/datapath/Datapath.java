@@ -454,12 +454,12 @@ public class Datapath implements IDatapath {
 		// if VM is disconnected from port which had one or more other connected VM only OUT flow needed.
 		// For other cases need to create 2 flows: IN and OUT.
 
-		boolean addingFirstOrRemovingLastVm = commandType == Command.Type.FLOW_ADD_FIRST_VM ||
-				commandType == Command.Type.FLOW_REMOVE_LAST_VM;
+		boolean anotherVm = commandType == Command.Type.FLOW_ADD_ANOTHER_VM ||
+				commandType == Command.Type.FLOW_REMOVE_ANOTHER_VM;
 
 		boolean onlyOutFlow = ruleGroup == Command.RuleGroup.RULE_BROADCAST ||
 				ruleGroup == Command.RuleGroup.RULE_SUBNET ||
-				!addingFirstOrRemovingLastVm;
+				(ruleGroup == Command.RuleGroup.RULE_VM && anotherVm);
 
 		JSONObject[] commands;
 		Command.Action action = Command.getAction(commandType);

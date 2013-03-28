@@ -5,6 +5,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import ru.spbstu.telematics.flowgen.cloud.Cloud;
+import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.StaticFlowPusherClient;
@@ -21,15 +23,14 @@ public class FlowGenMain {
 
 		testVn0();
 
+		// TODO test Quantum
 //		testRabbitMq();
 
 	}
 
 	public static void testVn0() {
 
-		// TODO test cloud
-
-		// Datapath, Gateway
+		// Datapath
 
 		String dpid = "00:00:a6:49:24:26:a5:40";
 		String name = "qbr1dee26dc-b0";
@@ -37,7 +38,13 @@ public class FlowGenMain {
 		int firewallPort = 3;
 		String gwMac = "fa:16:3e:15:2d:df";
 		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
-		datapath.registerListener(new DatapathLogger(datapath.toString()));
+
+		// Cloud
+
+		String cloudName = "vn0";
+		ICloud cloud = new Cloud(cloudName);
+		cloud.addDatapath(datapath);
+		cloud.addDatapathListener(new DatapathLogger(datapath.toString()));
 
 		// SFP client
 
@@ -55,27 +62,27 @@ public class FlowGenMain {
 		// Adding flows
 
 //		REGISTER TO ADD
-//		datapath.registerListener(sfpClient);
+//		cloud.addDatapathListener(sfpClient);
 
-		datapath.connectToNetwork();
+		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
-			datapath.connectVm(mac, portMacMap.get(mac));
+			cloud.launchVm(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
 
 //		UNREGISTER TO KEEP
-//		datapath.unregisterListener(sfpClient);
+//		cloud.deleteDatapathListener(sfpClient);
 
 
 
 		// Removing flows
 
 //		REGISTER TO REMOVE
-//		datapath.registerListener(sfpClient);
+//		cloud.addDatapathListener(sfpClient);
 
 		for (String mac : macs) {
-			datapath.disconnectVm(mac);
+			cloud.stopVm(mac);
 		}
-		datapath.disconnectFromNetwork();
+		cloud.getDatapath(dpid).disconnectFromNetwork();
 	}
 
 	public static void testRabbitMq() {
