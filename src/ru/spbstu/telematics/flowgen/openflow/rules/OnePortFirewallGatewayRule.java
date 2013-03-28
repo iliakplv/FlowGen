@@ -17,6 +17,8 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 
+	private static final String FLOW_NAME_GATEWAY_LABEL = "gateway";
+
 	private String gatewayMac;
 
 
@@ -73,7 +75,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 		StringBuilder sb = new StringBuilder();
 		sb.append(StringUtils.omitDelimiters(getDpid(), OpenflowUtils.DPID_DELIMITER));
 		sb.append(NAME_DELIMITER);
-		sb.append(StringUtils.omitDelimiters(gatewayMac, OpenflowUtils.MAC_DELIMITER));
+		sb.append(FLOW_NAME_GATEWAY_LABEL);
 		return sb.toString();
 	}
 
