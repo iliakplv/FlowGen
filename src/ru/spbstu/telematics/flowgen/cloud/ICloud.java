@@ -22,6 +22,7 @@ public interface ICloud {
 	// Virtual Machines
 	public void launchVm(String mac, String dpid, int port);
 	public void pauseVm(String mac);
+	public void wakeVm(String mac);
 	public void stopVm(String mac);
 	public void migrateVm(String mac, String dstDpid, int dstPort);
 	public Set<String> getAllVmMacs();
