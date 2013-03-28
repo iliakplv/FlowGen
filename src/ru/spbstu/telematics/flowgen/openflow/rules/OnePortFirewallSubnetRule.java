@@ -64,11 +64,7 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 
 	@Override
 	public String getOutFlowName() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getRuleName());
-		sb.append(NAME_DELIMITER);
-		sb.append(FLOW_NAME_OUT_LABEL);
-		return sb.toString();
+		return getRuleName();
 	}
 
 	@Override
