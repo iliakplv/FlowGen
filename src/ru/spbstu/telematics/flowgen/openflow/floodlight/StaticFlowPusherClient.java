@@ -1,24 +1,33 @@
 package ru.spbstu.telematics.flowgen.openflow.floodlight;
 
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.rules.Command;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 
 public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapathListener {
 
+	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String URL_SCHEME = "http:";
-	private static final String URL_STATIC_FLOW_PUSHER = "/wm/staticflowentrypusher/json";
+	private static final String URL_STATIC_FLOW_PUSHER =	"/wm/staticflowentrypusher/json";
+	private static final String URL_GET_ALL_DATAPATHS =		"/wm/core/controller/switches/json";
 	private static final String HTTP_HEADER_CONTENT_TYPE_NAME = "content-type";
 	private static final String HTTP_HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
@@ -60,19 +69,30 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 
 
 	/**
-	 * Static Flow Pusher address
+	 * URLs
 	 */
 
-	public String getStaticFlowPusherUrl() {
+	public String getControllerUrl() {
 		String controllerAddress = this.controllerAddress.toString();
 		StringBuilder sb = new StringBuilder();
 		sb.append(URL_SCHEME);
 		sb.append(controllerAddress.startsWith("/") ? "/" : "//");
 		sb.append(controllerAddress);
-		sb.append(URL_STATIC_FLOW_PUSHER);
 		return sb.toString();
 	}
 
+	public String getStaticFlowPusherUrl() {
+		return getControllerUrl() + URL_STATIC_FLOW_PUSHER;
+	}
+
+	public String getAllDatapathsUrl() {
+		return getControllerUrl() + URL_GET_ALL_DATAPATHS;
+	}
+
+
+	/**
+	 * Command executor
+	 */
 
 	private synchronized void executeCommand(JSONObject command, Command.Action action) {
 		HttpClient httpClient = new DefaultHttpClient();
@@ -129,6 +149,38 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 		for (JSONObject command : commands) {
 			executeCommand(command, Command.Action.FLOW_REMOVE);
 		}
+	}
+
+	@Override
+	public synchronized JSONArray getAllConnectedHosts() {
+
+		HttpClient httpClient = new DefaultHttpClient();
+
+		JSONArray result = null;
+		try {
+
+			HttpGet request = new HttpGet(getAllDatapathsUrl());
+			request.addHeader(HTTP_HEADER_CONTENT_TYPE_NAME, HTTP_HEADER_CONTENT_TYPE_VALUE);
+
+			HttpResponse response = httpClient.execute(request);
+
+			InputStreamReader isr = new InputStreamReader(response.getEntity().getContent(), DEFAULT_ENCODING);
+			BufferedReader br = new BufferedReader(isr);
+			String jsonString = br.readLine();
+			JSONTokener tokener = new JSONTokener(jsonString);
+			result = new JSONArray(tokener);
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e ) {
+			e.printStackTrace();
+		} finally {
+			httpClient.getConnectionManager().shutdown();
+		}
+
+		return result;
 	}
 
 
