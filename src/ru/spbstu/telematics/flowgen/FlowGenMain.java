@@ -9,7 +9,8 @@ import ru.spbstu.telematics.flowgen.cloud.Cloud;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.StaticFlowPusherClient;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.FloodlightClient;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
 import ru.spbstu.telematics.flowgen.utils.DatapathLogger;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class FlowGenMain {
 
 		// SFP client
 
-		StaticFlowPusherClient sfpClient = new StaticFlowPusherClient("127.0.0.1", 8080);
+		IFloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
 
 		// VMs
 
@@ -62,7 +63,7 @@ public class FlowGenMain {
 		// Adding flows
 
 //		REGISTER TO ADD
-//		cloud.addDatapathListener(sfpClient);
+//		cloud.addDatapathListener(flClient);
 
 		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
@@ -70,14 +71,14 @@ public class FlowGenMain {
 		}
 
 //		UNREGISTER TO KEEP
-//		cloud.deleteDatapathListener(sfpClient);
+//		cloud.deleteDatapathListener(flClient);
 
 
 
 		// Removing flows
 
 //		REGISTER TO REMOVE
-//		cloud.addDatapathListener(sfpClient);
+//		cloud.addDatapathListener(flClient);
 
 		for (String mac : macs) {
 			cloud.stopVm(mac);

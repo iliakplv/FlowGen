@@ -22,7 +22,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 
-public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapathListener {
+public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String URL_SCHEME = "http:";
@@ -38,11 +38,11 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 	 * Constructors
 	 */
 
-	public StaticFlowPusherClient(InetSocketAddress controllerAdress) {
+	public FloodlightClient(InetSocketAddress controllerAdress) {
 		controllerAddress = controllerAdress;
 	}
 
-	public StaticFlowPusherClient(String controllerHostname, int controllerPort) {
+	public FloodlightClient(String controllerHostname, int controllerPort) {
 		this(new InetSocketAddress(controllerHostname, controllerPort));
 	}
 
@@ -124,7 +124,7 @@ public class StaticFlowPusherClient implements IStaticFlowPusherClient, IDatapat
 
 
 	/**
-	 * IStaticFlowPusherClient implementation
+	 * IFloodlightClient implementation
 	 */
 
 	@Override

@@ -5,7 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-public interface IStaticFlowPusherClient {
+public interface IFloodlightClient {
 
 	public void addFlow(JSONObject command);
 	public void addFlows(JSONObject[] commands);
