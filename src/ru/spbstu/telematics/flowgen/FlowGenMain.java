@@ -77,11 +77,14 @@ public class FlowGenMain {
 		}
 
 //		PARSING TEST
-		try {
-			parsingTest(flClient.getAllConnectedHosts());
-		} catch (JSONException e) {
-			e.printStackTrace();
+		if (true) {
+			try {
+				parsingTest(flClient.getAllConnectedHosts());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
+
 
 //		UNREGISTER TO KEEP
 //		cloud.deleteDatapathListener(flClient);
