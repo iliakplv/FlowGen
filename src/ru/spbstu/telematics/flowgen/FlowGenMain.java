@@ -5,6 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.cloud.Cloud;
@@ -13,6 +14,7 @@ import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.FloodlightClient;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
 import ru.spbstu.telematics.flowgen.utils.DatapathLogger;
@@ -77,7 +79,7 @@ public class FlowGenMain {
 		// Getting controller data
 
 		try {
-			parsingTest(flClient.getAllConnectedHosts().getJSONObject(0));
+			parsingTest(flClient.getAllConnectedHosts());
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -122,17 +124,23 @@ public class FlowGenMain {
 
 	}
 
-	public static void parsingTest(JSONObject data) throws JSONException {
+	public static void parsingTest(JSONArray data) throws JSONException {
 
-		DatapathData datapathData = DatapathData.parse(data);
-		System.out.println("DPID: " + datapathData.getDpid());
+		ControllerData controllerData = ControllerData.parse(data);
 
-		for (PortData portData : datapathData.getPorts()) {
-			System.out.println(portData.getNumber() + " " +
-					portData.getName() + " " +
-					portData.getMac() + " " +
-					(portData.isDatapathReservedPort() ? "(datapath)" : ""));
+		for (DatapathData datapathData : controllerData.getDatapaths()) {
+
+			System.out.println("\n [DPID] " + datapathData.getDpid());
+
+			for (PortData portData : datapathData.getPorts()) {
+				System.out.println(portData.getNumber() + " " +
+						portData.getName() + " " +
+						portData.getMac() + " " +
+						(portData.isDatapathReservedPort() ? "(datapath)" : ""));
+			}
 		}
+
+		System.out.println();
 	}
 
 

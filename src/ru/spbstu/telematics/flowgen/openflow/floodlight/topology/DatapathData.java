@@ -20,7 +20,7 @@ public class DatapathData {
 
 
 	public DatapathData(String dpid) {
-		this.dpid = dpid;
+		this.dpid = dpid.toLowerCase();
 		ports = new HashMap<Integer, PortData>();
 	}
 
