@@ -1,8 +1,14 @@
 package ru.spbstu.telematics.flowgen.cloud;
 
 
+import org.json.JSONException;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
+import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +23,8 @@ public class Cloud implements ICloud {
 	private Map<String, IDatapath> dpidDatapathMap;
 	private Map<String, VmConnectionData> macActiveVmMap;
 	private Map<String, VmConnectionData> macPausedVmMap;
-	private Set<IDatapathListener> listeners;
+	private Set<IDatapathListener> listeners = null;
+	private IFloodlightClient floodlightClient = null;
 
 	/**
 	 * Constructors
@@ -196,6 +203,55 @@ public class Cloud implements ICloud {
 		Set<String> macs = macActiveVmMap.keySet();
 		macs.addAll(macPausedVmMap.keySet());
 		return macs;
+	}
+
+	@Override
+	public void setFloodlightClient(IFloodlightClient floodlightClient) {
+		this.floodlightClient = floodlightClient;
+	}
+
+	@Override
+	public void removeFloodlightClient() {
+		floodlightClient = null;
+	}
+
+	@Override
+	public boolean launchVmByMac(String mac) {
+		if (floodlightClient == null) {
+			throw new NullPointerException("No floodlight client set to cloud " + toString());
+		}
+		if (!OpenflowUtils.validateMac(mac)) {
+			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in cloud " + toString());
+		}
+		mac = mac.toLowerCase();
+
+		ControllerData controllerData;
+		try {
+			 controllerData = ControllerData.parse(floodlightClient.getAllConnectedHosts());
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		final int NO_PORT = -1;
+		int port = NO_PORT;
+		String dpid = null;
+		for (DatapathData datapathData : controllerData.getDatapaths()) {
+			for (PortData portData : datapathData.getPorts()) {
+				if (mac.equalsIgnoreCase(portData.getMac()) && !portData.isDatapathReservedPort() ) {
+					dpid = datapathData.getDpid();
+					port = portData.getNumber();
+				}
+			}
+		}
+
+		boolean result = dpid != null && port != NO_PORT;
+
+		if (result) {
+			launchVm(mac, dpid, port);
+		}
+
+		return result;
 	}
 
 

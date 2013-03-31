@@ -3,6 +3,7 @@ package ru.spbstu.telematics.flowgen.cloud;
 
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
 
 import java.util.Set;
 
@@ -28,5 +29,10 @@ public interface ICloud {
 	public void stopVm(String mac);
 	public void migrateVm(String mac, String dstDpid, int dstPort);
 	public Set<String> getAllVmMacs();
+
+	// Controller connectivity
+	public void setFloodlightClient(IFloodlightClient client);
+	public void removeFloodlightClient();
+	public boolean launchVmByMac(String mac);
 
 }

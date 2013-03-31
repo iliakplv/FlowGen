@@ -7,7 +7,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.cloud.Cloud;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
@@ -56,12 +55,19 @@ public class FlowGenMain {
 		// SFP client
 
 		IFloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
+		cloud.setFloodlightClient(flClient);
 
 		// VMs
 
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
-		portMacMap.put("fa:16:3e:69:ab:bf", 4);
-		portMacMap.put("fa:16:3e:38:0f:e9", 5);
+		// TODO wtf!
+//		MACs from VMs
+//		portMacMap.put("fa:16:3e:69:ab:bf", 4);
+//		portMacMap.put("fa:16:3e:38:0f:e9", 5);
+
+//		MACs from floodlight
+		portMacMap.put("fe:16:3e:69:ab:bf", 4);
+		portMacMap.put("fe:16:3e:38:0f:e9", 5);
 		Set<String> macs = portMacMap.keySet();
 
 
@@ -73,11 +79,11 @@ public class FlowGenMain {
 
 		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
-			cloud.launchVm(mac, datapath.getDpid(), portMacMap.get(mac));
+//			cloud.launchVm(mac, datapath.getDpid(), portMacMap.get(mac));
+			cloud.launchVmByMac(mac);
 		}
 
-		// Getting controller data
-
+//		PARSING TEST
 		try {
 			parsingTest(flClient.getAllConnectedHosts());
 		} catch (JSONException e) {
