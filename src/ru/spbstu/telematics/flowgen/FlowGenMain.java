@@ -128,7 +128,7 @@ public class FlowGenMain {
 
 		for (DatapathData datapathData : controllerData.getDatapaths()) {
 
-			System.out.println("\n [DPID] " + datapathData.getDpid());
+			System.out.println("\n[DPID] " + datapathData.getDpid());
 
 			for (PortData portData : datapathData.getPorts()) {
 				System.out.println(portData.getNumber() + " " +
