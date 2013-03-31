@@ -78,6 +78,36 @@ public class OpenflowUtils {
 		return true;
 	}
 
+	public static String setMacUniqueness(String mac, boolean globallyUnique) {
+		if (!validateMac(mac)) {
+			throw new IllegalArgumentException("Wrong MAC: " + mac);
+		}
+		mac = mac.toLowerCase();
+
+		final int GLOBAL_UNIQUE_MASK_OR = 0x04;	// 0000 0100
+		final int LOCAL_UNIQUE_MASK_AND = 0xFB;	// 1111 1011
+
+		int firstByte = Integer.parseInt(mac.substring(0, 2), 16);
+		String otherBytes = mac.substring(2);
+
+		if (globallyUnique) {
+			firstByte |= GLOBAL_UNIQUE_MASK_OR;
+		} else {
+			firstByte &= LOCAL_UNIQUE_MASK_AND;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(Integer.toHexString(firstByte));
+		sb.append(otherBytes);
+		return sb.toString();
+	}
+
+	public static boolean macEquals(String mac1, String mac2) {
+		mac1 = setMacUniqueness(mac1, false);
+		mac2 = setMacUniqueness(mac2, false);
+		return mac1.equalsIgnoreCase(mac2);
+	}
+
 	public static boolean validatePortNumber(int port) {
 		return port >= MIN_PORT && port <= MAX_PORT;
 

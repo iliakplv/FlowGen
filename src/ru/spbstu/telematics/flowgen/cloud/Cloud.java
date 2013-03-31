@@ -238,7 +238,7 @@ public class Cloud implements ICloud {
 		String dpid = null;
 		for (DatapathData datapathData : controllerData.getDatapaths()) {
 			for (PortData portData : datapathData.getPorts()) {
-				if (mac.equalsIgnoreCase(portData.getMac()) && !portData.isDatapathReservedPort() ) {
+				if (OpenflowUtils.macEquals(mac, portData.getMac()) && !portData.isDatapathReservedPort() ) {
 					dpid = datapathData.getDpid();
 					port = portData.getNumber();
 				}
