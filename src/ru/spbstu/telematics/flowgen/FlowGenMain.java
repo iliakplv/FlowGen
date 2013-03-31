@@ -60,19 +60,12 @@ public class FlowGenMain {
 		// VMs
 
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
-		// TODO wtf!
-//		MACs from VMs
-//		portMacMap.put("fa:16:3e:69:ab:bf", 4);
-//		portMacMap.put("fa:16:3e:38:0f:e9", 5);
-
-//		MACs from floodlight
-		portMacMap.put("fe:16:3e:69:ab:bf", 4);
-		portMacMap.put("fe:16:3e:38:0f:e9", 5);
+		portMacMap.put("fa:16:3e:69:ab:bf", 4);
+		portMacMap.put("fa:16:3e:38:0f:e9", 5);
 		Set<String> macs = portMacMap.keySet();
 
 
-
-		// Adding flows
+//		Adding flows
 
 //		REGISTER TO ADD
 //		cloud.addDatapathListener(flClient);
@@ -94,8 +87,7 @@ public class FlowGenMain {
 //		cloud.deleteDatapathListener(flClient);
 
 
-
-		// Removing flows
+//		Removing flows
 
 //		REGISTER TO REMOVE
 //		cloud.addDatapathListener(flClient);
