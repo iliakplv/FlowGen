@@ -72,12 +72,12 @@ public class FlowGenMain {
 
 		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
-//			cloud.launchVm(mac, datapath.getDpid(), portMacMap.get(mac));
-			cloud.launchVmByMac(mac);
+			cloud.launchVm(mac, datapath.getDpid(), portMacMap.get(mac));
+//			cloud.launchVmByMac(mac);
 		}
 
 //		PARSING TEST
-		if (true) {
+		if (false) {
 			try {
 				parsingTest(flClient.getAllConnectedHosts());
 			} catch (JSONException e) {
