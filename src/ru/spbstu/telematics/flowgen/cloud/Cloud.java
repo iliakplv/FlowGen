@@ -211,6 +211,11 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
+	public IFloodlightClient getFloodlightClient() {
+		return floodlightClient;
+	}
+
+	@Override
 	public void removeFloodlightClient() {
 		floodlightClient = null;
 	}
@@ -233,9 +238,9 @@ public class Cloud implements ICloud {
 			return false;
 		}
 
-		final int NO_PORT = -1;
-		int port = NO_PORT;
 		String dpid = null;
+		int port = OpenflowUtils.DEFAULT_PORT;
+
 		for (DatapathData datapathData : controllerData.getDatapaths()) {
 			for (PortData portData : datapathData.getPorts()) {
 				if (OpenflowUtils.macEquals(mac, portData.getMac()) && !portData.isDatapathReservedPort() ) {
@@ -245,7 +250,7 @@ public class Cloud implements ICloud {
 			}
 		}
 
-		boolean result = dpid != null && port != NO_PORT;
+		boolean result = dpid != null && port != OpenflowUtils.DEFAULT_PORT;
 
 		if (result) {
 			launchVm(mac, dpid, port);

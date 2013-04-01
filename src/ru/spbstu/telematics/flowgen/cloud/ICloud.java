@@ -32,6 +32,7 @@ public interface ICloud {
 
 	// Controller connectivity
 	public void setFloodlightClient(IFloodlightClient client);
+	public IFloodlightClient getFloodlightClient();
 	public void removeFloodlightClient();
 	public boolean launchVmByMac(String mac);
 
