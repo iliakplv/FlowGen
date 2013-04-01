@@ -103,8 +103,8 @@ public class OpenflowUtils {
 	}
 
 	public static boolean macEquals(String mac1, String mac2) {
-		mac1 = setMacUniqueness(mac1, false);
-		mac2 = setMacUniqueness(mac2, false);
+		mac1 = setMacUniqueness(mac1, true);
+		mac2 = setMacUniqueness(mac2, true);
 		return mac1.equalsIgnoreCase(mac2);
 	}
 
