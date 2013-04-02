@@ -104,6 +104,9 @@ public class FlowGenMain {
 	public static void testRabbitMq() {
 
 		final String host = "vn0";
+//		final String host = "host_ip";
+		final String exchange = "nova";
+//		final String exchange = "quantum";
 		final String queueNamePrefix = "ovs.";
 
 		String[] routingKeys = new String[]{
@@ -113,9 +116,11 @@ public class FlowGenMain {
 				"compute.vn0",
 				"scheduler",
 				"scheduler.vn0"};
+//		String[] routingKeys = new String[] {"q-plugin"};
 
 		for (String routingKey : routingKeys) {
 			NovaRabbitMqListener listener = new NovaRabbitMqListener(host,
+					exchange,
 					queueNamePrefix + routingKey,
 					routingKey,
 					false,
@@ -149,23 +154,23 @@ public class FlowGenMain {
 
 	private static class NovaRabbitMqListener extends Thread {
 
-		private static final String EXCHANGE_NAME = "nova";
 		private static final String EXCHANGE_TYPE = "topic";
 		private static final boolean EXCHANGE_DURABLE = false;
 		private static final boolean EXCHANGE_AUTO_DELETE = false;
 		private static final boolean EXCHANGE_INTERNAL = false;
 
 		private String host;
-
+		private String exchangeName;
 		private String queueName;
 		private String queueRoutingKey;
 		private boolean queueDurable;
 		private boolean queueAutoDelete;
 		private static final boolean QUEUE_EXCLUSIVE = false;
 
-		public NovaRabbitMqListener(String host, String queueName, String queueRoutingKey,
+		public NovaRabbitMqListener(String host, String exchangeName, String queueName, String queueRoutingKey,
 									boolean queueDurable, boolean queueAutoDelete) {
 			this.host = host;
+			this.exchangeName = exchangeName;
 			this.queueName = queueName;
 			this.queueRoutingKey = queueRoutingKey;
 			this.queueDurable = queueDurable;
@@ -187,7 +192,7 @@ public class FlowGenMain {
 				connection = factory.newConnection();
 				channel = connection.createChannel();
 
-				channel.exchangeDeclare(EXCHANGE_NAME,
+				channel.exchangeDeclare(exchangeName,
 						EXCHANGE_TYPE,
 						EXCHANGE_DURABLE,
 						EXCHANGE_AUTO_DELETE,
@@ -203,7 +208,7 @@ public class FlowGenMain {
 						null);
 
 				channel.queueBind(queueName,
-						EXCHANGE_NAME,
+						exchangeName,
 						queueRoutingKey,
 						null);
 
