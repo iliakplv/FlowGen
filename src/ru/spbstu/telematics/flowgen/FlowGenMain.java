@@ -29,7 +29,6 @@ public class FlowGenMain {
 
 		testVn0();
 
-		// TODO test Quantum
 //		testRabbitMq();
 
 	}
