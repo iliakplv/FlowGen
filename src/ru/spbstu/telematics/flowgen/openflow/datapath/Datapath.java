@@ -315,7 +315,7 @@ public class Datapath implements IDatapath {
 		if (!connectedToNetwork) {
 			// order!
 			connectBroadcast();
-			connectSubnet();
+//			TODO [sub] connectSubnet();
 			connectGateway();
 			connectedToNetwork = true;
 		}
@@ -327,7 +327,7 @@ public class Datapath implements IDatapath {
 			// order!
 			connectedToNetwork = false;
 			disconnectGateway();
-			disconnectSubnet();
+//			TODO [sub] disconnectSubnet();
 			disconnectBroadcast();
 		}
 	}
@@ -341,7 +341,7 @@ public class Datapath implements IDatapath {
 	public List<IFirewallRule> getAllNetworkRules() {
 		List<IFirewallRule> rules = new ArrayList<IFirewallRule>();
 		rules.add(getBroadcastRule());
-		rules.add(getSubnetRule());
+//		TODO [sub] rules.add(getSubnetRule());
 		rules.add(getGatewayRule());
 		return rules;
 

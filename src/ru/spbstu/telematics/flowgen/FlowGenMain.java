@@ -12,7 +12,6 @@ import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.FloodlightClient;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
@@ -37,10 +36,10 @@ public class FlowGenMain {
 
 		// Datapath
 
-		String dpid = "00:00:a6:49:24:26:a5:40";
-		String name = "qbr1dee26dc-b0";
-		int trunkPort = 1;
-		int firewallPort = 3;
+		String dpid = "00:00:00:15:17:f9:4c:7f";
+		String name = "br-int";
+		int trunkPort = 5;
+		int firewallPort = 48;
 		String gwMac = "fa:16:3e:15:2d:df";
 		IDatapath datapath = new Datapath(dpid, name, trunkPort, firewallPort, gwMac);
 
@@ -53,14 +52,16 @@ public class FlowGenMain {
 
 		// SFP client
 
-		IFloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
+		FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
 		cloud.setFloodlightClient(flClient);
 
 		// VMs
 
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
-		portMacMap.put("fa:16:3e:69:ab:bf", 4);
-		portMacMap.put("fa:16:3e:38:0f:e9", 5);
+		portMacMap.put("5c:d9:98:37:16:02", 1); // eth0
+		portMacMap.put("fa:16:3e:77:56:6e", 2); // gw-fb259ed4-dd
+		portMacMap.put("fa:16:3e:69:ab:bf", 49);
+		portMacMap.put("fa:16:3e:38:0f:e9", 50);
 		Set<String> macs = portMacMap.keySet();
 
 
@@ -76,7 +77,7 @@ public class FlowGenMain {
 		}
 
 //		PARSING TEST
-		if (false) {
+		if (true) {
 			try {
 				parsingTest(flClient.getAllConnectedHosts());
 			} catch (JSONException e) {
