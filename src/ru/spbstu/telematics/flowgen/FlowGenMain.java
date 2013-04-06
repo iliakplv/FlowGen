@@ -77,7 +77,7 @@ public class FlowGenMain {
 		}
 
 //		PARSING TEST
-		if (true) {
+		if (false) {
 			try {
 				parsingTest(flClient.getAllConnectedHosts());
 			} catch (JSONException e) {
