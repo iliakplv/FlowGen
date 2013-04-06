@@ -2,12 +2,8 @@ package ru.spbstu.telematics.flowgen.openflow.datapath;
 
 
 import org.json.JSONObject;
-import ru.spbstu.telematics.flowgen.openflow.rules.Command;
-import ru.spbstu.telematics.flowgen.openflow.rules.IFirewallRule;
-import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallBroadcastRule;
-import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallGatewayRule;
-import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallSubnetRule;
-import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallVmRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.*;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallHostRule;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 import java.util.ArrayList;
@@ -157,15 +153,15 @@ public class Datapath implements IDatapath {
 	 */
 
 	@Override
-	public boolean containsVm(String mac) {
+	public boolean containsHost(String mac) {
 		return macPortMap.containsKey(mac.toLowerCase());
 	}
 
 	@Override
-	public int getVmPort(String mac) {
+	public int getHostPort(String mac) {
 		int result;
 
-		if (containsVm(mac)) {
+		if (containsHost(mac)) {
 			result = macPortMap.get(mac.toLowerCase());
 		} else {
 			result = OpenflowUtils.DEFAULT_PORT;
@@ -185,7 +181,7 @@ public class Datapath implements IDatapath {
 	 */
 
 	@Override
-	public synchronized void connectVm(String mac, int port) {
+	public synchronized void connectHost(String mac, int port) {
 
 		if (mac == null) {
 			throw new IllegalArgumentException("VM MAC is null in datapath " + toString());
@@ -196,7 +192,7 @@ public class Datapath implements IDatapath {
 		if (isGatewayMac(mac)) {
 			throw new IllegalArgumentException("New VM MAC equals to gateway MAC (" + gatewayMac + ") of datapath " + toString());
 		}
-		if (containsVm(mac)) {
+		if (containsHost(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") already connected to port " +
 					macPortMap.get(mac.toLowerCase()) + " of datapath " + toString());
 		}
@@ -220,19 +216,19 @@ public class Datapath implements IDatapath {
 		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
 		incrementNumberOfVmsConnectedToPort(port);
-		IFirewallRule rule = getVmRule(mac);
+		IFirewallRule rule = getHostRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, Command.Action.FLOW_ADD);
 	}
 
 	@Override
-	public synchronized void disconnectVm(String mac) {
+	public synchronized void disconnectHost(String mac) {
 
-		if(!containsVm(mac)) {
+		if(!containsHost(mac)) {
 			throw new IllegalArgumentException("VM with such MAC (" + mac + ") not connected to datapath " + toString());
 		}
 
-		int port = getVmPort(mac);
+		int port = getHostPort(mac);
 		Command.Type commandType;
 		if (isLastVmConnectedToPort(port)) {
 			commandType = Command.Type.FLOW_REMOVE_LAST_VM;
@@ -240,7 +236,7 @@ public class Datapath implements IDatapath {
 			commandType = Command.Type.FLOW_REMOVE_ANOTHER_VM;
 		}
 		mac = mac.toLowerCase();
-		IFirewallRule rule = getVmRule(mac);
+		IFirewallRule rule = getHostRule(mac);
 		macPortMap.remove(mac);
 		decrementNumberOfVmsConnectedToPort(port);
 		JSONObject[] commands = createCommands(rule, commandType);
@@ -248,20 +244,20 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public IFirewallRule getVmRule(String mac) {
+	public IFirewallRule getHostRule(String mac) {
 		mac = mac.toLowerCase();
-		if (containsVm(mac)) {
-			return new OnePortFirewallVmRule(dpid, firewallPort, macPortMap.get(mac), mac);
+		if (containsHost(mac)) {
+			return new OnePortFirewallHostRule(dpid, firewallPort, macPortMap.get(mac), mac);
 		}
 		return null;
 	}
 
 	@Override
-	public List<IFirewallRule> getAllVmRules() {
+	public List<IFirewallRule> getAllHostsRules() {
 		ArrayList<IFirewallRule> rules = new ArrayList<IFirewallRule>();
 		Set<String> macs = macPortMap.keySet();
 		for (String mac : macs) {
-			rules.add(getVmRule(mac));
+			rules.add(getHostRule(mac));
 		}
 		return rules;
 	}
@@ -350,7 +346,7 @@ public class Datapath implements IDatapath {
 	@Override
 	public List<IFirewallRule> getAllRules() {
 		List<IFirewallRule> rules = getAllNetworkRules();
-		List<IFirewallRule> vmRules = getAllVmRules();
+		List<IFirewallRule> vmRules = getAllHostsRules();
 		rules.addAll(vmRules);
 		return rules;
 	}
@@ -360,9 +356,9 @@ public class Datapath implements IDatapath {
 	@Override
 	public void migrateVm(String vmMac, IDatapath dstDatapath, int dstPort) {
 		// TODO implement safe migration
-		if (containsVm(vmMac)) {
-			dstDatapath.connectVm(vmMac, dstPort);
-			disconnectVm(vmMac);
+		if (containsHost(vmMac)) {
+			dstDatapath.connectHost(vmMac, dstPort);
+			disconnectHost(vmMac);
 		} else {
 			throw new IllegalArgumentException("VM with such MAC (" + vmMac + ") not connected to datapath " + toString());
 		}

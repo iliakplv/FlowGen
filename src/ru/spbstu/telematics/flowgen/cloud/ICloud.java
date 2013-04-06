@@ -23,12 +23,12 @@ public interface ICloud {
 	public void clearListeners();
 
 	// Virtual Machines
-	public void launchVm(String mac, String dpid, int port);
-	public void pauseVm(String mac);
-	public void wakeVm(String mac);
-	public void stopVm(String mac);
-	public void migrateVm(String mac, String dstDpid, int dstPort);
-	public Set<String> getAllVmMacs();
+	public void launchHost(String mac, String dpid, int port);
+	public void pauseHost(String mac);
+	public void wakeHost(String mac);
+	public void stopHost(String mac);
+	public void migrateHost(String mac, String dstDpid, int dstPort);
+	public Set<String> getAllHostsMacs();
 
 	// Controller connectivity
 	public void setFloodlightClient(IFloodlightClient client);

@@ -13,12 +13,12 @@ public interface IDatapath {
 	public String getName();
 
 	// VM
-	public void connectVm(String mac, int port);
-	public void disconnectVm(String mac);
-	public IFirewallRule getVmRule(String mac);
-	public List<IFirewallRule> getAllVmRules();
-	public boolean containsVm(String mac);
-	public int getVmPort(String mac);
+	public void connectHost(String mac, int port);
+	public void disconnectHost(String mac);
+	public IFirewallRule getHostRule(String mac);
+	public List<IFirewallRule> getAllHostsRules();
+	public boolean containsHost(String mac);
+	public int getHostPort(String mac);
 	public Map<String, Integer> getMacPortMap();
 
 	// Network

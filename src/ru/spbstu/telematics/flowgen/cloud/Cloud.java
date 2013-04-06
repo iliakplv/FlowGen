@@ -21,8 +21,8 @@ public class Cloud implements ICloud {
 	private String name;
 
 	private Map<String, IDatapath> dpidDatapathMap;
-	private Map<String, VmConnectionData> macActiveVmMap;
-	private Map<String, VmConnectionData> macPausedVmMap;
+	private Map<String, VmConnectionData> macActiveHostsMap;
+	private Map<String, VmConnectionData> macPausedHostsMap;
 	private Set<IDatapathListener> listeners = null;
 	private IFloodlightClient floodlightClient = null;
 
@@ -33,8 +33,8 @@ public class Cloud implements ICloud {
 	public Cloud(String name) {
 		setName(name);
 		dpidDatapathMap = new HashMap<String, IDatapath>();
-		macActiveVmMap = new HashMap<String, VmConnectionData>();
-		macPausedVmMap = new HashMap<String, VmConnectionData>();
+		macActiveHostsMap = new HashMap<String, VmConnectionData>();
+		macPausedHostsMap = new HashMap<String, VmConnectionData>();
 		listeners = new HashSet<IDatapathListener>();
 	}
 
@@ -134,14 +134,14 @@ public class Cloud implements ICloud {
 	// TODO check for datapath port availability when waking VM up
 
 	@Override
-	public void launchVm(String mac, String dpid, int port) {
+	public void launchHost(String mac, String dpid, int port) {
 		dpid = dpid.toLowerCase();
 		if (dpidDatapathMap.containsKey(dpid)) {
 			mac = mac.toLowerCase();
-			if (!(macActiveVmMap.containsKey(mac) || macPausedVmMap.containsKey(mac))) {
+			if (!(macActiveHostsMap.containsKey(mac) || macPausedHostsMap.containsKey(mac))) {
 				IDatapath datapath = dpidDatapathMap.get(dpid);
-				datapath.connectVm(mac, port);
-				macActiveVmMap.put(mac, new VmConnectionData(dpid, port));
+				datapath.connectHost(mac, port);
+				macActiveHostsMap.put(mac, new VmConnectionData(dpid, port));
 			} else {
 				throw new IllegalArgumentException("Cloud " + toString() + " already has VM with MAC " + mac);
 			}
@@ -151,26 +151,26 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void pauseVm(String mac) {
+	public void pauseHost(String mac) {
 		mac = mac.toLowerCase();
-		if (macActiveVmMap.containsKey(mac)) {
-			VmConnectionData vmData = macActiveVmMap.get(mac);
+		if (macActiveHostsMap.containsKey(mac)) {
+			VmConnectionData vmData = macActiveHostsMap.get(mac);
 			IDatapath datapath = dpidDatapathMap.get(vmData.getDpid());
-			datapath.disconnectVm(mac);
-			macPausedVmMap.put(mac, vmData);
+			datapath.disconnectHost(mac);
+			macPausedHostsMap.put(mac, vmData);
 		} else {
 			throw new IllegalArgumentException("Cloud " + toString() + " has no active VM with MAC " + mac);
 		}
 	}
 
 	@Override
-	public void wakeVm(String mac) {
+	public void wakeHost(String mac) {
 		mac = mac.toLowerCase();
-		if (macPausedVmMap.containsKey(mac)) {
-			VmConnectionData vmData = macPausedVmMap.get(mac);
+		if (macPausedHostsMap.containsKey(mac)) {
+			VmConnectionData vmData = macPausedHostsMap.get(mac);
 			IDatapath datapath = dpidDatapathMap.get(vmData.getDpid());
-			datapath.connectVm(mac, vmData.getPort());
-			macActiveVmMap.put(mac, vmData);
+			datapath.connectHost(mac, vmData.getPort());
+			macActiveHostsMap.put(mac, vmData);
 		} else {
 			throw new IllegalArgumentException("Cloud " + toString() + " has no paused VM with MAC " + mac);
 		}
@@ -178,15 +178,15 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void stopVm(String mac) {
+	public void stopHost(String mac) {
 		mac = mac.toLowerCase();
-		if (macActiveVmMap.containsKey(mac)) {
-			VmConnectionData vmData = macActiveVmMap.get(mac);
+		if (macActiveHostsMap.containsKey(mac)) {
+			VmConnectionData vmData = macActiveHostsMap.get(mac);
 			IDatapath datapath = dpidDatapathMap.get(vmData.getDpid());
-			datapath.disconnectVm(mac);
-			macActiveVmMap.remove(mac);
-		} else if (macPausedVmMap.containsKey(mac)) {
-			macPausedVmMap.remove(mac);
+			datapath.disconnectHost(mac);
+			macActiveHostsMap.remove(mac);
+		} else if (macPausedHostsMap.containsKey(mac)) {
+			macPausedHostsMap.remove(mac);
 		} else {
 			throw new IllegalArgumentException("Cloud " + toString() + " has no active VM with MAC " + mac);
 		}
@@ -194,14 +194,14 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void migrateVm(String mac, String dstDpid, int dstPort) {
+	public void migrateHost(String mac, String dstDpid, int dstPort) {
 		// TODO implement
 	}
 
 	@Override
-	public Set<String> getAllVmMacs() {
-		Set<String> macs = macActiveVmMap.keySet();
-		macs.addAll(macPausedVmMap.keySet());
+	public Set<String> getAllHostsMacs() {
+		Set<String> macs = macActiveHostsMap.keySet();
+		macs.addAll(macPausedHostsMap.keySet());
 		return macs;
 	}
 
@@ -253,7 +253,7 @@ public class Cloud implements ICloud {
 		boolean result = dpid != null && port != OpenflowUtils.DEFAULT_PORT;
 
 		if (result) {
-			launchVm(mac, dpid, port);
+			launchHost(mac, dpid, port);
 		}
 
 		return result;

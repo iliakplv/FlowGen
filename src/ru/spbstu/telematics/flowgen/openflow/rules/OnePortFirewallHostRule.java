@@ -10,7 +10,7 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
  * Rule for processing VM traffic.
  */
 
-public class OnePortFirewallVmRule extends OnePortFirewallRule {
+public class OnePortFirewallHostRule extends OnePortFirewallRule {
 
 	private String vmMac;
 
@@ -19,14 +19,14 @@ public class OnePortFirewallVmRule extends OnePortFirewallRule {
 	 * Constructors
 	 */
 
-	public OnePortFirewallVmRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
-								 int firewallPort, int vmPort, String vmMac) {
+	public OnePortFirewallHostRule(String dpid, boolean active, int inFlowPriority, int outFlowPriority,
+								   int firewallPort, int vmPort, String vmMac) {
 		super(dpid, active, inFlowPriority, outFlowPriority, firewallPort, vmPort);
 		setVmMac(vmMac);
 	}
 
-	public OnePortFirewallVmRule(String dpid, int firewallPort, int vmPort, String vmMac) {
-		this(dpid, true, OpenflowUtils.IN_VM_FLOW_PRIORITY, OpenflowUtils.OUT_VM_FLOW_PRIORITY,
+	public OnePortFirewallHostRule(String dpid, int firewallPort, int vmPort, String vmMac) {
+		this(dpid, true, OpenflowUtils.IN_HOST_FLOW_PRIORITY, OpenflowUtils.OUT_HOST_FLOW_PRIORITY,
 				firewallPort, vmPort, vmMac);
 	}
 

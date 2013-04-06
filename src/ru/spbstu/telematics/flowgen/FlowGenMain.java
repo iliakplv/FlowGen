@@ -72,7 +72,7 @@ public class FlowGenMain {
 
 		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
-			cloud.launchVm(mac, datapath.getDpid(), portMacMap.get(mac));
+			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
 //			cloud.launchVmByMac(mac);
 		}
 
@@ -96,7 +96,7 @@ public class FlowGenMain {
 //		cloud.addDatapathListener(flClient);
 
 		for (String mac : macs) {
-			cloud.stopVm(mac);
+			cloud.stopHost(mac);
 		}
 		cloud.getDatapath(dpid).disconnectFromNetwork();
 	}

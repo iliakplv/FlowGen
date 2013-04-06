@@ -9,7 +9,7 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 /**
  * Rule for processing outgoing broadcast traffic.
  * This rule doesn't generate add/remove JSON commands (returns null) for incoming flow.
- * This flow already processed by other rules (OnePortFirewallGatewayRule and OnePortFirewallVmRule).
+ * This flow already processed by other rules (OnePortFirewallGatewayRule and OnePortFirewallHostRule).
  * Use this rule to process broadcast traffic (with destination MAC = FF:FF:FF:FF:FF:FF, e.g. ARP requests).
  */
 
