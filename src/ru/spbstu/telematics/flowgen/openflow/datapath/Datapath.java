@@ -312,18 +312,24 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public synchronized void connectToNetwork() {
-		connectGateway();
-		connectBroadcast();
-		connectSubnet();
-		connectedToNetwork = true;
+		if (!connectedToNetwork) {
+			// order!
+			connectBroadcast();
+			connectSubnet();
+			connectGateway();
+			connectedToNetwork = true;
+		}
 	}
 
 	@Override
 	public synchronized void disconnectFromNetwork() {
-		connectedToNetwork = false;
-		disconnectSubnet();
-		disconnectBroadcast();
-		disconnectGateway();
+		if (connectedToNetwork) {
+			// order!
+			connectedToNetwork = false;
+			disconnectGateway();
+			disconnectSubnet();
+			disconnectBroadcast();
+		}
 	}
 
 	@Override
@@ -334,9 +340,9 @@ public class Datapath implements IDatapath {
 	@Override
 	public List<IFirewallRule> getAllNetworkRules() {
 		List<IFirewallRule> rules = new ArrayList<IFirewallRule>();
-		rules.add(getGatewayRule());
 		rules.add(getBroadcastRule());
 		rules.add(getSubnetRule());
+		rules.add(getGatewayRule());
 		return rules;
 
 	}
@@ -478,12 +484,13 @@ public class Datapath implements IDatapath {
 		} else {
 
 			commands = new JSONObject[2];
+			// OUT flow first!
 			if (action == Command.Action.FLOW_ADD) {
-				commands[0] = rule.ovsInFlowAddCommand();
-				commands[1] = rule.ovsOutFlowAddCommand();
+				commands[0] = rule.ovsOutFlowAddCommand();
+				commands[1] = rule.ovsInFlowAddCommand();
 			} else if (action == Command.Action.FLOW_REMOVE) {
-				commands[0] = rule.ovsInFlowRemoveCommand();
-				commands[1] = rule.ovsOutFlowRemoveCommand();
+				commands[0] = rule.ovsOutFlowRemoveCommand();
+				commands[1] = rule.ovsInFlowRemoveCommand();
 			} else {
 				throw new IllegalArgumentException("Unknown command action of " + commandType);
 			}
