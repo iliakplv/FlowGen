@@ -14,6 +14,8 @@ import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.FloodlightClient;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Host;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
 import ru.spbstu.telematics.flowgen.utils.DatapathLogger;
 
@@ -45,7 +47,7 @@ public class FlowGenMain {
 
 		// Cloud
 
-		String cloudName = "vn0";
+		String cloudName = "vn0.";
 		ICloud cloud = new Cloud(cloudName);
 		cloud.addDatapath(datapath);
 		cloud.addDatapathListener(new DatapathLogger(datapath.toString()));
@@ -79,7 +81,7 @@ public class FlowGenMain {
 //		PARSING TEST
 		if (false) {
 			try {
-				parsingTest(flClient.getAllConnectedHosts());
+				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -130,23 +132,40 @@ public class FlowGenMain {
 
 	}
 
-	public static void parsingTest(JSONArray data) throws JSONException {
+	public static void parsingTest(JSONArray connectedHosts, JSONArray knownHosts) throws JSONException {
 
-		ControllerData controllerData = ControllerData.parse(data);
+		// Connected hosts
+
+		ControllerData controllerData = ControllerData.parse(connectedHosts);
 
 		for (DatapathData datapathData : controllerData.getDatapaths()) {
 
 			System.out.println("\n[DPID] " + datapathData.getDpid());
 
 			for (PortData portData : datapathData.getPorts()) {
-				System.out.println(portData.getNumber() + " " +
-						portData.getName() + " " +
-						portData.getMac() + " " +
+				System.out.println(portData.getMac() + "  " +
+						portData.getNumber() + "  " +
+						portData.getName() + "  " +
 						(portData.isDatapathReservedPort() ? "(datapath)" : ""));
 			}
 		}
 
+		// Known hosts
+
+		Hosts hosts = Hosts.parse(knownHosts);
+
+		System.out.println("\n[HOSTS]");
+
+		for (Host host : hosts.getAllHosts()) {
+
+			System.out.println(host.getAttachmentPoint().getDpid() + "  " +
+					host.getAttachmentPoint().getPort() + "  " +
+					host.getMac() + "  " +
+					host.getIpv4());
+		}
+
 		System.out.println();
+
 	}
 
 

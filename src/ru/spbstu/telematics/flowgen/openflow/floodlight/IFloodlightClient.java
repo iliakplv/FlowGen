@@ -14,5 +14,6 @@ public interface IFloodlightClient {
 	public void removeFlows(JSONObject[] commands);
 
 	public JSONArray getAllConnectedHosts();
+	public JSONArray getAllKnownHosts();
 
 }

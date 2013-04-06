@@ -7,6 +7,7 @@ import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 

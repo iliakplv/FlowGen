@@ -28,6 +28,7 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 	private static final String URL_SCHEME = "http:";
 	private static final String URL_STATIC_FLOW_PUSHER =	"/wm/staticflowentrypusher/json";
 	private static final String URL_GET_ALL_DATAPATHS =		"/wm/core/controller/switches/json";
+	private static final String URL_GET_ALL_DEVICES =		"/wm/device/";
 	private static final String HTTP_HEADER_CONTENT_TYPE_NAME = "content-type";
 	private static final String HTTP_HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
@@ -87,6 +88,10 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 
 	public String getAllDatapathsUrl() {
 		return getControllerUrl() + URL_GET_ALL_DATAPATHS;
+	}
+
+	public String getAllDevicesUrl() {
+		return getControllerUrl() + URL_GET_ALL_DEVICES;
 	}
 
 
@@ -151,15 +156,14 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 		}
 	}
 
-	@Override
-	public synchronized JSONArray getAllConnectedHosts() {
+	private synchronized JSONArray requestToController(String url) {
 
 		HttpClient httpClient = new DefaultHttpClient();
 
 		JSONArray result = null;
 		try {
 
-			HttpGet request = new HttpGet(getAllDatapathsUrl());
+			HttpGet request = new HttpGet(url);
 			request.addHeader(HTTP_HEADER_CONTENT_TYPE_NAME, HTTP_HEADER_CONTENT_TYPE_VALUE);
 
 			HttpResponse response = httpClient.execute(request);
@@ -181,6 +185,16 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 		}
 
 		return result;
+	}
+
+	@Override
+	public JSONArray getAllConnectedHosts() {
+		return requestToController(getAllDatapathsUrl());
+	}
+
+	@Override
+	public JSONArray getAllKnownHosts() {
+		return requestToController(getAllDevicesUrl());
 	}
 
 
