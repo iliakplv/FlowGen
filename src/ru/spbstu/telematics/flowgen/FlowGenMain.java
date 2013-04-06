@@ -47,7 +47,7 @@ public class FlowGenMain {
 
 		// Cloud
 
-		String cloudName = "vn0.";
+		String cloudName = "vn0.stu.neva.ru";
 		ICloud cloud = new Cloud(cloudName);
 		cloud.addDatapath(datapath);
 		cloud.addDatapathListener(new DatapathLogger(datapath.toString()));
@@ -78,8 +78,10 @@ public class FlowGenMain {
 //			cloud.launchVmByMac(mac);
 		}
 
+		cloud.findAndConnect("fa:16:3e:69:ab:bf", "172.16.1.5");
+
 //		PARSING TEST
-		if (false) {
+		if (true) {
 			try {
 				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
 			} catch (JSONException e) {

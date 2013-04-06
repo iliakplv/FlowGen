@@ -222,7 +222,7 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public boolean launchVmByMac(String mac) {
+	public void findAndConnect(String mac, String ip) {
 		if (floodlightClient == null) {
 			throw new NullPointerException("No floodlight client set to cloud " + toString());
 		}
@@ -230,34 +230,40 @@ public class Cloud implements ICloud {
 			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in cloud " + toString());
 		}
 		mac = mac.toLowerCase();
-
-		ControllerData controllerData;
-		try {
-			 controllerData = ControllerData.parse(floodlightClient.getAllConnectedHosts());
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return false;
+		if (!OpenflowUtils.validateIpv4(ip)) {
+			throw new IllegalArgumentException("Wrong IP (" + ip + ") in cloud " + toString());
 		}
 
-		String dpid = null;
-		int port = OpenflowUtils.DEFAULT_PORT;
+		Thread connectorThread = new Thread(new ControllerHostConnector(this, mac, ip));
+		connectorThread.start();
 
-		for (DatapathData datapathData : controllerData.getDatapaths()) {
-			for (PortData portData : datapathData.getPorts()) {
-				if (OpenflowUtils.macEquals(mac, portData.getMac()) && !portData.isDatapathReservedPort() ) {
-					dpid = datapathData.getDpid();
-					port = portData.getNumber();
-				}
-			}
-		}
-
-		boolean result = dpid != null && port != OpenflowUtils.DEFAULT_PORT;
-
-		if (result) {
-			launchHost(mac, dpid, port);
-		}
-
-		return result;
+//		ControllerData controllerData;
+//		try {
+//			 controllerData = ControllerData.parse(floodlightClient.getAllConnectedHosts());
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//
+//		String dpid = null;
+//		int port = OpenflowUtils.DEFAULT_PORT;
+//
+//		for (DatapathData datapathData : controllerData.getDatapaths()) {
+//			for (PortData portData : datapathData.getPorts()) {
+//				if (OpenflowUtils.macEquals(mac, portData.getMac()) && !portData.isDatapathReservedPort() ) {
+//					dpid = datapathData.getDpid();
+//					port = portData.getNumber();
+//				}
+//			}
+//		}
+//
+//		boolean result = dpid != null && port != OpenflowUtils.DEFAULT_PORT;
+//
+//		if (result) {
+//			launchHost(mac, dpid, port);
+//		}
+//
+//		return result;
 	}
 
 

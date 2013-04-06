@@ -34,6 +34,6 @@ public interface ICloud {
 	public void setFloodlightClient(IFloodlightClient client);
 	public IFloodlightClient getFloodlightClient();
 	public void removeFloodlightClient();
-	public boolean launchVmByMac(String mac);
+	public void findAndConnect(String mac, String ip);
 
 }

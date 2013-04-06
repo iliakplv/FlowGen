@@ -78,6 +78,38 @@ public class OpenflowUtils {
 		return true;
 	}
 
+	public static boolean validateIpv4(String string) {
+		// TODO fix
+//		if (StringUtils.isNullOrEmpty(string)) {
+//			return false;
+//		}
+//
+//		final String delimiter = ".";
+//		final int OCTETS_NUMBER = 4;
+//
+//		if (string.startsWith(delimiter) || string.endsWith(delimiter)) {
+//			return false;
+//		}
+//
+//		String[] octets = string.split(delimiter);
+//		if (octets.length != OCTETS_NUMBER) {
+//			return false;
+//		}
+//		for (int i = 0; i < OCTETS_NUMBER; i++) {
+//			int value;
+//			try {
+//				value = Integer.parseInt(octets[i]);
+//			} catch (NumberFormatException e) {
+//				return false;
+//			}
+//			if (value < 0 || value > 255) {
+//				return false;
+//			}
+//		}
+
+		return true;
+	}
+
 	public static String setMacUniqueness(String mac, boolean globallyUnique) {
 		if (!validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong MAC: " + mac);
