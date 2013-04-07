@@ -67,7 +67,7 @@ public class FlowGenMain {
 		FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
 		cloud.setFloodlightClient(flClient);
 
-		// VMs
+		// Hosts (not VMs)
 
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
 		portMacMap.put("5c:d9:98:37:16:02", 1); // eth0
@@ -84,6 +84,8 @@ public class FlowGenMain {
 		for (String mac : macs) {
 			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
+
+		// FLOWGEN !!!
 
 		Thread novaListener =
 				new Thread(new NovaNetworkQueueListener("vn0.stu.neva.ru",
