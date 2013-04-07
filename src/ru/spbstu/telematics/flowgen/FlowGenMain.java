@@ -38,6 +38,8 @@ public class FlowGenMain {
 			}
 		}
 
+		// TODO critical errors
+
 		testVn0();
 
 //		testRabbitMq();
