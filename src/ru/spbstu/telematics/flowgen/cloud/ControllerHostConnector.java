@@ -11,7 +11,8 @@ import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 public class ControllerHostConnector implements Runnable {
 
-	private static final int ATTEMPTS = 10;
+	// Attempting every 5 seconds for 2 minutes
+	private static final int ATTEMPTS = 25;
 	private static final int INTERVAL_MILLIS = 5000;
 
 	private ICloud cloud;

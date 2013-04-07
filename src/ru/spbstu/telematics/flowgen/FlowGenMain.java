@@ -37,7 +37,7 @@ public class FlowGenMain {
 			}
 		}
 
-		testVn0();
+//		testVn0();
 
 //		testRabbitMq();
 
@@ -71,8 +71,6 @@ public class FlowGenMain {
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
 		portMacMap.put("5c:d9:98:37:16:02", 1); // eth0
 		portMacMap.put("fa:16:3e:77:56:6e", 2); // gw-fb259ed4-dd
-//		portMacMap.put("fa:16:3e:69:ab:bf", 49);
-//		portMacMap.put("fa:16:3e:38:0f:e9", 50);
 		Set<String> macs = portMacMap.keySet();
 
 
@@ -86,7 +84,7 @@ public class FlowGenMain {
 			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
 
-		cloud.findAndConnect("fa:16:3e:78:16:0f", "172.16.1.7");
+//		cloud.findAndConnect("fa:16:3e:78:16:0f", "172.16.1.7");
 
 //		UNREGISTER TO KEEP
 //		cloud.deleteDatapathListener(flClient);
