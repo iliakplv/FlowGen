@@ -33,6 +33,7 @@ public interface ICloud {
 	// Controller connectivity
 	public void setFloodlightClient(IFloodlightClient client);
 	public IFloodlightClient getFloodlightClient();
-	public void findAndConnect(String mac, String ip);
+	public void findAndConnect(String ip);
+	public void findAndDisconnect(String ip);
 
 }

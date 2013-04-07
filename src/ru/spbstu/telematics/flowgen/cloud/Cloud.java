@@ -221,20 +221,27 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void findAndConnect(String mac, String ip) {
+	public void findAndConnect(String ip) {
+		findAndDoAction(ip, ControllerHostConnector.Action.Connect);
+	}
+
+	@Override
+	public void findAndDisconnect(String ip) {
+		findAndDoAction(ip, ControllerHostConnector.Action.Disconnect);
+	}
+
+	private void findAndDoAction(String ip, ControllerHostConnector.Action action) {
 		if (floodlightClient == null) {
 			throw new NullPointerException("No floodlight client set to cloud " + toString());
-		}
-		if (!OpenflowUtils.validateMac(mac)) {
-			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in cloud " + toString());
 		}
 		if (StringUtils.isNullOrEmpty(ip)) {
 			throw new IllegalArgumentException("Wrong IP (null or empty) in cloud " + toString());
 		}
-		mac = mac.toLowerCase();
 
-		Thread connectorThread = new Thread(new ControllerHostConnector(this, mac, ip));
+		Thread connectorThread =
+				new Thread(new ControllerHostConnector(this, ip, action));
 		connectorThread.start();
+
 	}
 
 

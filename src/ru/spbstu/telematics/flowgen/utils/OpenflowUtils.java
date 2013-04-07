@@ -1,6 +1,8 @@
 package ru.spbstu.telematics.flowgen.utils;
 
 
+import java.util.regex.Pattern;
+
 public class OpenflowUtils {
 
 	// Rule priority
@@ -27,6 +29,13 @@ public class OpenflowUtils {
 
 	public static final char DPID_DELIMITER = ':';
 	public static final char MAC_DELIMITER = ':';
+
+	private static final String IP_REGEX =
+			"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+					"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+					"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+					"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+	private static final Pattern IP_PATTERN = Pattern.compile(IP_REGEX);
 
 
 	public static boolean validateDpid(String dpid) {
@@ -76,6 +85,10 @@ public class OpenflowUtils {
 		}
 
 		return true;
+	}
+
+	public static boolean validateIpv4(String string) {
+		return IP_PATTERN.matcher(string).matches();
 	}
 
 	public static String setMacUniqueness(String mac, boolean globallyUnique) {

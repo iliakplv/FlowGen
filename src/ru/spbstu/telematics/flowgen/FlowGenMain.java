@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import ru.spbstu.telematics.flowgen.cloud.Cloud;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
+import ru.spbstu.telematics.flowgen.cloud.rabbitmq.NovaNetworkQueueListener;
 import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.FloodlightClient;
@@ -28,7 +29,7 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
-		if (true) {
+		if (false) {
 			FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
 			try {
 				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
@@ -37,7 +38,7 @@ public class FlowGenMain {
 			}
 		}
 
-//		testVn0();
+		testVn0();
 
 //		testRabbitMq();
 
@@ -56,7 +57,7 @@ public class FlowGenMain {
 
 		// Cloud
 
-		String cloudName = "vn0.";
+		String cloudName = "vn0";
 		ICloud cloud = new Cloud(cloudName);
 		cloud.addDatapath(datapath);
 		cloud.addDatapathListener(new DatapathLogger(datapath.toString()));
@@ -84,7 +85,15 @@ public class FlowGenMain {
 			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
 
-//		cloud.findAndConnect("fa:16:3e:78:16:0f", "172.16.1.7");
+		Thread novaListener =
+				new Thread(new NovaNetworkQueueListener("vn0.",
+						"ovs.network.vn0",
+						"network.vn0",
+						false,
+						false,
+						cloud));
+		novaListener.start();
+
 
 //		UNREGISTER TO KEEP
 //		cloud.deleteDatapathListener(flClient);
@@ -141,7 +150,7 @@ public class FlowGenMain {
 
 	public static void testRabbitMq() {
 
-		final String host = "vn0";
+		final String host = "vn0.";
 		final String exchange = "nova";
 		final String queueNamePrefix = "ovs.";
 
