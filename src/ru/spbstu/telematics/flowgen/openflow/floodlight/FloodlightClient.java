@@ -124,6 +124,7 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 			e.printStackTrace();
 		} finally {
 			httpClient.getConnectionManager().shutdown();
+			System.out.println("[CRITICAL] Command execution failed!");
 		}
 	}
 
@@ -182,6 +183,7 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 			e.printStackTrace();
 		} finally {
 			httpClient.getConnectionManager().shutdown();
+			System.out.println("[CRITICAL] Request to controller failed!");
 		}
 
 		return result;

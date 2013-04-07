@@ -51,21 +51,22 @@ public class Host {
 
 
 	public static Host parse(JSONObject data) throws JSONException {
-		Host result = null;
+		Host result = null
+				;
 		JSONArray points = data.getJSONArray(ATTACHMENT_POINT_KEY);
-
 		if (points.length() > 0) {
-			AttachmentPoint attachmentPoint = AttachmentPoint.parse(points.getJSONObject(0));
 
 			JSONArray macs = (JSONArray) data.get(MAC_KEY);
 			JSONArray ips = (JSONArray) data.get(IPV4_KEY);
 
-			String mac = macs.length() > 0 ? macs.getString(0) : StringUtils.EMPTY_STRING;
-			String ip = ips.length() > 0 ? ips.getString(0) : StringUtils.EMPTY_STRING;
-
-			result = new Host(mac, ip, attachmentPoint);
+			if (macs.length() > 0 && ips.length() > 0) {
+				String mac = macs.getString(0);
+				String ip = ips.getString(0);
+				AttachmentPoint attachmentPoint = AttachmentPoint.parse(points.getJSONObject(0));
+				result = new Host(mac, ip, attachmentPoint);
+			}
 		}
 
-		return result; // returns null if host has no AttachmentPoint
+		return result;
 	}
 }

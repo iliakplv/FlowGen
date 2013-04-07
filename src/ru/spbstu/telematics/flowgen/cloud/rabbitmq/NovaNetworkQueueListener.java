@@ -14,6 +14,9 @@ import java.io.IOException;
 
 public class NovaNetworkQueueListener implements Runnable{
 
+	private static final String INFO = "[INFO] ";
+	private static final String ERROR = "[ERROR] ";
+
 	private static final String EXCHANGE_NAME = "nova";
 	private static final String EXCHANGE_TYPE = "topic";
 	private static final boolean EXCHANGE_DURABLE = false;
@@ -101,6 +104,7 @@ public class NovaNetworkQueueListener implements Runnable{
 				try {
 					message = new JSONObject(new String(delivery.getBody()));
 				} catch (JSONException e) {
+					System.out.println(ERROR + "Creating JSON from AMQP message failed:");
 					e.printStackTrace();
 					continue;
 				}
@@ -117,8 +121,10 @@ public class NovaNetworkQueueListener implements Runnable{
 			}
 
 		} catch (IOException e) {
+			System.out.println(ERROR + "Connection exception caught:");
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			System.out.println(ERROR + "Interrupted exception caught:");
 			e.printStackTrace();
 		}
 	}

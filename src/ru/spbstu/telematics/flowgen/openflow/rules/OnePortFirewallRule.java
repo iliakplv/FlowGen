@@ -20,6 +20,8 @@ public abstract class OnePortFirewallRule implements IFirewallRule {
 	protected static final String FLOW_ACTIONS = 			"actions";
 	protected static final String FLOW_OUT_PORTS_PREFIX =	"output=";
 
+	protected static final String COMMAND_CREATION_FAILED = "[CRITICAL] Command creation failed!";
+
 	private String dpid;
 	private boolean active;
 	private int inFlowPriority;

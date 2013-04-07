@@ -83,6 +83,7 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 			command.put(FLOW_IN_PORT,	getFirewallPort());
 			command.put(FLOW_ACTIONS,	FLOW_OUT_PORTS_PREFIX + getTargetPort());
 		} catch (JSONException e) {
+			System.out.println(COMMAND_CREATION_FAILED);
 			e.printStackTrace();
 		}
 		return command;
@@ -99,6 +100,7 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 		try {
 			command.put(FLOW_NAME,	getOutFlowName());
 		} catch (JSONException e) {
+			System.out.println(COMMAND_CREATION_FAILED);
 			e.printStackTrace();
 		}
 		return command;
