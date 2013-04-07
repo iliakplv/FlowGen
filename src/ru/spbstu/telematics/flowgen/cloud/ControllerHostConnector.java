@@ -37,7 +37,8 @@ public class ControllerHostConnector implements Runnable {
 	public void run() {
 
 		boolean done = false;
-		String dpid = "not_found";
+		String dpid = "<not_found>";
+		String mac = "<unknown>";
 		int port = -1;
 
 		int i;
@@ -58,10 +59,13 @@ public class ControllerHostConnector implements Runnable {
 					// Found!
 
 					AttachmentPoint ap = host.getAttachmentPoint();
+					mac = host.getMac();
+					dpid = ap.getDpid();
+					port = ap.getPort();
 					if (action == Action.Connect) {
-						cloud.launchHost(host.getMac(), ap.getDpid(), ap.getPort());
+						cloud.launchHost(mac, dpid, port);
 					} else {
-						cloud.stopHost(host.getMac());
+						cloud.stopHost(mac);
 					}
 
 					done = true;
@@ -86,16 +90,18 @@ public class ControllerHostConnector implements Runnable {
 		if (done) {
 			if (action == Action.Connect) {
 				System.out.println("[INFO] [+] VM with IP (" + ip +
+						") and MAC (" + mac +
 						") connected by connector on port (" + port +
 						") of DPID (" + dpid + ") in attempt #" + i);
 			} else {
 				System.out.println("[INFO] [-] VM with IP (" + ip +
+						") and MAC (" + mac +
 						") disconnected by connector from port (" + port +
 						") of DPID (" + dpid + ") in attempt #" + i);
 			}
 		} else {
 			System.out.println("[ERROR] " + (action == Action.Connect ? "[+]" : "[-]") +
-					" VM with IP (" + ip + ") not found in list of known hosts");
+					" VM with IP (" + ip + ") not found by connector in list of known hosts");
 		}
 
 	}
