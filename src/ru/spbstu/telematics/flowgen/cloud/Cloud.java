@@ -10,6 +10,7 @@ import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
+import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -220,18 +221,20 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void findAndConnect(String mac) {
+	public void findAndConnect(String mac, String ip) {
 		if (floodlightClient == null) {
 			throw new NullPointerException("No floodlight client set to cloud " + toString());
 		}
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in cloud " + toString());
 		}
+		if (StringUtils.isNullOrEmpty(ip)) {
+			throw new IllegalArgumentException("Wrong IP (null or empty) in cloud " + toString());
+		}
 		mac = mac.toLowerCase();
 
-		Thread connectorThread = new Thread(new ControllerHostConnector(this, mac));
+		Thread connectorThread = new Thread(new ControllerHostConnector(this, mac, ip));
 		connectorThread.start();
-
 	}
 
 

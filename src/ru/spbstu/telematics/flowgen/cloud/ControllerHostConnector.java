@@ -6,6 +6,7 @@ import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.AttachmentPoint
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Host;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
+import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 
 public class ControllerHostConnector implements Runnable {
@@ -15,18 +16,23 @@ public class ControllerHostConnector implements Runnable {
 
 	private ICloud cloud;
 	private String mac;
+	private String ip;
 
 
-	public ControllerHostConnector(ICloud cloud, String mac) {
+	public ControllerHostConnector(ICloud cloud, String mac, String ip) {
 		if (cloud == null) {
 			throw new NullPointerException("Cloud is null");
 		}
 		if (!OpenflowUtils.validateMac(mac)) {
 			throw new IllegalArgumentException("Wrong MAC: " + mac);
 		}
+		if (StringUtils.isNullOrEmpty(ip)) {
+			throw new IllegalArgumentException("Wrong IP (null or empty string)");
+		}
 
 		this.cloud = cloud;
 		this.mac = mac.toLowerCase();
+		this.ip = ip;
 	}
 
 
@@ -51,7 +57,7 @@ public class ControllerHostConnector implements Runnable {
 
 			// Search for launched host by MAC
 			for (Host host : knownHosts.getAllHosts()) {
-				if (OpenflowUtils.macEquals(mac, host.getMac())) {
+				if (ip.equals(host.getIpv4()) && OpenflowUtils.macEquals(mac, host.getMac())) {
 					// Found!
 					AttachmentPoint ap = host.getAttachmentPoint();
 					dpid = ap.getDpid();
@@ -77,11 +83,11 @@ public class ControllerHostConnector implements Runnable {
 		}
 
 		if (launched) {
-			System.out.println("[INFO] VM with MAC (" + mac +
+			System.out.println("[INFO] VM with MAC (" + mac + ") and IP (" + ip +
 					") launched by connector on port (" + port +
 					") of DPID (" + dpid + ") in attempt #" + i);
 		} else {
-			System.out.println("[ERROR] VM with MAC (" + mac +
+			System.out.println("[ERROR] VM with MAC (" + mac + ") and IP (" + ip +
 					") not launched by connector (not found in list of known hosts)");
 		}
 

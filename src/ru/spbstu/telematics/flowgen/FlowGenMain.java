@@ -28,6 +28,15 @@ public class FlowGenMain {
 
 	public static void main(String[] args) {
 
+		if (true) {
+			FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
+			try {
+				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
 		testVn0();
 
 //		testRabbitMq();
@@ -77,18 +86,7 @@ public class FlowGenMain {
 			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
 
-		cloud.findAndConnect("fa:16:3e:69:ab:bf");
-		cloud.findAndConnect("fa:16:3e:38:0f:e9");
-
-//		PARSING TEST
-		if (false) {
-			try {
-				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-
+		cloud.findAndConnect("fa:16:3e:78:16:0f", "172.16.1.7");
 
 //		UNREGISTER TO KEEP
 //		cloud.deleteDatapathListener(flClient);
