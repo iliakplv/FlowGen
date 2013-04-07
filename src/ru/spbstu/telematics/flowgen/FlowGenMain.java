@@ -88,7 +88,7 @@ public class FlowGenMain {
 		// FLOWGEN !!!
 
 		Thread novaListener =
-				new Thread(new NovaNetworkQueueListener("vn0.stu.neva.ru",
+				new Thread(new NovaNetworkQueueListener("vn0.",
 						"ovs.network.vn0",
 						"network.vn0",
 						false,
