@@ -58,7 +58,7 @@ public class ControllerHostConnector implements Runnable {
 			} catch (JSONException e) {
 				System.out.println(ERROR + "JSON parsing failed:");
 				e.printStackTrace();
-				break;
+				return;
 			}
 
 			// Search for host by IP
@@ -66,11 +66,12 @@ public class ControllerHostConnector implements Runnable {
 				if (ip.equals(host.getIpv4())) {
 					// Found!
 
-					AttachmentPoint ap = host.getAttachmentPoint();
 					mac = host.getMac();
-					dpid = ap.getDpid();
-					port = ap.getPort();
+
 					if (action == Action.Connect) {
+						AttachmentPoint ap = host.getAttachmentPoint();
+						dpid = ap.getDpid();
+						port = ap.getPort();
 						cloud.launchHost(mac, dpid, port);
 					} else {
 						cloud.stopHost(mac);
@@ -92,7 +93,7 @@ public class ControllerHostConnector implements Runnable {
 			} catch (InterruptedException e) {
 				System.out.println(ERROR + "Interrupted exception caught:");
 				e.printStackTrace();
-				break;
+				return;
 			}
 		}
 
