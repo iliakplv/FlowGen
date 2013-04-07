@@ -6,7 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
-import java.util.List;
 
 public class Host {
 
@@ -52,16 +51,21 @@ public class Host {
 
 
 	public static Host parse(JSONObject data) throws JSONException {
+		Host result = null;
 		JSONArray points = data.getJSONArray(ATTACHMENT_POINT_KEY);
-		AttachmentPoint attachmentPoint = AttachmentPoint.parse(points.getJSONObject(0));
 
-		JSONArray macs = (JSONArray) data.get(MAC_KEY);
-		JSONArray ips = (JSONArray) data.get(IPV4_KEY);
+		if (points.length() > 0) {
+			AttachmentPoint attachmentPoint = AttachmentPoint.parse(points.getJSONObject(0));
 
-		String mac = macs.length() > 0 ? macs.getString(0) : StringUtils.EMPTY_STRING;
-		String ip = ips.length() > 0 ? ips.getString(0) : StringUtils.EMPTY_STRING;
+			JSONArray macs = (JSONArray) data.get(MAC_KEY);
+			JSONArray ips = (JSONArray) data.get(IPV4_KEY);
 
+			String mac = macs.length() > 0 ? macs.getString(0) : StringUtils.EMPTY_STRING;
+			String ip = ips.length() > 0 ? ips.getString(0) : StringUtils.EMPTY_STRING;
 
-		return new Host(mac, ip, attachmentPoint);
+			result = new Host(mac, ip, attachmentPoint);
+		}
+
+		return result; // returns null if host has no AttachmentPoint
 	}
 }

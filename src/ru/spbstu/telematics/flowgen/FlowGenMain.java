@@ -47,7 +47,7 @@ public class FlowGenMain {
 
 		// Cloud
 
-		String cloudName = "vn0.stu.neva.ru";
+		String cloudName = "vn0.";
 		ICloud cloud = new Cloud(cloudName);
 		cloud.addDatapath(datapath);
 		cloud.addDatapathListener(new DatapathLogger(datapath.toString()));
@@ -62,8 +62,8 @@ public class FlowGenMain {
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
 		portMacMap.put("5c:d9:98:37:16:02", 1); // eth0
 		portMacMap.put("fa:16:3e:77:56:6e", 2); // gw-fb259ed4-dd
-		portMacMap.put("fa:16:3e:69:ab:bf", 49);
-		portMacMap.put("fa:16:3e:38:0f:e9", 50);
+//		portMacMap.put("fa:16:3e:69:ab:bf", 49);
+//		portMacMap.put("fa:16:3e:38:0f:e9", 50);
 		Set<String> macs = portMacMap.keySet();
 
 
@@ -75,13 +75,13 @@ public class FlowGenMain {
 		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
 			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
-//			cloud.launchVmByMac(mac);
 		}
 
-		cloud.findAndConnect("fa:16:3e:69:ab:bf", "172.16.1.5");
+		cloud.findAndConnect("fa:16:3e:69:ab:bf");
+		cloud.findAndConnect("fa:16:3e:38:0f:e9");
 
 //		PARSING TEST
-		if (true) {
+		if (false) {
 			try {
 				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
 			} catch (JSONException e) {
@@ -105,34 +105,6 @@ public class FlowGenMain {
 		cloud.getDatapath(dpid).disconnectFromNetwork();
 	}
 
-	public static void testRabbitMq() {
-
-		final String host = "vn0";
-//		final String host = "host_ip";
-		final String exchange = "nova";
-//		final String exchange = "quantum";
-		final String queueNamePrefix = "ovs.";
-
-		String[] routingKeys = new String[]{
-				//"network",
-				"network.vn0",
-				"compute",
-				"compute.vn0",
-				"scheduler",
-				"scheduler.vn0"};
-//		String[] routingKeys = new String[] {"q-plugin"};
-
-		for (String routingKey : routingKeys) {
-			NovaRabbitMqListener listener = new NovaRabbitMqListener(host,
-					exchange,
-					queueNamePrefix + routingKey,
-					routingKey,
-					false,
-					false);
-			listener.start();
-		}
-
-	}
 
 	public static void parsingTest(JSONArray connectedHosts, JSONArray knownHosts) throws JSONException {
 
@@ -167,6 +139,33 @@ public class FlowGenMain {
 		}
 
 		System.out.println();
+
+	}
+
+
+	public static void testRabbitMq() {
+
+		final String host = "vn0";
+		final String exchange = "nova";
+		final String queueNamePrefix = "ovs.";
+
+		String[] routingKeys = new String[]{
+				//"network",
+				"network.vn0",
+				"compute",
+				"compute.vn0",
+				"scheduler",
+				"scheduler.vn0"};
+
+		for (String routingKey : routingKeys) {
+			NovaRabbitMqListener listener = new NovaRabbitMqListener(host,
+					exchange,
+					queueNamePrefix + routingKey,
+					routingKey,
+					false,
+					false);
+			listener.start();
+		}
 
 	}
 

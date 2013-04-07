@@ -22,7 +22,7 @@ public interface ICloud {
 	public Set<IDatapathListener> getAllListeners();
 	public void clearListeners();
 
-	// Virtual Machines
+	// Hosts
 	public void launchHost(String mac, String dpid, int port);
 	public void pauseHost(String mac);
 	public void wakeHost(String mac);
@@ -33,7 +33,6 @@ public interface ICloud {
 	// Controller connectivity
 	public void setFloodlightClient(IFloodlightClient client);
 	public IFloodlightClient getFloodlightClient();
-	public void removeFloodlightClient();
-	public void findAndConnect(String mac, String ip);
+	public void findAndConnect(String mac);
 
 }

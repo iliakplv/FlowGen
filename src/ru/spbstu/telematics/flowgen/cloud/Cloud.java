@@ -132,7 +132,7 @@ public class Cloud implements ICloud {
 		listeners.clear();
 	}
 
-	// TODO check for datapath port availability when waking VM up
+	// TODO check for datapath port availability when waking host up
 
 	@Override
 	public void launchHost(String mac, String dpid, int port) {
@@ -208,6 +208,9 @@ public class Cloud implements ICloud {
 
 	@Override
 	public void setFloodlightClient(IFloodlightClient floodlightClient) {
+		if (floodlightClient == null) {
+			throw new NullPointerException("FloodlightClient is null");
+		}
 		this.floodlightClient = floodlightClient;
 	}
 
@@ -217,12 +220,7 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void removeFloodlightClient() {
-		floodlightClient = null;
-	}
-
-	@Override
-	public void findAndConnect(String mac, String ip) {
+	public void findAndConnect(String mac) {
 		if (floodlightClient == null) {
 			throw new NullPointerException("No floodlight client set to cloud " + toString());
 		}
@@ -230,40 +228,10 @@ public class Cloud implements ICloud {
 			throw new IllegalArgumentException("Wrong VM MAC (" + mac + ") in cloud " + toString());
 		}
 		mac = mac.toLowerCase();
-		if (!OpenflowUtils.validateIpv4(ip)) {
-			throw new IllegalArgumentException("Wrong IP (" + ip + ") in cloud " + toString());
-		}
 
-		Thread connectorThread = new Thread(new ControllerHostConnector(this, mac, ip));
+		Thread connectorThread = new Thread(new ControllerHostConnector(this, mac));
 		connectorThread.start();
 
-//		ControllerData controllerData;
-//		try {
-//			 controllerData = ControllerData.parse(floodlightClient.getAllConnectedHosts());
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//
-//		String dpid = null;
-//		int port = OpenflowUtils.DEFAULT_PORT;
-//
-//		for (DatapathData datapathData : controllerData.getDatapaths()) {
-//			for (PortData portData : datapathData.getPorts()) {
-//				if (OpenflowUtils.macEquals(mac, portData.getMac()) && !portData.isDatapathReservedPort() ) {
-//					dpid = datapathData.getDpid();
-//					port = portData.getNumber();
-//				}
-//			}
-//		}
-//
-//		boolean result = dpid != null && port != OpenflowUtils.DEFAULT_PORT;
-//
-//		if (result) {
-//			launchHost(mac, dpid, port);
-//		}
-//
-//		return result;
 	}
 
 

@@ -38,7 +38,10 @@ public class Hosts {
 		int length = data.length();
 		Hosts hosts = new Hosts();
 		for (int i = 0; i < length; i++) {
-			hosts.addHost(Host.parse(data.getJSONObject(i)));
+			Host host = Host.parse(data.getJSONObject(i));
+			if (host != null) {
+				hosts.addHost(host);
+			}
 		}
 		return hosts;
 	}
