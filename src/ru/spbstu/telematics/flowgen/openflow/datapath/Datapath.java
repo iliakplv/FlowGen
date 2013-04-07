@@ -209,16 +209,16 @@ public class Datapath implements IDatapath {
 
 		Command.Type commandType;
 		if (isPortEmpty(port)) {
-			commandType = Command.Type.FLOW_ADD_FIRST_VM;
+			commandType = Command.Type.FlowAddFirstVm;
 		} else {
-			commandType = Command.Type.FLOW_ADD_ANOTHER_VM;
+			commandType = Command.Type.FlowAddAnotherVm;
 		}
 		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
 		incrementNumberOfVmsConnectedToPort(port);
 		IFirewallRule rule = getHostRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
-		notifyListeners(commands, Command.Action.FLOW_ADD);
+		notifyListeners(commands, Command.Action.FlowAdd);
 	}
 
 	@Override
@@ -231,16 +231,16 @@ public class Datapath implements IDatapath {
 		int port = getHostPort(mac);
 		Command.Type commandType;
 		if (isLastVmConnectedToPort(port)) {
-			commandType = Command.Type.FLOW_REMOVE_LAST_VM;
+			commandType = Command.Type.FlowRemoveLastVm;
 		} else {
-			commandType = Command.Type.FLOW_REMOVE_ANOTHER_VM;
+			commandType = Command.Type.FlowRemoveAnotherVm;
 		}
 		mac = mac.toLowerCase();
 		IFirewallRule rule = getHostRule(mac);
 		macPortMap.remove(mac);
 		decrementNumberOfVmsConnectedToPort(port);
 		JSONObject[] commands = createCommands(rule, commandType);
-		notifyListeners(commands, Command.Action.FLOW_REMOVE);
+		notifyListeners(commands, Command.Action.FlowRemove);
 	}
 
 	@Override
@@ -265,13 +265,13 @@ public class Datapath implements IDatapath {
 	// Network
 
 	private void connectGateway() {
-		JSONObject[] commands = createCommands(getGatewayRule(), Command.Type.FLOW_ADD_GATEWAY);
-		notifyListeners(commands, Command.Action.FLOW_ADD);
+		JSONObject[] commands = createCommands(getGatewayRule(), Command.Type.FlowAddGateway);
+		notifyListeners(commands, Command.Action.FlowAdd);
 	}
 
 	private void disconnectGateway() {
-		JSONObject[] commands = createCommands(getGatewayRule(), Command.Type.FLOW_REMOVE_GATEWAY);
-		notifyListeners(commands, Command.Action.FLOW_REMOVE);
+		JSONObject[] commands = createCommands(getGatewayRule(), Command.Type.FlowRemoveGateway);
+		notifyListeners(commands, Command.Action.FlowRemove);
 	}
 
 	private IFirewallRule getGatewayRule() {
@@ -279,13 +279,13 @@ public class Datapath implements IDatapath {
 	}
 
 	private void connectBroadcast() {
-		JSONObject[] commands = createCommands(getBroadcastRule(), Command.Type.FLOW_ADD_BROADCAST);
-		notifyListeners(commands, Command.Action.FLOW_ADD);
+		JSONObject[] commands = createCommands(getBroadcastRule(), Command.Type.FlowAddBroadcast);
+		notifyListeners(commands, Command.Action.FlowAdd);
 	}
 
 	private void disconnectBroadcast() {
-		JSONObject[] commands = createCommands(getBroadcastRule(), Command.Type.FLOW_REMOVE_BROADCAST);
-		notifyListeners(commands, Command.Action.FLOW_REMOVE);
+		JSONObject[] commands = createCommands(getBroadcastRule(), Command.Type.FlowRemoveBroadcast);
+		notifyListeners(commands, Command.Action.FlowRemove);
 	}
 
 	private IFirewallRule getBroadcastRule() {
@@ -293,13 +293,13 @@ public class Datapath implements IDatapath {
 	}
 
 	private void connectSubnet() {
-		JSONObject[] commands = createCommands(getSubnetRule(), Command.Type.FLOW_ADD_SUBNET);
-		notifyListeners(commands, Command.Action.FLOW_ADD);
+		JSONObject[] commands = createCommands(getSubnetRule(), Command.Type.FlowAddSubnet);
+		notifyListeners(commands, Command.Action.FlowAdd);
 	}
 
 	private void disconnectSubnet() {
-		JSONObject[] commands = createCommands(getSubnetRule(), Command.Type.FLOW_REMOVE_SUBNET);
-		notifyListeners(commands, Command.Action.FLOW_REMOVE);
+		JSONObject[] commands = createCommands(getSubnetRule(), Command.Type.FlowRemoveSubnet);
+		notifyListeners(commands, Command.Action.FlowRemove);
 	}
 
 	private IFirewallRule getSubnetRule() {
@@ -381,12 +381,12 @@ public class Datapath implements IDatapath {
 	private void notifyListeners(JSONObject[] commands, Command.Action action) {
 		if (listeners != null && !listeners.isEmpty()) {
 			switch (action) {
-				case FLOW_ADD:
+				case FlowAdd:
 					for (IDatapathListener listener : listeners) {
 						listener.onConnection(commands);
 					}
 					break;
-				case FLOW_REMOVE:
+				case FlowRemove:
 					for (IDatapathListener listener : listeners) {
 						listener.onDisconnection(commands);
 					}
@@ -456,12 +456,12 @@ public class Datapath implements IDatapath {
 		// if VM is disconnected from port which had one or more other connected VM only OUT flow needed.
 		// For other cases need to create 2 flows: IN and OUT.
 
-		boolean anotherVm = commandType == Command.Type.FLOW_ADD_ANOTHER_VM ||
-				commandType == Command.Type.FLOW_REMOVE_ANOTHER_VM;
+		boolean anotherVm = commandType == Command.Type.FlowAddAnotherVm ||
+				commandType == Command.Type.FlowRemoveAnotherVm;
 
-		boolean onlyOutFlow = ruleGroup == Command.RuleGroup.RULE_BROADCAST ||
-				ruleGroup == Command.RuleGroup.RULE_SUBNET ||
-				(ruleGroup == Command.RuleGroup.RULE_VM && anotherVm);
+		boolean onlyOutFlow = ruleGroup == Command.RuleGroup.RuleBroadcast ||
+				ruleGroup == Command.RuleGroup.RuleSubnet ||
+				(ruleGroup == Command.RuleGroup.RuleVm && anotherVm);
 
 		JSONObject[] commands;
 		Command.Action action = Command.getAction(commandType);
@@ -469,9 +469,9 @@ public class Datapath implements IDatapath {
 		if (onlyOutFlow) {
 
 			commands = new JSONObject[1];
-			if (action == Command.Action.FLOW_ADD) {
+			if (action == Command.Action.FlowAdd) {
 				commands[0] = rule.ovsOutFlowAddCommand();
-			} else if (action == Command.Action.FLOW_REMOVE) {
+			} else if (action == Command.Action.FlowRemove) {
 				commands[0] = rule.ovsOutFlowRemoveCommand();
 			} else {
 				throw new IllegalArgumentException("Unknown command action of " + commandType);
@@ -481,10 +481,10 @@ public class Datapath implements IDatapath {
 
 			commands = new JSONObject[2];
 			// OUT flow first!
-			if (action == Command.Action.FLOW_ADD) {
+			if (action == Command.Action.FlowAdd) {
 				commands[0] = rule.ovsOutFlowAddCommand();
 				commands[1] = rule.ovsInFlowAddCommand();
-			} else if (action == Command.Action.FLOW_REMOVE) {
+			} else if (action == Command.Action.FlowRemove) {
 				commands[0] = rule.ovsOutFlowRemoveCommand();
 				commands[1] = rule.ovsInFlowRemoveCommand();
 			} else {

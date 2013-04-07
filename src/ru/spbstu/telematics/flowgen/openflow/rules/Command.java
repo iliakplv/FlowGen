@@ -4,50 +4,50 @@ package ru.spbstu.telematics.flowgen.openflow.rules;
 public class Command {
 
 	public enum Action {
-		FLOW_ADD,
-		FLOW_REMOVE
+		FlowAdd,
+		FlowRemove
 	}
 
 	public enum RuleGroup {
-		RULE_GATEWAY,
-		RULE_BROADCAST,
-		RULE_SUBNET,
-		RULE_VM
+		RuleGateway,
+		RuleBroadcast,
+		RuleSubnet,
+		RuleVm
 	}
 
 	public enum Type {
 
-		// action FLOW_ADD
-		FLOW_ADD_GATEWAY,
-		FLOW_ADD_BROADCAST,
-		FLOW_ADD_SUBNET,
-		FLOW_ADD_FIRST_VM,
-		FLOW_ADD_ANOTHER_VM,
+		// action FlowAdd
+		FlowAddGateway,
+		FlowAddBroadcast,
+		FlowAddSubnet,
+		FlowAddFirstVm,
+		FlowAddAnotherVm,
 
-		// action FLOW_REMOVE
-		FLOW_REMOVE_GATEWAY,
-		FLOW_REMOVE_BROADCAST,
-		FLOW_REMOVE_SUBNET,
-		FLOW_REMOVE_LAST_VM,
-		FLOW_REMOVE_ANOTHER_VM
+		// action FlowRemove
+		FlowRemoveGateway,
+		FlowRemoveBroadcast,
+		FlowRemoveSubnet,
+		FlowRemoveLastVm,
+		FlowRemoveAnotherVm
 	}
 
 	public static Action getAction(Type type) {
-		if (type == Type.FLOW_ADD_GATEWAY ||
-				type == Type.FLOW_ADD_BROADCAST ||
-				type == Type.FLOW_ADD_SUBNET ||
-				type == Type.FLOW_ADD_FIRST_VM ||
-				type == Type.FLOW_ADD_ANOTHER_VM) {
+		if (type == Type.FlowAddGateway ||
+				type == Type.FlowAddBroadcast ||
+				type == Type.FlowAddSubnet ||
+				type == Type.FlowAddFirstVm ||
+				type == Type.FlowAddAnotherVm) {
 
-			return Action.FLOW_ADD;
+			return Action.FlowAdd;
 
-		} else if (type == Type.FLOW_REMOVE_GATEWAY ||
-				type == Type.FLOW_REMOVE_BROADCAST ||
-				type == Type.FLOW_REMOVE_SUBNET ||
-				type == Type.FLOW_REMOVE_LAST_VM ||
-				type == Type.FLOW_REMOVE_ANOTHER_VM) {
+		} else if (type == Type.FlowRemoveGateway ||
+				type == Type.FlowRemoveBroadcast ||
+				type == Type.FlowRemoveSubnet ||
+				type == Type.FlowRemoveLastVm ||
+				type == Type.FlowRemoveAnotherVm) {
 
-			return Action.FLOW_REMOVE;
+			return Action.FlowRemove;
 
 		}
 
@@ -55,29 +55,29 @@ public class Command {
 	}
 
 	public static RuleGroup getRuleGroup(Type type) {
-		if (type == Type.FLOW_ADD_GATEWAY ||
-				type == Type.FLOW_REMOVE_GATEWAY) {
+		if (type == Type.FlowAddGateway ||
+				type == Type.FlowRemoveGateway) {
 
-			return RuleGroup.RULE_GATEWAY;
+			return RuleGroup.RuleGateway;
 
-		} else if (type == Type.FLOW_ADD_BROADCAST ||
-				type == Type.FLOW_REMOVE_BROADCAST) {
+		} else if (type == Type.FlowAddBroadcast ||
+				type == Type.FlowRemoveBroadcast) {
 
-			return RuleGroup.RULE_BROADCAST;
-
-		}
-		if (type == Type.FLOW_ADD_SUBNET ||
-				type == Type.FLOW_REMOVE_SUBNET) {
-
-			return RuleGroup.RULE_SUBNET;
+			return RuleGroup.RuleBroadcast;
 
 		}
-		if (type == Type.FLOW_ADD_FIRST_VM ||
-				type == Type.FLOW_ADD_ANOTHER_VM ||
-				type == Type.FLOW_REMOVE_LAST_VM ||
-				type == Type.FLOW_REMOVE_ANOTHER_VM) {
+		if (type == Type.FlowAddSubnet ||
+				type == Type.FlowRemoveSubnet) {
 
-			return RuleGroup.RULE_VM;
+			return RuleGroup.RuleSubnet;
+
+		}
+		if (type == Type.FlowAddFirstVm ||
+				type == Type.FlowAddAnotherVm ||
+				type == Type.FlowRemoveLastVm ||
+				type == Type.FlowRemoveAnotherVm) {
+
+			return RuleGroup.RuleVm;
 
 		}
 

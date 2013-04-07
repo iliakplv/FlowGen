@@ -105,9 +105,9 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 		try {
 			HttpEntityEnclosingRequestBase request;
 			String url = getStaticFlowPusherUrl();
-			if (action == Command.Action.FLOW_ADD) {
+			if (action == Command.Action.FlowAdd) {
 				request = new HttpPost(url);
-			} else if (action == Command.Action.FLOW_REMOVE) {
+			} else if (action == Command.Action.FlowRemove) {
 				request = new HttpDeleteWithBody(url);
 			} else {
 				throw new IllegalArgumentException("Unknown command action " + action);
@@ -135,25 +135,25 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 
 	@Override
 	public void addFlow(JSONObject command) {
-		executeCommand(command, Command.Action.FLOW_ADD);
+		executeCommand(command, Command.Action.FlowAdd);
 	}
 
 	@Override
 	public void addFlows(JSONObject[] commands) {
 		for (JSONObject command : commands) {
-			executeCommand(command, Command.Action.FLOW_ADD);
+			executeCommand(command, Command.Action.FlowAdd);
 		}
 	}
 
 	@Override
 	public void removeFlow(JSONObject command) {
-		executeCommand(command, Command.Action.FLOW_REMOVE);
+		executeCommand(command, Command.Action.FlowRemove);
 	}
 
 	@Override
 	public void removeFlows(JSONObject[] commands) {
 		for (JSONObject command : commands) {
-			executeCommand(command, Command.Action.FLOW_REMOVE);
+			executeCommand(command, Command.Action.FlowRemove);
 		}
 	}
 

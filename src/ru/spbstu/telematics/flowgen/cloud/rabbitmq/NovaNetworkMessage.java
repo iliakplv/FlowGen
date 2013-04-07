@@ -19,11 +19,8 @@ public class NovaNetworkMessage {
 
 
 	public NovaNetworkMessage(MessageType type, String ip) {
-		if (!OpenflowUtils.validateIpv4(ip)) {
-			throw new IllegalArgumentException("Wrong IP " + ip);
-		}
-		this.type = type;
-		this.ip = ip;
+		setType(type);
+		setIp(ip);
 	}
 
 	public MessageType getMessageType() {
@@ -34,24 +31,40 @@ public class NovaNetworkMessage {
 		return ip;
 	}
 
+	public void setType(MessageType type) {
+		this.type = type;
+	}
+
+	public void setIp(String ip) {
+		if (!OpenflowUtils.validateIpv4(ip)) {
+			throw new IllegalArgumentException("Wrong IP " + ip);
+		}
+		this.ip = ip;
+	}
+
 	public static NovaNetworkMessage parse(JSONObject data) {
-		NovaNetworkMessage result;
+
+		NovaNetworkMessage result = null;
 
 		try {
 			String method = (String) data.get(METHOD_KEY);
 			JSONObject args = data.getJSONObject(ARGS_KEY);
 			String ip = (String) args.get(IP_KEY);
 
+			// Message parsed. Check message method type.
 			if (METHOD_LEASE_VALUE.equals(method)) {
 				result = new NovaNetworkMessage(MessageType.Launch, ip);
 			} else if (METHOD_RELEASE_VALUE.equals(method)) {
 				result = new NovaNetworkMessage(MessageType.Terminate, ip);
 			} else {
-				result = new NovaNetworkMessage(MessageType.Other, ip);
+				System.out.println("[INFO] Unknown method type of Nova network message: " +
+						method + " (ignored)");
 			}
 
 		} catch (JSONException e) {
-			result = new NovaNetworkMessage(MessageType.Other, "0.0.0.0");
+			System.out.println("[INFO] Not \'VM launching or termination\' Nova network message" +
+					" (parsing failed) (ignored) stacktrace:");
+			e.printStackTrace();
 		}
 
 		return result;
@@ -63,6 +76,5 @@ public class NovaNetworkMessage {
 	public static enum MessageType {
 		Launch,
 		Terminate,
-		Other
 	}
 }

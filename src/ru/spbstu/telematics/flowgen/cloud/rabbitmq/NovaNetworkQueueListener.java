@@ -113,10 +113,13 @@ public class NovaNetworkQueueListener implements Runnable{
 
 				NovaNetworkMessage networkMessage = NovaNetworkMessage.parse(message);
 
-				if (networkMessage.getMessageType() == NovaNetworkMessage.MessageType.Launch) {
-					cloud.findAndConnect(networkMessage.getIp());
-				} else if (networkMessage.getMessageType() == NovaNetworkMessage.MessageType.Terminate) {
-					cloud.findAndDisconnect(networkMessage.getIp());
+				if (networkMessage != null) {
+					NovaNetworkMessage.MessageType messageType = networkMessage.getMessageType();
+					if (messageType == NovaNetworkMessage.MessageType.Launch) {
+						cloud.findAndConnect(networkMessage.getIp());
+					} else if (messageType == NovaNetworkMessage.MessageType.Terminate) {
+						cloud.findAndDisconnect(networkMessage.getIp());
+					}
 				}
 			}
 
