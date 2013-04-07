@@ -67,11 +67,11 @@ public class ControllerHostConnector implements Runnable {
 					// Found!
 
 					mac = host.getMac();
+					AttachmentPoint ap = host.getAttachmentPoint();
+					dpid = ap.getDpid();
+					port = ap.getPort();
 
 					if (action == Action.Connect) {
-						AttachmentPoint ap = host.getAttachmentPoint();
-						dpid = ap.getDpid();
-						port = ap.getPort();
 						cloud.launchHost(mac, dpid, port);
 					} else {
 						cloud.stopHost(mac);
@@ -86,14 +86,16 @@ public class ControllerHostConnector implements Runnable {
 			}
 
 			// Wait for time interval
-			try {
-				synchronized (this) {
-					this.wait(INTERVAL_MILLIS);
+			if (attempt < ATTEMPTS) {
+				try {
+					synchronized (this) {
+						this.wait(INTERVAL_MILLIS);
+					}
+				} catch (InterruptedException e) {
+					System.out.println(ERROR + "Interrupted exception caught:");
+					e.printStackTrace();
+					return;
 				}
-			} catch (InterruptedException e) {
-				System.out.println(ERROR + "Interrupted exception caught:");
-				e.printStackTrace();
-				return;
 			}
 		}
 

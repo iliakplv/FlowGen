@@ -32,6 +32,9 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 	private static final String HTTP_HEADER_CONTENT_TYPE_NAME = "content-type";
 	private static final String HTTP_HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded";
 
+	private static final String REQUEST_FAILED = "[CRITICAL] Request to controller failed!";
+	private static final String EXECUTION_FAILED = "[CRITICAL] Command execution failed!";
+
 	private InetSocketAddress controllerAddress;
 
 
@@ -119,12 +122,13 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 			httpClient.execute(request);
 
 		} catch (UnsupportedEncodingException e) {
+			System.out.println(EXECUTION_FAILED);
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.out.println(EXECUTION_FAILED);
 			e.printStackTrace();
 		} finally {
 			httpClient.getConnectionManager().shutdown();
-			System.out.println("[CRITICAL] Command execution failed!");
 		}
 	}
 
@@ -176,14 +180,16 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 			result = new JSONArray(tokener);
 
 		} catch (UnsupportedEncodingException e) {
+			System.out.println(REQUEST_FAILED);
 			e.printStackTrace();
 		} catch (IOException e) {
+			System.out.println(REQUEST_FAILED);
 			e.printStackTrace();
 		} catch (JSONException e ) {
+			System.out.println(REQUEST_FAILED);
 			e.printStackTrace();
 		} finally {
 			httpClient.getConnectionManager().shutdown();
-			System.out.println("[CRITICAL] Request to controller failed!");
 		}
 
 		return result;

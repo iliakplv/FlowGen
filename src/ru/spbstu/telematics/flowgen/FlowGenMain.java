@@ -38,8 +38,6 @@ public class FlowGenMain {
 			}
 		}
 
-		// TODO critical errors
-
 		testVn0();
 
 //		testRabbitMq();
@@ -90,7 +88,7 @@ public class FlowGenMain {
 		// FLOWGEN !!!
 
 		Thread novaListener =
-				new Thread(new NovaNetworkQueueListener("vn0.",
+				new Thread(new NovaNetworkQueueListener("vn0",
 						"ovs.network.vn0",
 						"network.vn0",
 						false,
@@ -154,7 +152,7 @@ public class FlowGenMain {
 
 	public static void testRabbitMq() {
 
-		final String host = "vn0.";
+		final String host = "vn0";
 		final String exchange = "nova";
 		final String queueNamePrefix = "ovs.";
 
