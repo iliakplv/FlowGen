@@ -28,14 +28,12 @@ import java.util.Set;
 public class FlowGenMain {
 
 
-	// TODO IFloodlightClient getAllConnectedHosts() and getAllKnownHosts() should return parsed topology objects (or null)
-
 	// TODO IDatapath -> [sub]
 	// TODO IDatapath should provide host connectivity with specified flows priority (for case with many gateways)
 	// TODO IDatapath concurrency research
 	// TODO [low] IDatapath safe host migration
 
-	// TODO ICloud remove pause/wake functionality
+	// TODO ICloud rework pause/wake functionality
 	// TODO ICloud concurrency research
 	// TODO [low] ICloud support implemented IDatapath migration
 
@@ -48,7 +46,7 @@ public class FlowGenMain {
 		if (false) {
 			FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
 			try {
-				parsingTest(flClient.getAllConnectedHosts(), flClient.getAllKnownHosts());
+				parsingTest(flClient.getControllerData(), flClient.getKnownHosts());
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -131,11 +129,9 @@ public class FlowGenMain {
 	}
 
 
-	public static void parsingTest(JSONArray connectedHosts, JSONArray knownHosts) throws JSONException {
+	public static void parsingTest(ControllerData controllerData, Hosts hosts) throws JSONException {
 
 //		Connected hosts
-
-		ControllerData controllerData = ControllerData.parse(connectedHosts);
 
 		for (DatapathData datapathData : controllerData.getDatapaths()) {
 
@@ -150,8 +146,6 @@ public class FlowGenMain {
 		}
 
 //		Known hosts
-
-		Hosts hosts = Hosts.parse(knownHosts);
 
 		System.out.println("\n[HOSTS]");
 

@@ -14,6 +14,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
+import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
 import ru.spbstu.telematics.flowgen.openflow.rules.Command;
 
 import java.io.BufferedReader;
@@ -196,13 +198,13 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 	}
 
 	@Override
-	public JSONArray getAllConnectedHosts() {
-		return requestToController(getAllDatapathsUrl());
+	public ControllerData getControllerData() {
+		return ControllerData.parse(requestToController(getAllDatapathsUrl()));
 	}
 
 	@Override
-	public JSONArray getAllKnownHosts() {
-		return requestToController(getAllDevicesUrl());
+	public Hosts getKnownHosts() {
+		return Hosts.parse(requestToController(getAllDevicesUrl()));
 	}
 
 

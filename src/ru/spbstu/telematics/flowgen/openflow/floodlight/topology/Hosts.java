@@ -34,15 +34,25 @@ public class Hosts {
 		return hosts.values();
 	}
 
-	public static Hosts parse(JSONArray data) throws JSONException {
-		int length = data.length();
+	// returns not null
+	public static Hosts parse(JSONArray data) {
 		Hosts hosts = new Hosts();
-		for (int i = 0; i < length; i++) {
-			Host host = Host.parse(data.getJSONObject(i));
-			if (host != null) {
-				hosts.addHost(host);
+
+		if (data != null) {
+			int length = data.length();
+			for (int i = 0; i < length; i++) {
+				Host host = null;
+				try {
+					host = Host.parse(data.getJSONObject(i));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (host != null) {
+					hosts.addHost(host);
+				}
 			}
 		}
+
 		return hosts;
 	}
 

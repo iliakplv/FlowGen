@@ -34,9 +34,17 @@ public class AttachmentPoint {
 		this.dpid = dpid;
 	}
 
-	public static AttachmentPoint parse(JSONObject data) throws JSONException {
-		String dpid = (String) data.get(DPID_KEY);
-		int port = (Integer) data.get(PORT_KEY);
-		return new AttachmentPoint(dpid, port);
+	public static AttachmentPoint parse(JSONObject data) {
+		try {
+
+			String dpid = (String) data.get(DPID_KEY);
+			int port = (Integer) data.get(PORT_KEY);
+
+			return new AttachmentPoint(dpid, port);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

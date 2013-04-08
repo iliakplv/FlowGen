@@ -54,16 +54,36 @@ public class DatapathData {
 	}
 
 
-	public static DatapathData parse(JSONObject data) throws JSONException {
-		String dpid = (String) data.get(DPID_KEY);
-		DatapathData result = new DatapathData(dpid);
+	public static DatapathData parse(JSONObject data) {
 
-		JSONArray portsJsonArray = data.getJSONArray(PORTS_KEY);
-		int numberOfPorts = portsJsonArray.length();
+		String dpid;
+		DatapathData result;
+		JSONArray portsJsonArray;
+
+		try {
+			dpid = (String) data.get(DPID_KEY);
+			portsJsonArray = data.getJSONArray(PORTS_KEY);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		result = new DatapathData(dpid);
+        int numberOfPorts = portsJsonArray.length();
 
 		for (int i = 0; i < numberOfPorts; i++) {
-			JSONObject portJsonObject = (JSONObject) portsJsonArray.get(i);
-			result.addPortData(PortData.parse(portJsonObject));
+			JSONObject portJsonObject;
+			try {
+				portJsonObject = (JSONObject) portsJsonArray.get(i);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				continue;
+			}
+
+			PortData portData = PortData.parse(portJsonObject);
+			if (portData != null) {
+				result.addPortData(portData);
+			}
 		}
 
 		return result;

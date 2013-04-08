@@ -52,14 +52,7 @@ public class ControllerHostConnector implements Runnable {
 		for (attempt = 1; attempt <= ATTEMPTS; attempt++) {
 
 			// Request controller for list of known hosts and parse it
-			Hosts knownHosts;
-			try {
-				knownHosts = Hosts.parse(cloud.getFloodlightClient().getAllKnownHosts());
-			} catch (JSONException e) {
-				System.out.println(ERROR + "JSON parsing failed:");
-				e.printStackTrace();
-				return;
-			}
+			Hosts knownHosts = cloud.getFloodlightClient().getKnownHosts();
 
 			// Search for host by IP
 			for (Host host : knownHosts.getAllHosts()) {

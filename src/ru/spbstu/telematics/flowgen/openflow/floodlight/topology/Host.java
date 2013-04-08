@@ -50,21 +50,29 @@ public class Host {
 	}
 
 
-	public static Host parse(JSONObject data) throws JSONException {
-		Host result = null
-				;
-		JSONArray points = data.getJSONArray(ATTACHMENT_POINT_KEY);
-		if (points.length() > 0) {
+	public static Host parse(JSONObject data) {
+		Host result = null;
 
-			JSONArray macs = (JSONArray) data.get(MAC_KEY);
-			JSONArray ips = (JSONArray) data.get(IPV4_KEY);
+		try {
 
-			if (macs.length() > 0 && ips.length() > 0) {
-				String mac = macs.getString(0);
-				String ip = ips.getString(0);
-				AttachmentPoint attachmentPoint = AttachmentPoint.parse(points.getJSONObject(0));
-				result = new Host(mac, ip, attachmentPoint);
+			JSONArray points = data.getJSONArray(ATTACHMENT_POINT_KEY);
+			if (points.length() > 0) {
+
+				JSONArray macs = (JSONArray) data.get(MAC_KEY);
+				JSONArray ips = (JSONArray) data.get(IPV4_KEY);
+
+				if (macs.length() > 0 && ips.length() > 0) {
+					String mac = macs.getString(0);
+					String ip = ips.getString(0);
+					AttachmentPoint attachmentPoint = AttachmentPoint.parse(points.getJSONObject(0));
+					if (attachmentPoint != null) {
+						result = new Host(mac, ip, attachmentPoint);
+					}
+				}
 			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 
 		return result;

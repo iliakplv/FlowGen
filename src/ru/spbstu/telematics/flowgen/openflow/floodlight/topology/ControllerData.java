@@ -45,15 +45,26 @@ public class ControllerData {
 
 	}
 
-
-	public static ControllerData parse(JSONArray data) throws JSONException {
+	// returns not null
+	public static ControllerData parse(JSONArray data) {
 		ControllerData result = new ControllerData();
 
-		int numberOfDatapaths = data.length();
+		if (data != null) {
+			int numberOfDatapaths = data.length();
+			for (int i = 0; i < numberOfDatapaths; i++) {
+				JSONObject datapathJsonObject;
+				try {
+					datapathJsonObject = (JSONObject) data.get(i);
+				} catch (JSONException e) {
+					e.printStackTrace();
+					continue;
+				}
 
-		for (int i = 0; i < numberOfDatapaths; i++) {
-			JSONObject datapathJsonObject = (JSONObject) data.get(i);
-			result.addDatapathData(DatapathData.parse(datapathJsonObject));
+				DatapathData datapathData = DatapathData.parse(datapathJsonObject);
+				if (datapathData != null) {
+					result.addDatapathData(datapathData);
+				}
+			}
 		}
 
 		return result;

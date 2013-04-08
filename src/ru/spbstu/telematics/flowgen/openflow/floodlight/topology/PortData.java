@@ -41,10 +41,18 @@ public class PortData {
 	}
 
 
-	public static PortData parse(JSONObject data) throws JSONException {
-		String name = (String) data.get(NAME_KEY);
-		int number = (Integer) data.get(NUMBER_KEY);
-		String mac = ((String) data.get(MAC_KEY)).toLowerCase();
-		return new PortData(name, number, mac);
+	public static PortData parse(JSONObject data) {
+		try {
+
+			String name = (String) data.get(NAME_KEY);
+			int number = (Integer) data.get(NUMBER_KEY);
+			String mac = ((String) data.get(MAC_KEY)).toLowerCase();
+
+			return new PortData(name, number, mac);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
