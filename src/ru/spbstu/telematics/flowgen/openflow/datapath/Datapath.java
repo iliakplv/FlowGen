@@ -355,7 +355,7 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public void migrateVm(String vmMac, IDatapath dstDatapath, int dstPort) {
-		// TODO implement safe migration
+		// TODO must be safe
 		if (containsHost(vmMac)) {
 			dstDatapath.connectHost(vmMac, dstPort);
 			disconnectHost(vmMac);

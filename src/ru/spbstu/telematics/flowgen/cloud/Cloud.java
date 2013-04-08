@@ -133,8 +133,6 @@ public class Cloud implements ICloud {
 		listeners.clear();
 	}
 
-	// TODO check for datapath port availability when waking host up
-
 	@Override
 	public void launchHost(String mac, String dpid, int port) {
 		dpid = dpid.toLowerCase();

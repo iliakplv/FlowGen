@@ -27,8 +27,24 @@ import java.util.Set;
 
 public class FlowGenMain {
 
+
+	// TODO IFloodlightClient getAllConnectedHosts() and getAllKnownHosts() should return parsed topology objects (or null)
+
+	// TODO IDatapath -> [sub]
+	// TODO IDatapath should provide host connectivity with specified flows priority (for case with many gateways)
+	// TODO IDatapath concurrency research
+	// TODO [low] IDatapath safe host migration
+
+	// TODO ICloud remove pause/wake functionality
+	// TODO ICloud concurrency research
+	// TODO [low] ICloud support implemented IDatapath migration
+
+	// TODO FlowGenMain implement application initialization and main thread
+
+
 	public static void main(String[] args) {
 
+//		*** Parsing Test ***
 		if (false) {
 			FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
 			try {
@@ -38,8 +54,10 @@ public class FlowGenMain {
 			}
 		}
 
+//      *** Main Test ***
 		testVn0();
 
+//      *** RabbitMQ cloud exchanges and queues test ***
 //		testRabbitMq();
 
 	}
@@ -85,7 +103,7 @@ public class FlowGenMain {
 			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
 
-		// FLOWGEN !!!
+//		FLOWGEN !!!
 
 		Thread novaListener =
 				new Thread(new NovaNetworkQueueListener("vn0",
@@ -115,7 +133,7 @@ public class FlowGenMain {
 
 	public static void parsingTest(JSONArray connectedHosts, JSONArray knownHosts) throws JSONException {
 
-		// Connected hosts
+//		Connected hosts
 
 		ControllerData controllerData = ControllerData.parse(connectedHosts);
 
@@ -131,7 +149,7 @@ public class FlowGenMain {
 			}
 		}
 
-		// Known hosts
+//		Known hosts
 
 		Hosts hosts = Hosts.parse(knownHosts);
 
@@ -157,7 +175,7 @@ public class FlowGenMain {
 		final String queueNamePrefix = "ovs.";
 
 		String[] routingKeys = new String[]{
-				//"network",
+//				"network",
 				"network.vn0",
 				"compute",
 				"compute.vn0",
