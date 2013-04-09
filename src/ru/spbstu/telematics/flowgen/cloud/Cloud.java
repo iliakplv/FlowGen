@@ -1,14 +1,9 @@
 package ru.spbstu.telematics.flowgen.cloud;
 
 
-import org.json.JSONException;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
@@ -134,16 +129,26 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
+	public void launchGateway(String mac, String dpid, int port) {
+		launchDevice(mac, dpid, port, OpenflowUtils.GATEWAY_FLOW_PRIORITY);
+	}
+
+	@Override
 	public void launchHost(String mac, String dpid, int port) {
+		launchDevice(mac, dpid, port, OpenflowUtils.HOST_FLOW_PRIORITY);
+	}
+
+	private void launchDevice(String mac, String dpid, int port, int priority) {
 		dpid = dpid.toLowerCase();
 		if (dpidDatapathMap.containsKey(dpid)) {
 			mac = mac.toLowerCase();
 			if (!(macActiveHostsMap.containsKey(mac) || macPausedHostsMap.containsKey(mac))) {
 				IDatapath datapath = dpidDatapathMap.get(dpid);
-				datapath.connectHost(mac, port);
+				// priority value must be correct here
+				datapath.connectHost(mac, port, priority);
 				macActiveHostsMap.put(mac, new VmConnectionData(dpid, port));
 			} else {
-				throw new IllegalArgumentException("Cloud " + toString() + " already has VM with MAC " + mac);
+				throw new IllegalArgumentException("Cloud " + toString() + " already has host with MAC " + mac);
 			}
 		} else {
 			throw new IllegalArgumentException("Cloud " + toString() + " has no datapath with DPID " + dpid);
@@ -151,7 +156,7 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void pauseHost(String mac) {
+	public void pauseDevice(String mac) {
 		mac = mac.toLowerCase();
 		if (macActiveHostsMap.containsKey(mac)) {
 			VmConnectionData vmData = macActiveHostsMap.get(mac);
@@ -164,7 +169,7 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void wakeHost(String mac) {
+	public void wakeDevice(String mac) {
 		mac = mac.toLowerCase();
 		if (macPausedHostsMap.containsKey(mac)) {
 			VmConnectionData vmData = macPausedHostsMap.get(mac);
@@ -178,7 +183,7 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void stopHost(String mac) {
+	public void stopDevice(String mac) {
 		mac = mac.toLowerCase();
 		if (macActiveHostsMap.containsKey(mac)) {
 			VmConnectionData vmData = macActiveHostsMap.get(mac);
@@ -194,12 +199,12 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void migrateHost(String mac, String dstDpid, int dstPort) {
+	public void migrateDevice(String mac, String dstDpid, int dstPort) {
 		// TODO implement
 	}
 
 	@Override
-	public Set<String> getAllHostsMacs() {
+	public Set<String> getAllDevicesMacs() {
 		Set<String> macs = macActiveHostsMap.keySet();
 		macs.addAll(macPausedHostsMap.keySet());
 		return macs;

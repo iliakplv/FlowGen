@@ -1,7 +1,6 @@
 package ru.spbstu.telematics.flowgen.cloud;
 
 
-import org.json.JSONException;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.AttachmentPoint;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Host;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
@@ -67,7 +66,7 @@ public class ControllerHostConnector implements Runnable {
 					if (action == Action.Connect) {
 						cloud.launchHost(mac, dpid, port);
 					} else {
-						cloud.stopHost(mac);
+						cloud.stopDevice(mac);
 					}
 
 					done = true;

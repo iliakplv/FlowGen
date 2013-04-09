@@ -12,9 +12,11 @@ public interface IDatapath {
 	public String getDpid();
 	public String getName();
 
-	// VM
+	// Hosts
+	public void connectHost(String mac, int port, int flowPriority);
 	public void connectHost(String mac, int port);
 	public void disconnectHost(String mac);
+	public IFirewallRule getHostRule(String mac, int flowPriority);
 	public IFirewallRule getHostRule(String mac);
 	public List<IFirewallRule> getAllHostsRules();
 	public boolean containsHost(String mac);

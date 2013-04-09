@@ -181,7 +181,7 @@ public class Datapath implements IDatapath {
 	 */
 
 	@Override
-	public synchronized void connectHost(String mac, int port) {
+	public synchronized void connectHost(String mac, int port, int flowPriority) {
 
 		if (mac == null) {
 			throw new IllegalArgumentException("VM MAC is null in datapath " + toString());
@@ -207,6 +207,10 @@ public class Datapath implements IDatapath {
 			throw new IllegalArgumentException("New VM port equals to firewall port (" + firewallPort + ") of datapath " + toString());
 		}
 
+		if (!OpenflowUtils.validatePriority(flowPriority)) {
+			throw new IllegalArgumentException("Wrong flow priority value (" + flowPriority + ") in datapath " + toString());
+		}
+
 		Command.Type commandType;
 		if (isPortEmpty(port)) {
 			commandType = Command.Type.FlowAddFirstVm;
@@ -216,9 +220,14 @@ public class Datapath implements IDatapath {
 		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
 		incrementNumberOfVmsConnectedToPort(port);
-		IFirewallRule rule = getHostRule(mac);
+		IFirewallRule rule = getHostRule(mac, flowPriority);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, Command.Action.FlowAdd);
+	}
+
+	@Override
+	public void connectHost(String mac, int port) {
+		connectHost(mac, port, OpenflowUtils.HOST_FLOW_PRIORITY);
 	}
 
 	@Override
@@ -244,12 +253,17 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public IFirewallRule getHostRule(String mac) {
+	public IFirewallRule getHostRule(String mac, int flowPriority) {
 		mac = mac.toLowerCase();
-		if (containsHost(mac)) {
-			return new OnePortFirewallHostRule(dpid, firewallPort, macPortMap.get(mac), mac);
+		if (OpenflowUtils.validatePriority(flowPriority) && containsHost(mac)) {
+			return new OnePortFirewallHostRule(dpid, true, flowPriority, flowPriority, firewallPort, macPortMap.get(mac), mac);
 		}
 		return null;
+	}
+
+	@Override
+	public IFirewallRule getHostRule(String mac) {
+		return getHostRule(mac, OpenflowUtils.HOST_FLOW_PRIORITY);
 	}
 
 	@Override

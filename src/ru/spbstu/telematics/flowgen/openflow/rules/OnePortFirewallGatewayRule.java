@@ -33,7 +33,7 @@ public class OnePortFirewallGatewayRule extends OnePortFirewallRule {
 	}
 
 	public OnePortFirewallGatewayRule(String dpid, int firewallPort, int gatewayPort, String gatewayMac) {
-		this(dpid, true, OpenflowUtils.GATEWAY_FLOW_PRIORITY, OpenflowUtils.GATEWAY_FLOW_PRIORITY,
+		this(dpid, true, OpenflowUtils.DEFAULT_GATEWAY_FLOW_PRIORITY, OpenflowUtils.DEFAULT_GATEWAY_FLOW_PRIORITY,
 				firewallPort, gatewayPort, gatewayMac);
 	}
 

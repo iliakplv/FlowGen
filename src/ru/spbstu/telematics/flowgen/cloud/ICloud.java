@@ -22,13 +22,14 @@ public interface ICloud {
 	public Set<IDatapathListener> getAllListeners();
 	public void clearListeners();
 
-	// Hosts
+	// Devices
+	public void launchGateway(String mac, String dpid, int port);
 	public void launchHost(String mac, String dpid, int port);
-	public void pauseHost(String mac);
-	public void wakeHost(String mac);
-	public void stopHost(String mac);
-	public void migrateHost(String mac, String dstDpid, int dstPort);
-	public Set<String> getAllHostsMacs();
+	public void stopDevice(String mac);
+	public void pauseDevice(String mac);
+	public void wakeDevice(String mac);
+	public void migrateDevice(String mac, String dstDpid, int dstPort);
+	public Set<String> getAllDevicesMacs();
 
 	// Controller connectivity
 	public void setFloodlightClient(IFloodlightClient client);

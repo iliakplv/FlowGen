@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
-import org.json.JSONArray;
 import org.json.JSONException;
 import ru.spbstu.telematics.flowgen.cloud.Cloud;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
@@ -29,15 +28,17 @@ public class FlowGenMain {
 
 
 	// TODO IDatapath -> [sub]
-	// TODO IDatapath should provide host connectivity with specified flows priority (for case with many gateways)
+	// TODO IDatapath store priorities
 	// TODO IDatapath concurrency research
 	// TODO [low] IDatapath safe host migration
 
+	// TODO ICloud host/gateway launching
 	// TODO ICloud rework pause/wake functionality
 	// TODO ICloud concurrency research
 	// TODO [low] ICloud support implemented IDatapath migration
 
 	// TODO FlowGenMain implement application initialization and main thread
+	// TODO ALL log and exception messages
 
 
 	public static void main(String[] args) {
@@ -98,7 +99,7 @@ public class FlowGenMain {
 
 		cloud.getDatapath(dpid).connectToNetwork();
 		for (String mac : macs) {
-			cloud.launchHost(mac, datapath.getDpid(), portMacMap.get(mac));
+			cloud.launchGateway(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
 
 //		FLOWGEN !!!
@@ -123,7 +124,7 @@ public class FlowGenMain {
 //		cloud.addDatapathListener(flClient);
 
 		for (String mac : macs) {
-			cloud.stopHost(mac);
+			cloud.stopDevice(mac);
 		}
 		cloud.getDatapath(dpid).disconnectFromNetwork();
 	}
