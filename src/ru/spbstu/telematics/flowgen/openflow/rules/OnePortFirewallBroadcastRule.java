@@ -29,7 +29,7 @@ public class OnePortFirewallBroadcastRule extends OnePortFirewallRule {
 	}
 
 	public OnePortFirewallBroadcastRule(String dpid, int firewallPort) {
-		this(dpid, true, OpenflowUtils.OUT_BROADCAST_FLOW_PRIORITY, firewallPort);
+		this(dpid, true, OpenflowUtils.BROADCAST_FLOW_PRIORITY, firewallPort);
 	}
 
 

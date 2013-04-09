@@ -10,13 +10,11 @@ public class OpenflowUtils {
 	public static final int MIN_FLOW_PRIORITY = 			0;
 	public static final int FLOW_PRIORITY_LEVEL = 			128;
 
-	public static final int IN_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
-	public static final int IN_HOST_FLOW_PRIORITY =			MAX_FLOW_PRIORITY - FLOW_PRIORITY_LEVEL;
+	public static final int GATEWAY_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
+	public static final int HOST_FLOW_PRIORITY =		MAX_FLOW_PRIORITY - FLOW_PRIORITY_LEVEL;
 
-	public static final int OUT_TRUNK_FLOW_PRIORITY =		MAX_FLOW_PRIORITY;
-	public static final int OUT_HOST_FLOW_PRIORITY =			MAX_FLOW_PRIORITY - FLOW_PRIORITY_LEVEL;
-	public static final int OUT_BROADCAST_FLOW_PRIORITY =	MAX_FLOW_PRIORITY;
-	public static final int OUT_SUBNET_FLOW_PRIORITY =		MIN_FLOW_PRIORITY + FLOW_PRIORITY_LEVEL;
+	public static final int BROADCAST_FLOW_PRIORITY =	MAX_FLOW_PRIORITY;
+	public static final int SUBNET_FLOW_PRIORITY =		MIN_FLOW_PRIORITY + FLOW_PRIORITY_LEVEL;
 
 	// Ports
 	public static final int DEFAULT_PORT = 0;

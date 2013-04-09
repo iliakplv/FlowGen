@@ -26,7 +26,7 @@ public class OnePortFirewallHostRule extends OnePortFirewallRule {
 	}
 
 	public OnePortFirewallHostRule(String dpid, int firewallPort, int vmPort, String vmMac) {
-		this(dpid, true, OpenflowUtils.IN_HOST_FLOW_PRIORITY, OpenflowUtils.OUT_HOST_FLOW_PRIORITY,
+		this(dpid, true, OpenflowUtils.HOST_FLOW_PRIORITY, OpenflowUtils.HOST_FLOW_PRIORITY,
 				firewallPort, vmPort, vmMac);
 	}
 

@@ -27,7 +27,7 @@ public class OnePortFirewallSubnetRule extends OnePortFirewallRule {
 	}
 
 	public OnePortFirewallSubnetRule(String dpid, int firewallPort, int trunkPort) {
-		this(dpid, true, OpenflowUtils.OUT_SUBNET_FLOW_PRIORITY, firewallPort, trunkPort);
+		this(dpid, true, OpenflowUtils.SUBNET_FLOW_PRIORITY, firewallPort, trunkPort);
 	}
 
 
