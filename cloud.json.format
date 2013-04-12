@@ -1,0 +1,35 @@
+Cloud configuration file (cloud.json) must support format of "Cloud" listed below in "<name> : <value_type>" format.
+
+- - - - - - - - - - - - - - - - - - - -
+
+Cloud
+	Name :              String
+	Servers :           array of Server
+	Datapaths :         array of Datapath
+	FloodlightClient :  FloodlightClient
+
+- - - - - - - - - - - - - - - - - - - -
+
+
+Server
+	Host :                      String
+	NetworkQueueName :          String
+	NetworkQueueRoutingKey :    String
+	
+Datapath
+	DPID :          String
+	Name :          String
+	TrunkPort :     int
+	FirewallPort :  int
+	GatewayMAC :    String
+	Hosts :         array of Device
+	Gateways :      array of Device
+
+Device
+	MAC :           String
+	Port :          int
+	Active :        boolean
+
+FloodlightClient
+	Host :          String
+	Port :          int
