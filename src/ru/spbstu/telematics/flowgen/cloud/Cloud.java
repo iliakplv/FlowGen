@@ -211,6 +211,35 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
+	public DeviceState getDeviceState(String mac) {
+		DeviceState result;
+
+		mac = OpenflowUtils.setMacUniqueness(mac, true);
+		result = getDeviceStateBySpecifiedMac(mac);
+		// if globally unique MAC not found try to find locally unique MAC
+		if (result == DeviceState.NotConnected) {
+			mac = OpenflowUtils.setMacUniqueness(mac, false);
+			result = getDeviceStateBySpecifiedMac(mac);
+		}
+
+		return result;
+	}
+
+	private DeviceState getDeviceStateBySpecifiedMac(String mac) {
+		DeviceState result;
+
+		if (macActiveHostsMap.containsKey(mac)) {
+			result = DeviceState.Active;
+		} else if (macPausedHostsMap.containsKey(mac)) {
+			result = DeviceState.Paused;
+		} else {
+			result = DeviceState.NotConnected;
+		}
+
+		return result;
+	}
+
+	@Override
 	public void setFloodlightClient(IFloodlightClient floodlightClient) {
 		if (floodlightClient == null) {
 			throw new NullPointerException("FloodlightClient is null");

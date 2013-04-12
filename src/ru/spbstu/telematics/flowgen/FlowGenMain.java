@@ -31,7 +31,6 @@ public class FlowGenMain {
 	// TODO IDatapath concurrency research
 	// TODO [low] IDatapath safe host migration
 
-	// TODO ICloud host/gateway launching
 	// TODO ICloud rework pause/wake functionality
 	// TODO ICloud concurrency research
 	// TODO [low] ICloud support implemented IDatapath migration

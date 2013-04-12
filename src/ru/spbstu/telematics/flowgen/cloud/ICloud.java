@@ -29,6 +29,7 @@ public interface ICloud {
 	public void pauseDevice(String mac);
 	public void wakeDevice(String mac);
 	public void migrateDevice(String mac, String dstDpid, int dstPort);
+	public DeviceState getDeviceState(String mac);
 	public Set<String> getAllDevicesMacs();
 
 	// Controller connectivity
