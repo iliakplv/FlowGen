@@ -30,7 +30,8 @@ public class Datapath implements IDatapath {
 
 	// VM
 	private Map<String, Integer> macPortMap;
-	private Map<Integer, Integer> portVmNumberMap;
+	private Map<String, Integer> macPriorityMap;
+	private Map<Integer, Integer> portHostsMap;
 
 	// Listeners
 	private LinkedList<IDatapathListener> listeners;
@@ -47,7 +48,8 @@ public class Datapath implements IDatapath {
 		setFirewallPort(firewallPort);
 		setGatewayMac(gatewayMac);
 		macPortMap = new HashMap<String, Integer>();
-		portVmNumberMap = new HashMap<Integer, Integer>();
+		macPriorityMap = new HashMap<String, Integer>();
+		portHostsMap = new HashMap<Integer, Integer>();
 		listeners = new LinkedList<IDatapathListener>();
 	}
 
@@ -137,7 +139,7 @@ public class Datapath implements IDatapath {
 
 	@Override
 	public boolean isGatewayMac(String mac) {
-		return gatewayMac.equalsIgnoreCase(mac);
+		return OpenflowUtils.macEquals(gatewayMac, mac);
 	}
 
 	private void setGatewayMac(String mac) {
@@ -173,6 +175,24 @@ public class Datapath implements IDatapath {
 	@Override
 	public Map<String, Integer> getMacPortMap() {
 		return new HashMap<String, Integer>(macPortMap);
+	}
+
+	@Override
+	public int getHostPriority(String mac) {
+		int result;
+
+		if (containsHost(mac)) {
+			result = macPriorityMap.get(mac.toLowerCase());
+		} else {
+			result = OpenflowUtils.HOST_FLOW_PRIORITY;
+		}
+
+		return result;
+	}
+
+	@Override
+	public Map<String, Integer> getMacPriorityMap() {
+		return new HashMap<String, Integer>(macPriorityMap);
 	}
 
 
@@ -219,8 +239,9 @@ public class Datapath implements IDatapath {
 		}
 		mac = mac.toLowerCase();
 		macPortMap.put(mac, port);
+		macPriorityMap.put(mac, flowPriority);
 		incrementNumberOfVmsConnectedToPort(port);
-		IFirewallRule rule = getHostRule(mac, flowPriority);
+		IFirewallRule rule = getHostRule(mac);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, Command.Action.FlowAdd);
 	}
@@ -247,23 +268,20 @@ public class Datapath implements IDatapath {
 		mac = mac.toLowerCase();
 		IFirewallRule rule = getHostRule(mac);
 		macPortMap.remove(mac);
+		macPriorityMap.remove(mac);
 		decrementNumberOfVmsConnectedToPort(port);
 		JSONObject[] commands = createCommands(rule, commandType);
 		notifyListeners(commands, Command.Action.FlowRemove);
 	}
 
 	@Override
-	public IFirewallRule getHostRule(String mac, int flowPriority) {
+	public IFirewallRule getHostRule(String mac) {
 		mac = mac.toLowerCase();
-		if (OpenflowUtils.validatePriority(flowPriority) && containsHost(mac)) {
-			return new OnePortFirewallHostRule(dpid, true, flowPriority, flowPriority, firewallPort, macPortMap.get(mac), mac);
+		if (containsHost(mac)) {
+			int priority = macPriorityMap.get(mac);
+			return new OnePortFirewallHostRule(dpid, true, priority, priority, firewallPort, macPortMap.get(mac), mac);
 		}
 		return null;
-	}
-
-	@Override
-	public IFirewallRule getHostRule(String mac) {
-		return getHostRule(mac, OpenflowUtils.HOST_FLOW_PRIORITY);
 	}
 
 	@Override
@@ -428,8 +446,8 @@ public class Datapath implements IDatapath {
 		}
 
 		int result = 0;
-		if (portVmNumberMap.containsKey(port)) {
-			result = portVmNumberMap.get(port);
+		if (portHostsMap.containsKey(port)) {
+			result = portHostsMap.get(port);
 		}
 		return result;
 	}
@@ -437,7 +455,7 @@ public class Datapath implements IDatapath {
 	private int incrementNumberOfVmsConnectedToPort(int port) {
 		int number = numberOfVmsConnectedToPort(port);
 		number++;
-		portVmNumberMap.put(port, number);
+		portHostsMap.put(port, number);
 		return number;
 	}
 
@@ -448,7 +466,7 @@ public class Datapath implements IDatapath {
 		} else {
 			number--;
 		}
-		portVmNumberMap.put(port, number);
+		portHostsMap.put(port, number);
 		return number;
 	}
 

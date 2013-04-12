@@ -28,7 +28,6 @@ public class FlowGenMain {
 
 
 	// TODO IDatapath -> [sub]
-	// TODO IDatapath store priorities
 	// TODO IDatapath concurrency research
 	// TODO [low] IDatapath safe host migration
 
@@ -104,8 +103,8 @@ public class FlowGenMain {
 
 //		FLOWGEN !!!
 
-		Thread novaListener =
-				new Thread(new NovaNetworkQueueListener("vn0",
+		Thread novaListener = new Thread(
+				new NovaNetworkQueueListener("vn0",
 						"ovs.network.vn0",
 						"network.vn0",
 						false,

@@ -16,12 +16,13 @@ public interface IDatapath {
 	public void connectHost(String mac, int port, int flowPriority);
 	public void connectHost(String mac, int port);
 	public void disconnectHost(String mac);
-	public IFirewallRule getHostRule(String mac, int flowPriority);
 	public IFirewallRule getHostRule(String mac);
 	public List<IFirewallRule> getAllHostsRules();
 	public boolean containsHost(String mac);
 	public int getHostPort(String mac);
 	public Map<String, Integer> getMacPortMap();
+	public int getHostPriority(String mac);
+	public Map<String, Integer> getMacPriorityMap();
 
 	// Network
 	public void connectToNetwork();
