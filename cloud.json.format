@@ -1,4 +1,5 @@
-Cloud configuration file (cloud.json) must support format of "Cloud" listed below in "<name> : <value_type>" format.
+Cloud configuration file (cloud.json) must support JSON syntax with
+format of "Cloud" listed below in "<name>:<type>" notation.
 
 - - - - - - - - - - - - - - - - - - - -
 
