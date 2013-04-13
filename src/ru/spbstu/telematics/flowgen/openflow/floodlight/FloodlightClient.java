@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import ru.spbstu.telematics.flowgen.application.configuration.FloodlightConfig;
 import ru.spbstu.telematics.flowgen.httpclient.HttpDeleteWithBody;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
@@ -205,6 +206,11 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 	@Override
 	public Hosts getKnownHosts() {
 		return Hosts.parse(requestToController(getAllDevicesUrl()));
+	}
+
+	@Override
+	public FloodlightConfig getConfig() {
+		return new FloodlightConfig(controllerAddress.getHostName(), controllerAddress.getPort());
 	}
 
 

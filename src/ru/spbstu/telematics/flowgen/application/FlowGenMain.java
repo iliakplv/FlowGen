@@ -91,29 +91,6 @@ public class FlowGenMain {
 		Set<String> macs = portMacMap.keySet();
 
 
-		/***************/
-		if (true) {
-			FloodlightConfig fc = new FloodlightConfig("127.0.0.1", 8080);
-			CloudConfig cc = new CloudConfig("vn0", fc);
-			ServerConfig sc = new ServerConfig("vn0", "ovs.network.vn0", "network.vn0");
-			cc.addServer(sc);
-
-			DatapathConfig dc = new DatapathConfig(dpid, name, trunkPort, firewallPort, gwMac);
-			DeviceConfig dev1 = new DeviceConfig("5c:d9:98:37:16:02", 1, true);
-			DeviceConfig dev2 = new DeviceConfig("fa:16:3e:77:56:6e", 2, true);
-			dc.addGateway(dev1);
-			dc.addHost(dev2);
-
-			cc.addDatapath(dc);
-
-			System.out.println("[CONFIG]\n" + cc.export().toString());
-
-			return;
-		}
-
-		/***************/
-
-
 //		Adding flows
 
 //		REGISTER TO ADD
@@ -123,6 +100,22 @@ public class FlowGenMain {
 		for (String mac : macs) {
 			cloud.launchGateway(mac, datapath.getDpid(), portMacMap.get(mac));
 		}
+
+
+//		CONFIG !!!
+
+		if (true) {
+			CloudConfig cc = cloud.getConfig();
+
+			ServerConfig sc = new ServerConfig("vn0", "ovs.network.vn0", "network.vn0");
+
+			cc.addServer(sc);
+
+			System.out.println("[CONFIG]\n" + cc.export().toString());
+
+			return;
+		}
+
 
 //		FLOWGEN !!!
 

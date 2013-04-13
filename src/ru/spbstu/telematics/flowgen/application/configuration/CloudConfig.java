@@ -4,6 +4,7 @@ package ru.spbstu.telematics.flowgen.application.configuration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +71,8 @@ public class CloudConfig {
 		JSONObject result = new JSONObject();
 
 		try {
-			result.accumulate(NAME_KEY, name);
-			result.accumulate(FLOODLIGHT_KEY, floodlight.export());
+			result.accumulate(NAME_KEY, StringUtils.getNotNull(name));
+			result.accumulate(FLOODLIGHT_KEY, floodlight != null ? floodlight.export() : "");
 
 			JSONArray servers = new JSONArray();
 			for (ServerConfig serverConfig : this.servers) {

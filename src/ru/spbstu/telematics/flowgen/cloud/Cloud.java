@@ -1,6 +1,10 @@
 package ru.spbstu.telematics.flowgen.cloud;
 
 
+import ru.spbstu.telematics.flowgen.application.configuration.CloudConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.DatapathConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.DeviceConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.FloodlightConfig;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
@@ -274,6 +278,43 @@ public class Cloud implements ICloud {
 				new Thread(new ControllerHostConnector(this, ip, action));
 		connectorThread.start();
 
+	}
+
+	@Override
+	public CloudConfig getConfig() {
+
+		FloodlightConfig floodlightConfig = null;
+		if (floodlightClient != null) {
+			 floodlightConfig = floodlightClient.getConfig();
+		}
+
+		CloudConfig cloudConfig = new CloudConfig(name, floodlightConfig);
+
+		for (IDatapath datapath : dpidDatapathMap.values()) {
+			DatapathConfig datapathConfig = new DatapathConfig(datapath.getDpid(),
+					datapath.getName(),
+					datapath.getTrunkPort(),
+					datapath.getFirewallPort(),
+					datapath.getGatewayMac());
+
+			Map<String, Integer> macPortMap = datapath.getMacPortMap();
+			Map<String, Integer> macPriorityMap = datapath.getMacPriorityMap();
+
+			for (String mac : macPortMap.keySet()) {
+				boolean active = getDeviceState(mac) == DeviceState.Active;
+				DeviceConfig deviceConfig = new DeviceConfig(mac, macPortMap.get(mac), active);
+
+				if (macPriorityMap.get(mac) == OpenflowUtils.GATEWAY_FLOW_PRIORITY) {
+					datapathConfig.addGateway(deviceConfig);
+				} else {
+					datapathConfig.addHost(deviceConfig);
+				}
+			}
+
+			cloudConfig.addDatapath(datapathConfig);
+		}
+
+		return cloudConfig;
 	}
 
 
