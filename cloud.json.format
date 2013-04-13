@@ -4,10 +4,10 @@ format of "Cloud" listed below in "<name>:<type>" notation.
 - - - - - - - - - - - - - - - - - - - -
 
 Cloud
-	Name :              String
-	Servers :           array of Server
-	Datapaths :         array of Datapath
-	FloodlightClient :  FloodlightClient
+	Name :          String
+	Servers :       array of Server
+	Datapaths :     array of Datapath
+	Floodlight :    Floodlight
 
 - - - - - - - - - - - - - - - - - - - -
 
@@ -31,6 +31,6 @@ Device
 	Port :          int
 	Active :        boolean
 
-FloodlightClient
+Floodlight
 	Host :          String
 	Port :          int
