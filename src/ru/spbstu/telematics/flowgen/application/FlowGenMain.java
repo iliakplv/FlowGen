@@ -104,7 +104,7 @@ public class FlowGenMain {
 
 //		FLOWGEN !!!
 
-		NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener("vn0.stu.neva.ru",
+		NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener("vn0",
 						"ovs.network.vn0",
 						"network.vn0",
 						false,
