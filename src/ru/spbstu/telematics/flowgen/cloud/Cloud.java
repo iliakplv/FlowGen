@@ -1,10 +1,8 @@
 package ru.spbstu.telematics.flowgen.cloud;
 
 
-import ru.spbstu.telematics.flowgen.application.configuration.CloudConfig;
-import ru.spbstu.telematics.flowgen.application.configuration.DatapathConfig;
-import ru.spbstu.telematics.flowgen.application.configuration.DeviceConfig;
-import ru.spbstu.telematics.flowgen.application.configuration.FloodlightConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.*;
+import ru.spbstu.telematics.flowgen.cloud.rabbitmq.NovaNetworkQueueListener;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
@@ -26,6 +24,7 @@ public class Cloud implements ICloud {
 	private Map<String, VmConnectionData> macPausedHostsMap;
 	private Set<IDatapathListener> listeners = null;
 	private IFloodlightClient floodlightClient = null;
+	private NovaNetworkQueueListener novaListener = null;
 
 	/**
 	 * Constructors
@@ -246,7 +245,7 @@ public class Cloud implements ICloud {
 	@Override
 	public void setFloodlightClient(IFloodlightClient floodlightClient) {
 		if (floodlightClient == null) {
-			throw new NullPointerException("FloodlightClient is null");
+			throw new NullPointerException("FloodlightClient is null in cloud " + toString());
 		}
 		this.floodlightClient = floodlightClient;
 	}
@@ -281,6 +280,27 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
+	public void setNovaListener(NovaNetworkQueueListener listener) {
+		if (listener == null) {
+			throw new NullPointerException("Nova listener is null in cloud " + toString());
+		}
+		listener.setCloud(this);
+		novaListener = listener;
+	}
+
+	@Override
+	public NovaNetworkQueueListener getNovaListener() {
+		return novaListener;
+	}
+
+	@Override
+	public void startListeningNova() {
+		if (novaListener != null) {
+			(new Thread(novaListener)).start();
+		}
+	}
+
+	@Override
 	public CloudConfig getConfig() {
 
 		FloodlightConfig floodlightConfig = null;
@@ -288,7 +308,13 @@ public class Cloud implements ICloud {
 			 floodlightConfig = floodlightClient.getConfig();
 		}
 
+		ServerConfig serverConfig = null;
+		if (novaListener != null) {
+			serverConfig = novaListener.getConfig();
+		}
+
 		CloudConfig cloudConfig = new CloudConfig(name, floodlightConfig);
+		cloudConfig.addServer(serverConfig);
 
 		for (IDatapath datapath : dpidDatapathMap.values()) {
 			DatapathConfig datapathConfig = new DatapathConfig(datapath.getDpid(),

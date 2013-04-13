@@ -2,6 +2,7 @@ package ru.spbstu.telematics.flowgen.cloud;
 
 
 import ru.spbstu.telematics.flowgen.application.configuration.CloudConfig;
+import ru.spbstu.telematics.flowgen.cloud.rabbitmq.NovaNetworkQueueListener;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapathListener;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.IFloodlightClient;
@@ -38,6 +39,11 @@ public interface ICloud {
 	public IFloodlightClient getFloodlightClient();
 	public void findAndConnect(String ip);
 	public void findAndDisconnect(String ip);
+
+	// Nova Listener
+	public void setNovaListener(NovaNetworkQueueListener listener);
+	public NovaNetworkQueueListener getNovaListener();
+	public void startListeningNova();
 
 	public CloudConfig getConfig();
 

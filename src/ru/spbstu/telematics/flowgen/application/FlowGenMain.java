@@ -7,7 +7,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.json.JSONException;
 import ru.spbstu.telematics.flowgen.application.configuration.CloudConfig;
-import ru.spbstu.telematics.flowgen.application.configuration.ServerConfig;
 import ru.spbstu.telematics.flowgen.cloud.Cloud;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.cloud.rabbitmq.NovaNetworkQueueListener;
@@ -103,31 +102,24 @@ public class FlowGenMain {
 		}
 
 
+//		FLOWGEN !!!
+
+		NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener("vn0.stu.neva.ru",
+						"ovs.network.vn0",
+						"network.vn0",
+						false,
+						false);
+		cloud.setNovaListener(novaListener);
+		cloud.startListeningNova();
+
+
 //		CONFIG !!!
 
 		if (true) {
 			CloudConfig cc = cloud.getConfig();
-
-			ServerConfig sc = new ServerConfig("vn0", "ovs.network.vn0", "network.vn0");
-
-			cc.addServer(sc);
-
 			System.out.println("[CONFIG]\n" + cc.export().toString());
-
 			return;
 		}
-
-
-//		FLOWGEN !!!
-
-		Thread novaListener = new Thread(
-				new NovaNetworkQueueListener("vn0",
-						"ovs.network.vn0",
-						"network.vn0",
-						false,
-						false,
-						cloud));
-		novaListener.start();
 
 
 //		UNREGISTER TO KEEP

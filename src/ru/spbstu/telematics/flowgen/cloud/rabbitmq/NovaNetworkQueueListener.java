@@ -7,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.spbstu.telematics.flowgen.application.configuration.ServerConfig;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
@@ -35,7 +36,7 @@ public class NovaNetworkQueueListener implements Runnable{
 
 
 	public NovaNetworkQueueListener(String host, String queueName, String queueRoutingKey,
-									boolean queueDurable, boolean queueAutoDelete, ICloud cloud) {
+									boolean queueDurable, boolean queueAutoDelete) {
 
 		if (StringUtils.isNullOrEmpty(host)) {
 			throw new IllegalArgumentException("Wrong host");
@@ -46,20 +47,69 @@ public class NovaNetworkQueueListener implements Runnable{
 		if (StringUtils.isNullOrEmpty(queueRoutingKey)) {
 			throw new IllegalArgumentException("Wrong queue routing key");
 		}
-		if (cloud == null) {
-			throw new NullPointerException("Cloud is null");
-		}
 
 		this.host = host;
 		this.queueName = queueName;
 		this.queueRoutingKey = queueRoutingKey;
 		this.queueDurable = queueDurable;
 		this.queueAutoDelete = queueAutoDelete;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getQueueName() {
+		return queueName;
+	}
+
+	public void setQueueName(String queueName) {
+		this.queueName = queueName;
+	}
+
+	public String getQueueRoutingKey() {
+		return queueRoutingKey;
+	}
+
+	public void setQueueRoutingKey(String queueRoutingKey) {
+		this.queueRoutingKey = queueRoutingKey;
+	}
+
+	public boolean isQueueDurable() {
+		return queueDurable;
+	}
+
+	public void setQueueDurable(boolean queueDurable) {
+		this.queueDurable = queueDurable;
+	}
+
+	public boolean isQueueAutoDelete() {
+		return queueAutoDelete;
+	}
+
+	public void setQueueAutoDelete(boolean queueAutoDelete) {
+		this.queueAutoDelete = queueAutoDelete;
+	}
+
+	public ICloud getCloud() {
+		return cloud;
+	}
+
+	public void setCloud(ICloud cloud) {
 		this.cloud = cloud;
 	}
 
 	@Override
 	public void run() {
+
+		if(cloud == null) {
+			System.out.println(INFO + "Can't start listening for Nova network (cloud is null)");
+			return;
+		}
 
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(host);
@@ -130,6 +180,10 @@ public class NovaNetworkQueueListener implements Runnable{
 			System.out.println(ERROR + "Interrupted exception caught:");
 			e.printStackTrace();
 		}
+	}
+
+	public ServerConfig getConfig() {
+		return new ServerConfig(host, queueName, queueRoutingKey);
 	}
 
 }
