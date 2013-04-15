@@ -45,8 +45,6 @@ import java.util.Set;
 
 public class FlowGenMain {
 
-	private static final String DP_LOGGER_TAG = "*";
-
 	private static CloudConfig cloudConfig;
 	private static Cloud cloud;
 
@@ -121,8 +119,9 @@ public class FlowGenMain {
 		} else {
 			System.out.println("No datapath listener added to cloud " + cloud.toString() + ". Flows pushing disabled");
 		}
-		cloud.addDatapathListener(new DatapathLogger(DP_LOGGER_TAG));
-		System.out.println("Datapath logger (TAG=\"" + DP_LOGGER_TAG + "\") added to cloud " + cloud.toString());
+		String datapathLoggerTag = cloud.getName();
+		cloud.addDatapathListener(new DatapathLogger(datapathLoggerTag));
+		System.out.println("Datapath logger (TAG=\"" + datapathLoggerTag + "\") added to cloud " + cloud.toString());
 
 		// Datapaths
 		List<DatapathConfig> datapaths = cloudConfig.getDatapaths();
