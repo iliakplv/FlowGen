@@ -139,6 +139,8 @@ public class FlowGenMain {
 			// Adding Datapath to Cloud
 			cloud.addDatapath(datapath);
 			System.out.println("Datapath (" + datapath.toString() + ") added to cloud " + cloud.toString());
+			datapath.connectToNetwork();
+			System.out.println("Datapath (" + datapath.toString() + ") connected to network");
 
 			// Adding Gateways
 			List<DeviceConfig> devices = datapathConfig.getGateways();
@@ -166,7 +168,8 @@ public class FlowGenMain {
 		// Cloud Server
 		List<ServerConfig> servers = cloudConfig.getServers();
 		ServerConfig serverConfig = servers.isEmpty() ? null : servers.get(0);
-		if (LISTEN_NOVA && serverConfig != null) {
+		boolean attachNovaListener = LISTEN_NOVA && serverConfig != null;
+		if (attachNovaListener) {
 			NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener(serverConfig.getHost(),
 					serverConfig.getQueueName(),
 					serverConfig.getRoutingKey(),
@@ -174,7 +177,8 @@ public class FlowGenMain {
 					false);
 			cloud.setNovaListener(novaListener);
 			cloud.startListeningNova();
-			System.out.println("Nova network queue listener attached to cloud " + cloud.toString());
+			System.out.println("Nova network queue listener attached to cloud " + cloud.toString() +
+					" and listening for messages");
 
 		} else if (!LISTEN_NOVA) {
 			System.out.println("No Nova network queue listener attached to cloud " + cloud.toString() +
@@ -184,7 +188,11 @@ public class FlowGenMain {
 					". Listener not specified in config file.");
 		}
 
-		System.out.println("Initialization is done. Application is running...\n");
+		if (attachNovaListener) {
+			System.out.println("Initialization is done. Application is running...\n");
+		} else {
+			System.out.println("Initialization is done. Nothing to do. Shutting down...\n");
+		}
 	}
 
 
