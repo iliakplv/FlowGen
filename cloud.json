@@ -3,12 +3,15 @@
 
     "floodlight": {
         "host": "127.0.0.1",
-        "port": 8080
+        "port": 8080,
+        "push_flows": false
     },
 
     "servers": [
         {
             "host": "vn0",
+            "port": 5672,
+            "active": false,
             "network_queue": "ovs.network.vn0",
             "network_routing_key": "network.vn0"
         }

@@ -50,15 +50,12 @@ public class FlowGenMain {
 	private static CloudConfig cloudConfig;
 	private static Cloud cloud;
 
-	private static boolean FLOW_PUSHING = false;
-	private static boolean LISTEN_NOVA = false;
-
 
 	public static void main(String[] args) {
 
-//		String fileName = args[0];
+		String fileName = args[0];
 //		String fileName = "/home/ilya/workspace/FlowGen/cloud.json";
-		String fileName = "C:\\Users\\Kopylov\\workspace\\Projects\\FlowGen\\cloud.json";
+//		String fileName = "C:\\Users\\Kopylov\\workspace\\Projects\\FlowGen\\cloud.json";
 
 		if (StringUtils.isNullOrEmpty(fileName)) {
 			System.out.println("\nBad config file name.\n");
@@ -118,7 +115,7 @@ public class FlowGenMain {
 		FloodlightClient floodlightClient = new FloodlightClient(floodlightConfig.getHost(), floodlightConfig.getPort());
 		cloud.setFloodlightClient(floodlightClient);
 		System.out.println("Floodlight client (" + floodlightClient.getControllerAddress().toString() + ") added to cloud " + cloud.toString());
-		if (FLOW_PUSHING) {
+		if (floodlightConfig.isPushingFlows()) {
 			cloud.addDatapathListener(floodlightClient);
 			System.out.println("Datapath listener (" + floodlightClient.getControllerAddress().toString() + ") added to cloud " + cloud.toString());
 		} else {
@@ -179,32 +176,32 @@ public class FlowGenMain {
 		}
 
 		// Cloud Server
+		boolean listenerAttached = false;
 		List<ServerConfig> servers = cloudConfig.getServers();
-		ServerConfig serverConfig = servers.isEmpty() ? null : servers.get(0);
-		boolean attachNovaListener = LISTEN_NOVA && serverConfig != null;
-		if (attachNovaListener) {
-			NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener(serverConfig.getHost(),
-					serverConfig.getQueueName(),
-					serverConfig.getRoutingKey(),
-					false,
-					false);
-			cloud.setNovaListener(novaListener);
-			cloud.startListeningNova();
-			System.out.println("Nova network queue listener attached to cloud " + cloud.toString() +
-					" and listening for messages");
+		for (ServerConfig serverConfig : servers) {
 
-		} else if (!LISTEN_NOVA) {
-			System.out.println("No Nova network queue listener attached to cloud " + cloud.toString() +
-					". Listening disabled.");
-		} else {
-			System.out.println("No Nova network queue listener attached to cloud " + cloud.toString() +
-					". Listener not specified in config file.");
+			if (serverConfig.isActive()) {
+				NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener(serverConfig.getHost(),
+						serverConfig.getPort(),
+						serverConfig.getQueueName(),
+						serverConfig.getRoutingKey(),
+						false,
+						false);
+
+				cloud.setNovaListener(novaListener);
+				cloud.startListeningNova();
+
+				System.out.println("Nova network queue listener attached to cloud " + cloud.toString() +
+						" and listening for messages");
+
+				listenerAttached = true;
+			}
 		}
 
-		if (attachNovaListener) {
+		if (listenerAttached) {
 			System.out.println("Initialization is done. Application is running...\n");
 		} else {
-			System.out.println("Initialization is done. Nothing to do. Shutting down...\n");
+			System.out.println("Initialization is done. No active Nova listeners. Shutting down...\n");
 		}
 	}
 
@@ -260,6 +257,7 @@ public class FlowGenMain {
 //		FLOWGEN !!!
 
 		NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener("vn0",
+						5672,
 						"ovs.network.vn0",
 						"network.vn0",
 						false,

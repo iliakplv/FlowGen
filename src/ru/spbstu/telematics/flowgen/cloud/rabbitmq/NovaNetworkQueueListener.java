@@ -26,6 +26,7 @@ public class NovaNetworkQueueListener implements Runnable{
 	private static final boolean QUEUE_EXCLUSIVE = false;
 
 	private String host;
+	private int port;
 
 	private String queueName;
 	private String queueRoutingKey;
@@ -35,11 +36,14 @@ public class NovaNetworkQueueListener implements Runnable{
 	private ICloud cloud;
 
 
-	public NovaNetworkQueueListener(String host, String queueName, String queueRoutingKey,
+	public NovaNetworkQueueListener(String host, int port, String queueName, String queueRoutingKey,
 									boolean queueDurable, boolean queueAutoDelete) {
 
 		if (StringUtils.isNullOrEmpty(host)) {
 			throw new IllegalArgumentException("Wrong host");
+		}
+		if (port < 0 || port > 65535) {
+			throw new IllegalArgumentException("Wrong port number: " + port);
 		}
 		if (StringUtils.isNullOrEmpty(queueName)) {
 			throw new IllegalArgumentException("Wrong queue name");
@@ -49,6 +53,7 @@ public class NovaNetworkQueueListener implements Runnable{
 		}
 
 		this.host = host;
+		this.port = port;
 		this.queueName = queueName;
 		this.queueRoutingKey = queueRoutingKey;
 		this.queueDurable = queueDurable;
@@ -61,6 +66,14 @@ public class NovaNetworkQueueListener implements Runnable{
 
 	public void setHost(String host) {
 		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public String getQueueName() {
@@ -113,7 +126,7 @@ public class NovaNetworkQueueListener implements Runnable{
 
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(host);
-		// factory.setPort(5672);
+		factory.setPort(port);
 		// factory.setVirtualHost("/");
 
 		Connection connection;
@@ -183,7 +196,7 @@ public class NovaNetworkQueueListener implements Runnable{
 	}
 
 	public ServerConfig getConfig() {
-		return new ServerConfig(host, queueName, queueRoutingKey);
+		return new ServerConfig(host, port, queueName, queueRoutingKey, true);
 	}
 
 }
