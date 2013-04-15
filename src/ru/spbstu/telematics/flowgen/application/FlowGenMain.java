@@ -61,17 +61,19 @@ public class FlowGenMain {
 		String fileName = "C:\\Users\\Kopylov\\workspace\\Projects\\FlowGen\\cloud.json";
 
 		if (StringUtils.isNullOrEmpty(fileName)) {
-			System.out.println("Bad config file name.");
+			System.out.println("\nBad config file name.\n");
 		} else {
 
-			System.out.println("Cloud config file: " + fileName + "\n");
-			parseParams(fileName);
+			// RUN!
+
+			System.out.println("\nCloud config file: " + fileName + "\n");
+			parseConfig(fileName);
 			startApplication();
 
 		}
 	}
 
-	private static void parseParams(String fileName) {
+	private static void parseConfig(String fileName) {
 
 		FileInputStream stream = null;
 		try {
