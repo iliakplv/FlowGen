@@ -52,8 +52,6 @@ public class FlowGenMain {
 	public static void main(String[] args) {
 
 		String fileName = args[0];
-//		String fileName = "/home/ilya/workspace/FlowGen/cloud.json";
-//		String fileName = "C:\\Users\\Kopylov\\workspace\\Projects\\FlowGen\\cloud.json";
 
 		if (StringUtils.isNullOrEmpty(fileName)) {
 			System.out.println("\nBad config file name.\n");
