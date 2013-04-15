@@ -68,7 +68,7 @@ public class DeviceConfig {
 		try {
 			String mac = (String) data.get(MAC_KEY);
 			int port = (Integer) data.get(PORT_KEY);
-			boolean active = Boolean.parseBoolean((String) data.get(ACTIVE_KEY));
+			boolean active = (Boolean) data.get(ACTIVE_KEY);
 
 			if (OpenflowUtils.validateMac(mac) && OpenflowUtils.validatePortNumber(port)) {
 				result = new DeviceConfig(mac, port, active);

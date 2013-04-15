@@ -1,0 +1,37 @@
+{
+    "datapaths": [
+        {
+            "trunk_port": 5,
+            "gateway_mac": "fa:16:3e:15:2d:df",
+            "name": "br-int",
+            "hosts": [
+            ],
+            "gateways": [
+                {
+                    "port": 2,
+                    "active": true,
+                    "mac": "fa:16:3e:77:56:6e"
+                },
+                {
+                    "port": 1,
+                    "active": true,
+                    "mac": "5c:d9:98:37:16:02"
+                }
+            ],
+            "dpid": "00:00:00:15:17:f9:4c:7f",
+            "firewall_port": 48
+        }
+    ],
+    "servers": [
+        {
+            "host": "vn0",
+            "network_routing_key": "network.vn0",
+            "network_queue": "ovs.network.vn0"
+        }
+    ],
+    "name": "vn0",
+    "floodlight": {
+        "port": 8080,
+        "host": "127.0.0.1"
+    }
+}
