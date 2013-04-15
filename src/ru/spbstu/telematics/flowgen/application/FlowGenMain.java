@@ -6,61 +6,195 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.json.JSONException;
+import org.json.JSONObject;
 import ru.spbstu.telematics.flowgen.application.configuration.CloudConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.DatapathConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.DeviceConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.FloodlightConfig;
+import ru.spbstu.telematics.flowgen.application.configuration.ServerConfig;
 import ru.spbstu.telematics.flowgen.cloud.Cloud;
 import ru.spbstu.telematics.flowgen.cloud.ICloud;
 import ru.spbstu.telematics.flowgen.cloud.rabbitmq.NovaNetworkQueueListener;
 import ru.spbstu.telematics.flowgen.openflow.datapath.Datapath;
 import ru.spbstu.telematics.flowgen.openflow.datapath.IDatapath;
 import ru.spbstu.telematics.flowgen.openflow.floodlight.FloodlightClient;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.ControllerData;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.DatapathData;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Host;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.Hosts;
-import ru.spbstu.telematics.flowgen.openflow.floodlight.topology.PortData;
 import ru.spbstu.telematics.flowgen.utils.DatapathLogger;
+import ru.spbstu.telematics.flowgen.utils.StringUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+
+
+// TODO IDatapath -> [sub]
+// TODO IDatapath concurrency research
+// TODO [low] IDatapath safe host migration
+
+// TODO ICloud rework pause/wake functionality
+// TODO ICloud concurrency research
+// TODO [low] ICloud support implemented IDatapath migration
+
+// TODO ALL log and exception messages
 
 
 public class FlowGenMain {
 
+	private static final String DP_LOGGER_TAG = "*";
 
-	// TODO IDatapath -> [sub]
-	// TODO IDatapath concurrency research
-	// TODO [low] IDatapath safe host migration
+	private static CloudConfig cloudConfig;
+	private static Cloud cloud;
 
-	// TODO ICloud rework pause/wake functionality
-	// TODO ICloud concurrency research
-	// TODO [low] ICloud support implemented IDatapath migration
-
-	// TODO FlowGenMain implement application initialization and main thread
-	// TODO ALL log and exception messages
+	private static boolean FLOW_PUSHING = false;
+	private static boolean LISTEN_NOVA = false;
 
 
 	public static void main(String[] args) {
 
-//		*** Parsing Test ***
-		if (false) {
-			FloodlightClient flClient = new FloodlightClient("127.0.0.1", 8080);
-			try {
-				parsingTest(flClient.getControllerData(), flClient.getKnownHosts());
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+//		String fileName = args[0];
+//		String fileName = "/home/ilya/workspace/FlowGen/cloud.json";
+		String fileName = "C:\\Users\\Kopylov\\workspace\\Projects\\FlowGen\\cloud.json";
+
+		if (StringUtils.isNullOrEmpty(fileName)) {
+			System.out.println("Bad config file name.");
+		} else {
+
+			System.out.println("Cloud config file: " + fileName + "\n");
+			parseParams(fileName);
+			startApplication();
+
 		}
-
-//      *** Main Test ***
-		testVn0();
-
-//      *** RabbitMQ cloud exchanges and queues test ***
-//		testRabbitMq();
-
 	}
 
-	public static void testVn0() {
+	private static void parseParams(String fileName) {
+
+		FileInputStream stream = null;
+		try {
+			stream = new FileInputStream(new File(fileName));
+			FileChannel channel = stream.getChannel();
+			MappedByteBuffer bb = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			String paramsFile = Charset.defaultCharset().decode(bb).toString();
+
+			JSONObject paramsJson = new JSONObject(paramsFile);
+
+			cloudConfig = CloudConfig.parse(paramsJson);
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private static void startApplication() {
+		if (cloudConfig != null) {
+			System.out.println("Starting application...");
+		} else {
+			System.out.println("No cloud config. Shutting down...");
+			return;
+		}
+
+		// Cloud
+		cloud = new Cloud(cloudConfig.getName());
+		System.out.println("Cloud (" + cloud.toString() + ") created");
+		FloodlightConfig floodlightConfig = cloudConfig.getFloodlight();
+		FloodlightClient floodlightClient = new FloodlightClient(floodlightConfig.getHost(), floodlightConfig.getPort());
+		cloud.setFloodlightClient(floodlightClient);
+		System.out.println("Floodlight client (" + floodlightClient.getControllerAddress().toString() + ") added to cloud " + cloud.toString());
+		if (FLOW_PUSHING) {
+			cloud.addDatapathListener(floodlightClient);
+			System.out.println("Datapath listener (" + floodlightClient.getControllerAddress().toString() + ") added to cloud " + cloud.toString());
+		} else {
+			System.out.println("No datapath listener added to cloud " + cloud.toString() + ". Flows pushing disabled");
+		}
+		cloud.addDatapathListener(new DatapathLogger(DP_LOGGER_TAG));
+		System.out.println("Datapath logger (TAG=\"" + DP_LOGGER_TAG + "\") added to cloud " + cloud.toString());
+
+		// Datapaths
+		List<DatapathConfig> datapaths = cloudConfig.getDatapaths();
+		for (DatapathConfig datapathConfig : datapaths) {
+
+			// Creating Datapath
+			Datapath datapath = new Datapath(datapathConfig.getDpid(),
+					datapathConfig.getName(),
+					datapathConfig.getTrunkPort(),
+					datapathConfig.getFirewallPort(),
+					datapathConfig.getGatewayMac());
+			// Adding Datapath to Cloud
+			cloud.addDatapath(datapath);
+			System.out.println("Datapath (" + datapath.toString() + ") added to cloud " + cloud.toString());
+
+			// Adding Gateways
+			List<DeviceConfig> devices = datapathConfig.getGateways();
+			for (DeviceConfig deviceConfig : devices) {
+				cloud.launchGateway(deviceConfig.getMac(),
+						datapathConfig.getDpid(),
+						deviceConfig.getPort());
+				System.out.println("Gateway with MAC (" + deviceConfig.getMac() +
+						") attached to port (" + deviceConfig.getPort() +
+						") of datapath " + datapath.toString());
+			}
+			// Adding Hosts
+			devices = datapathConfig.getHosts();
+			for (DeviceConfig deviceConfig : devices) {
+				cloud.launchHost(deviceConfig.getMac(),
+						datapathConfig.getDpid(),
+						deviceConfig.getPort());
+				System.out.println("Host with MAC (" + deviceConfig.getMac() +
+						") attached to port (" + deviceConfig.getPort() +
+						") of datapath " + datapath.toString());
+			}
+
+		}
+
+		// Cloud Server
+		List<ServerConfig> servers = cloudConfig.getServers();
+		ServerConfig serverConfig = servers.isEmpty() ? null : servers.get(0);
+		if (LISTEN_NOVA && serverConfig != null) {
+			NovaNetworkQueueListener novaListener = new NovaNetworkQueueListener(serverConfig.getHost(),
+					serverConfig.getQueueName(),
+					serverConfig.getRoutingKey(),
+					false,
+					false);
+			cloud.setNovaListener(novaListener);
+			cloud.startListeningNova();
+			System.out.println("Nova network queue listener attached to cloud " + cloud.toString());
+
+		} else if (!LISTEN_NOVA) {
+			System.out.println("No Nova network queue listener attached to cloud " + cloud.toString() +
+					". Listening disabled.");
+		} else {
+			System.out.println("No Nova network queue listener attached to cloud " + cloud.toString() +
+					". Listener not specified in config file.");
+		}
+
+		System.out.println("Initialization is done. Application is running...\n");
+	}
+
+
+	/**************************************************
+	 *
+	 *					TESTS
+	 *
+	 **************************************************/
+
+	private static void testVn0() {
 
 		// Datapath
 
@@ -137,41 +271,7 @@ public class FlowGenMain {
 		cloud.getDatapath(dpid).disconnectFromNetwork();
 	}
 
-
-	public static void parsingTest(ControllerData controllerData, Hosts hosts) throws JSONException {
-
-//		Connected hosts
-
-		for (DatapathData datapathData : controllerData.getDatapaths()) {
-
-			System.out.println("\n[DPID] " + datapathData.getDpid());
-
-			for (PortData portData : datapathData.getPorts()) {
-				System.out.println(portData.getMac() + "  " +
-						portData.getNumber() + "  " +
-						portData.getName() + "  " +
-						(portData.isDatapathReservedPort() ? "(datapath)" : ""));
-			}
-		}
-
-//		Known hosts
-
-		System.out.println("\n[HOSTS]");
-
-		for (Host host : hosts.getAllHosts()) {
-
-			System.out.println(host.getAttachmentPoint().getDpid() + "  " +
-					host.getAttachmentPoint().getPort() + "  " +
-					host.getMac() + "  " +
-					host.getIpv4());
-		}
-
-		System.out.println();
-
-	}
-
-
-	public static void testRabbitMq() {
+	private static void testRabbitMq() {
 
 		final String host = "vn0";
 		final String exchange = "nova";
@@ -196,9 +296,6 @@ public class FlowGenMain {
 		}
 
 	}
-
-
-	/***** Inner classes *****/
 
 	private static class NovaRabbitMqListener extends Thread {
 
