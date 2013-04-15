@@ -37,7 +37,6 @@ import java.util.Set;
 // TODO IDatapath concurrency research
 // TODO [low] IDatapath safe host migration
 
-// TODO ICloud rework pause/wake functionality
 // TODO ICloud concurrency research
 // TODO [low] ICloud support implemented IDatapath migration
 
@@ -151,6 +150,12 @@ public class FlowGenMain {
 				System.out.println("Gateway with MAC (" + deviceConfig.getMac() +
 						") attached to port (" + deviceConfig.getPort() +
 						") of datapath " + datapath.toString());
+				if (!deviceConfig.isActive()) {
+					cloud.pauseDevice(deviceConfig.getMac());
+					System.out.println("Gateway with MAC (" + deviceConfig.getMac() +
+							") paused on port (" + deviceConfig.getPort() +
+							") of datapath " + datapath.toString());
+				}
 			}
 			// Adding Hosts
 			devices = datapathConfig.getHosts();
@@ -161,6 +166,12 @@ public class FlowGenMain {
 				System.out.println("Host with MAC (" + deviceConfig.getMac() +
 						") attached to port (" + deviceConfig.getPort() +
 						") of datapath " + datapath.toString());
+				if (!deviceConfig.isActive()) {
+					cloud.pauseDevice(deviceConfig.getMac());
+					System.out.println("Host with MAC (" + deviceConfig.getMac() +
+							") paused port (" + deviceConfig.getPort() +
+							") of datapath " + datapath.toString());
+				}
 			}
 
 		}
