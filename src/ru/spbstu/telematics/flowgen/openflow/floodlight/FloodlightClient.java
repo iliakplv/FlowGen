@@ -210,7 +210,7 @@ public class FloodlightClient implements IFloodlightClient, IDatapathListener {
 
 	@Override
 	public FloodlightConfig getConfig() {
-		return new FloodlightConfig(controllerAddress.getHostName(), controllerAddress.getPort());
+		return new FloodlightConfig(controllerAddress.getHostName(), controllerAddress.getPort(), true);
 	}
 
 
