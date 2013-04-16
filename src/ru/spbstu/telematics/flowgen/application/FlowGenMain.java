@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 
-// TODO IDatapath -> [sub]
 // TODO IDatapath concurrency research
 // TODO [low] IDatapath safe host migration
 
