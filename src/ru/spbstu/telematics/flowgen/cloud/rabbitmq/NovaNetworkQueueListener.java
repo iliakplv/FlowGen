@@ -120,7 +120,7 @@ public class NovaNetworkQueueListener implements Runnable{
 	public void run() {
 
 		if(cloud == null) {
-			System.out.println(INFO + "Can't start listening for Nova network (cloud is null)");
+			System.out.println(INFO + "Can't start listening for Nova network (no Cloud set). Listener: " + toString());
 			return;
 		}
 
@@ -199,4 +199,40 @@ public class NovaNetworkQueueListener implements Runnable{
 		return new ServerConfig(host, port, queueName, queueRoutingKey, true);
 	}
 
+
+	/***** Other *****/
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		NovaNetworkQueueListener listener = (NovaNetworkQueueListener) o;
+
+		if (port != listener.port) return false;
+		if (!host.equals(listener.host)) return false;
+		if (!queueName.equals(listener.queueName)) return false;
+		if (!queueRoutingKey.equals(listener.queueRoutingKey)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = host.hashCode();
+		result = 31 * result + port;
+		result = 31 * result + queueName.hashCode();
+		result = 31 * result + queueRoutingKey.hashCode();
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "NovaNetworkQueueListener{" +
+				"port=" + port +
+				", host='" + host + '\'' +
+				", queueName='" + queueName + '\'' +
+				", queueRoutingKey='" + queueRoutingKey + '\'' +
+				'}';
+	}
 }

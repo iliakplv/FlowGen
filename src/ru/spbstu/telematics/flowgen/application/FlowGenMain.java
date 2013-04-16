@@ -185,8 +185,7 @@ public class FlowGenMain {
 						false,
 						false);
 
-				cloud.setNovaListener(novaListener);
-				cloud.startListeningNova();
+				cloud.addNovaListener(novaListener);
 
 				System.out.println("Nova network queue listener attached to cloud " + cloud.toString() +
 						" and listening for messages");
@@ -259,8 +258,7 @@ public class FlowGenMain {
 						"network.vn0",
 						false,
 						false);
-		cloud.setNovaListener(novaListener);
-		cloud.startListeningNova();
+		cloud.addNovaListener(novaListener);
 
 
 //		CONFIG !!!

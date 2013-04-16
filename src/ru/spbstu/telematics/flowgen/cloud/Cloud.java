@@ -22,9 +22,9 @@ public class Cloud implements ICloud {
 	private Map<String, IDatapath> dpidDatapathMap;
 	private Map<String, VmConnectionData> macActiveHostsMap;
 	private Map<String, VmConnectionData> macPausedHostsMap;
-	private Set<IDatapathListener> listeners = null;
 	private IFloodlightClient floodlightClient = null;
-	private NovaNetworkQueueListener novaListener = null;
+	private Set<IDatapathListener> datapathListeners = null;
+	private Map<NovaNetworkQueueListener, Thread> novaListeners = null;
 
 	/**
 	 * Constructors
@@ -35,7 +35,8 @@ public class Cloud implements ICloud {
 		dpidDatapathMap = new HashMap<String, IDatapath>();
 		macActiveHostsMap = new HashMap<String, VmConnectionData>();
 		macPausedHostsMap = new HashMap<String, VmConnectionData>();
-		listeners = new HashSet<IDatapathListener>();
+		datapathListeners = new HashSet<IDatapathListener>();
+		novaListeners = new HashMap<NovaNetworkQueueListener, Thread>();
 	}
 
 
@@ -67,7 +68,7 @@ public class Cloud implements ICloud {
 		}
 		dpidDatapathMap.put(dpid, datapath);
 
-		for (IDatapathListener listener : listeners) {
+		for (IDatapathListener listener : datapathListeners) {
 			datapath.registerListener(listener);
 		}
 	}
@@ -80,7 +81,7 @@ public class Cloud implements ICloud {
 		}
 
 		IDatapath datapath = getDatapath(dpid);
-		for (IDatapathListener listener : listeners) {
+		for (IDatapathListener listener : datapathListeners) {
 			datapath.unregisterListener(listener);
 		}
 
@@ -99,36 +100,40 @@ public class Cloud implements ICloud {
 
 	@Override
 	public void addDatapathListener(IDatapathListener listener) {
-		listeners.add(listener);
-		Collection<IDatapath> datapaths = dpidDatapathMap.values();
-		for (IDatapath datapath : datapaths) {
-			datapath.registerListener(listener);
+		if (!datapathListeners.contains(listener)) {
+			datapathListeners.add(listener);
+			Collection<IDatapath> datapaths = dpidDatapathMap.values();
+			for (IDatapath datapath : datapaths) {
+				datapath.registerListener(listener);
+			}
 		}
 	}
 
 	@Override
 	public void deleteDatapathListener(IDatapathListener listener) {
-		Collection<IDatapath> datapaths = dpidDatapathMap.values();
-		for (IDatapath datapath : datapaths) {
-			datapath.unregisterListener(listener);
+		if (datapathListeners.contains(listener)) {
+			Collection<IDatapath> datapaths = dpidDatapathMap.values();
+			for (IDatapath datapath : datapaths) {
+				datapath.unregisterListener(listener);
+			}
+			datapathListeners.remove(listener);
 		}
-		listeners.remove(listener);
 	}
 
 	@Override
-	public Set<IDatapathListener> getAllListeners() {
-		return new HashSet<IDatapathListener>(listeners);
+	public Set<IDatapathListener> getDatapathListeners() {
+		return new HashSet<IDatapathListener>(datapathListeners);
 	}
 
 	@Override
-	public void clearListeners() {
+	public void clearDatapathListeners() {
 		Collection<IDatapath> datapaths = dpidDatapathMap.values();
-		for (IDatapathListener listener : listeners) {
+		for (IDatapathListener listener : datapathListeners) {
 			for (IDatapath datapath : datapaths) {
 				datapath.unregisterListener(listener);
 			}
 		}
-		listeners.clear();
+		datapathListeners.clear();
 	}
 
 	@Override
@@ -280,24 +285,37 @@ public class Cloud implements ICloud {
 	}
 
 	@Override
-	public void setNovaListener(NovaNetworkQueueListener listener) {
-		if (listener == null) {
-			throw new NullPointerException("Nova listener is null in cloud " + toString());
+	public void addNovaListener(NovaNetworkQueueListener listener) {
+		if (!novaListeners.containsKey(listener)) {
+			listener.setCloud(this);
+			Thread listenerThread = new Thread(listener);
+			novaListeners.put(listener, listenerThread);
+			listenerThread.start();
+		} else {
+
 		}
-		listener.setCloud(this);
-		novaListener = listener;
 	}
 
 	@Override
-	public NovaNetworkQueueListener getNovaListener() {
-		return novaListener;
+	public void deleteNovaListener(NovaNetworkQueueListener listener) {
+		if (novaListeners.containsKey(listener)) {
+			Thread listenerThread = novaListeners.get(listener);
+			novaListeners.remove(listener);
+			listenerThread.interrupt();
+		}
 	}
 
 	@Override
-	public void startListeningNova() {
-		if (novaListener != null) {
-			(new Thread(novaListener)).start();
+	public Set<NovaNetworkQueueListener> getNovaListeners() {
+		return novaListeners.keySet();
+	}
+
+	@Override
+	public void clearNovaListeners() {
+		for (Thread thread : novaListeners.values()) {
+			thread.interrupt();
 		}
+		novaListeners.clear();
 	}
 
 	@Override
@@ -308,13 +326,12 @@ public class Cloud implements ICloud {
 			 floodlightConfig = floodlightClient.getConfig();
 		}
 
-		ServerConfig serverConfig = null;
-		if (novaListener != null) {
-			serverConfig = novaListener.getConfig();
-		}
-
 		CloudConfig cloudConfig = new CloudConfig(name, floodlightConfig);
-		cloudConfig.addServer(serverConfig);
+
+		for (NovaNetworkQueueListener listener : novaListeners.keySet()) {
+			ServerConfig serverConfig = listener.getConfig();
+			cloudConfig.addServer(serverConfig);
+		}
 
 		for (IDatapath datapath : dpidDatapathMap.values()) {
 			DatapathConfig datapathConfig = new DatapathConfig(datapath.getDpid(),

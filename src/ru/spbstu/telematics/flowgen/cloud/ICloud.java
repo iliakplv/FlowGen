@@ -18,11 +18,11 @@ public interface ICloud {
 	public IDatapath getDatapath(String dpid);
 	public Set<String> getAllDpids();
 
-	// Listeners
+	// Datapath listeners
 	public void addDatapathListener(IDatapathListener listener);
 	public void deleteDatapathListener(IDatapathListener listener);
-	public Set<IDatapathListener> getAllListeners();
-	public void clearListeners();
+	public Set<IDatapathListener> getDatapathListeners();
+	public void clearDatapathListeners();
 
 	// Devices
 	public void launchGateway(String mac, String dpid, int port);
@@ -40,10 +40,11 @@ public interface ICloud {
 	public void findAndConnect(String ip);
 	public void findAndDisconnect(String ip);
 
-	// Nova Listener
-	public void setNovaListener(NovaNetworkQueueListener listener);
-	public NovaNetworkQueueListener getNovaListener();
-	public void startListeningNova();
+	// Nova listeners
+	public void addNovaListener(NovaNetworkQueueListener listener);
+	public void deleteNovaListener(NovaNetworkQueueListener listener);
+	public Set<NovaNetworkQueueListener> getNovaListeners();
+	public void clearNovaListeners();
 
 	public CloudConfig getConfig();
 
