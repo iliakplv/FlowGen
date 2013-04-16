@@ -25,6 +25,7 @@ public class Datapath implements IDatapath {
 
 	// Network params
 	private boolean connectedToNetwork = false;
+	private boolean connectedToSubnet = false;
 	private String gatewayMac = null;
 	private int trunkPort = OpenflowUtils.DEFAULT_PORT;
 
@@ -339,11 +340,14 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
-	public synchronized void connectToNetwork() {
+	public synchronized void connectToNetwork(boolean connectSubnet) {
 		if (!connectedToNetwork) {
 			// order!
 			connectBroadcast();
-//			TODO [sub] connectSubnet();
+			if (!connectedToSubnet && connectSubnet) {
+				connectSubnet();
+				connectedToSubnet = true;
+			}
 			connectGateway();
 			connectedToNetwork = true;
 		}
@@ -355,7 +359,10 @@ public class Datapath implements IDatapath {
 			// order!
 			connectedToNetwork = false;
 			disconnectGateway();
-//			TODO [sub] disconnectSubnet();
+			if (connectedToSubnet) {
+				connectedToSubnet = false;
+				disconnectSubnet();
+			}
 			disconnectBroadcast();
 		}
 	}
@@ -366,13 +373,21 @@ public class Datapath implements IDatapath {
 	}
 
 	@Override
+	public boolean isConnectedToSubnet() {
+		return connectedToNetwork && connectedToSubnet;
+	}
+
+	@Override
 	public List<IFirewallRule> getAllNetworkRules() {
 		List<IFirewallRule> rules = new ArrayList<IFirewallRule>();
-		rules.add(getBroadcastRule());
-//		TODO [sub] rules.add(getSubnetRule());
-		rules.add(getGatewayRule());
+		if (connectedToNetwork) {
+			rules.add(getBroadcastRule());
+			if (connectedToSubnet) {
+				rules.add(getSubnetRule());
+			}
+			rules.add(getGatewayRule());
+		}
 		return rules;
-
 	}
 
 	@Override

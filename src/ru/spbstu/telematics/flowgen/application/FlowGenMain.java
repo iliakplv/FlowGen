@@ -134,8 +134,9 @@ public class FlowGenMain {
 			// Adding Datapath to Cloud
 			cloud.addDatapath(datapath);
 			System.out.println("Datapath (" + datapath.toString() + ") added to cloud " + cloud.toString());
-			datapath.connectToNetwork();
-			System.out.println("Datapath (" + datapath.toString() + ") connected to network");
+			datapath.connectToNetwork(datapathConfig.isConnectedToSubnet());
+			System.out.println("Datapath (" + datapath.toString() + ") connected to network (" +
+					(datapathConfig.isConnectedToSubnet() ? "and" : "not") + " connected to subnet)");
 
 			// Adding Gateways
 			List<DeviceConfig> devices = datapathConfig.getGateways();
@@ -244,7 +245,7 @@ public class FlowGenMain {
 //		REGISTER TO ADD
 //		cloud.addDatapathListener(flClient);
 
-		cloud.getDatapath(dpid).connectToNetwork();
+		cloud.getDatapath(dpid).connectToNetwork(true);
 		for (String mac : macs) {
 			cloud.launchGateway(mac, datapath.getDpid(), portMacMap.get(mac));
 		}

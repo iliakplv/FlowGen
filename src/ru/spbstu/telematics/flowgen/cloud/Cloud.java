@@ -338,7 +338,8 @@ public class Cloud implements ICloud {
 					datapath.getName(),
 					datapath.getTrunkPort(),
 					datapath.getFirewallPort(),
-					datapath.getGatewayMac());
+					datapath.getGatewayMac(),
+					datapath.isConnectedToSubnet());
 
 			Map<String, Integer> macPortMap = datapath.getMacPortMap();
 			Map<String, Integer> macPriorityMap = datapath.getMacPriorityMap();

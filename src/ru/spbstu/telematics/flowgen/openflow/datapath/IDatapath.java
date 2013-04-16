@@ -25,10 +25,11 @@ public interface IDatapath {
 	public Map<String, Integer> getMacPriorityMap();
 
 	// Network
-	public void connectToNetwork();
+	public void connectToNetwork(boolean connectSubnet);
 	public void disconnectFromNetwork();
 	public List<IFirewallRule> getAllNetworkRules();
 	public boolean isConnectedToNetwork();
+	public boolean isConnectedToSubnet();
 	public int getTrunkPort();
 	public String getGatewayMac();
 	public boolean isGatewayMac(String mac);

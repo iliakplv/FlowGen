@@ -16,6 +16,7 @@ public class DatapathConfig {
 	public static final String TRUNK_PORT_KEY = "trunk_port";
 	public static final String FIREWALL_PORT_KEY = "firewall_port";
 	public static final String GATEWAY_MAC_KEY = "gateway_mac";
+	public static final String SUBNET_KEY = "connect_to_subnet";
 	public static final String HOSTS_KEY = "hosts";
 	public static final String GATEWAYS_KEY = "gateways";
 
@@ -24,16 +25,18 @@ public class DatapathConfig {
 	private int trunkPort;
 	private int firewallPort;
 	private String gatewayMac;
+	private boolean subnet;
 	private List<DeviceConfig> hosts;
 	private List<DeviceConfig> gateways;
 
 
-	public DatapathConfig(String dpid, String name, int trunkPort, int firewallPort, String gatewayMac) {
+	public DatapathConfig(String dpid, String name, int trunkPort, int firewallPort, String gatewayMac, boolean subnet) {
 		this.dpid = dpid;
 		this.name = name;
 		this.trunkPort = trunkPort;
 		this.firewallPort = firewallPort;
 		this.gatewayMac = gatewayMac;
+		this.subnet = subnet;
 		hosts = new ArrayList<DeviceConfig>();
 		gateways = new ArrayList<DeviceConfig>();
 	}
@@ -78,6 +81,14 @@ public class DatapathConfig {
 		this.gatewayMac = gatewayMac;
 	}
 
+	public boolean isConnectedToSubnet() {
+		return subnet;
+	}
+
+	public void setConnectedToSubnet(boolean subnet) {
+		this.subnet = subnet;
+	}
+
 	public void addHost(DeviceConfig deviceConfig) {
 		if (deviceConfig != null) {
 			hosts.add(deviceConfig);
@@ -108,6 +119,7 @@ public class DatapathConfig {
 			result.accumulate(TRUNK_PORT_KEY, trunkPort);
 			result.accumulate(FIREWALL_PORT_KEY, firewallPort);
 			result.accumulate(GATEWAY_MAC_KEY, gatewayMac);
+			result.accumulate(SUBNET_KEY, subnet);
 
 			JSONArray gateways = new JSONArray();
 			for (DeviceConfig device : this.gateways) {
@@ -138,13 +150,14 @@ public class DatapathConfig {
 			int trunk = (Integer) data.get(TRUNK_PORT_KEY);
 			int firewall = (Integer) data.get(FIREWALL_PORT_KEY);
 			String gatewayMac = (String) data.get(GATEWAY_MAC_KEY);
+			boolean subnet = (Boolean) data.get(SUBNET_KEY);
 
 			if (OpenflowUtils.validateDpid(dpid) &&
 					OpenflowUtils.validateDatapathName(name) &&
 					OpenflowUtils.validatePortNumber(trunk) &&
 					OpenflowUtils.validatePortNumber(firewall) &&
 					OpenflowUtils.validateMac(gatewayMac)) {
-				result = new DatapathConfig(dpid, name, trunk, firewall, gatewayMac);
+				result = new DatapathConfig(dpid, name, trunk, firewall, gatewayMac, subnet);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

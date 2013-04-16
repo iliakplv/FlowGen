@@ -24,6 +24,7 @@
             "firewall_port": 48,
             "trunk_port": 5,
             "gateway_mac": "fa:16:3e:15:2d:df",
+            "connect_to_subnet": false,
 
             "gateways": [
                 {
