@@ -234,8 +234,8 @@ public class FlowGenMain {
 		// Hosts (not VMs)
 
 		HashMap<String, Integer> portMacMap = new HashMap<String, Integer>();
-		portMacMap.put("5c:d9:98:37:16:02", 1); // eth0
-		portMacMap.put("fa:16:3e:77:56:6e", 2); // gw-fb259ed4-dd
+		portMacMap.put("5c:d9:98:37:16:02", 1); // Interface eth0
+		portMacMap.put("fa:16:3e:77:56:6e", 2); // OvS gw-fb259ed4-dd
 		Set<String> macs = portMacMap.keySet();
 
 
@@ -292,7 +292,7 @@ public class FlowGenMain {
 		final String queueNamePrefix = "ovs.";
 
 		String[] routingKeys = new String[]{
-//				"network",
+//				"network", // Not used in test. Produces to much useless messages.
 				"network.vn0",
 				"compute",
 				"compute.vn0",
