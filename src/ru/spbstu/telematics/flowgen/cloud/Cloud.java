@@ -291,8 +291,6 @@ public class Cloud implements ICloud {
 			Thread listenerThread = new Thread(listener);
 			novaListeners.put(listener, listenerThread);
 			listenerThread.start();
-		} else {
-
 		}
 	}
 
