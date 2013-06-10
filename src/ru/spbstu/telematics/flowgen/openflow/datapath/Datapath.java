@@ -2,8 +2,12 @@ package ru.spbstu.telematics.flowgen.openflow.datapath;
 
 
 import org.json.JSONObject;
-import ru.spbstu.telematics.flowgen.openflow.rules.*;
+import ru.spbstu.telematics.flowgen.openflow.rules.Command;
+import ru.spbstu.telematics.flowgen.openflow.rules.IFirewallRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallBroadcastRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallGatewayRule;
 import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallHostRule;
+import ru.spbstu.telematics.flowgen.openflow.rules.OnePortFirewallSubnetRule;
 import ru.spbstu.telematics.flowgen.utils.OpenflowUtils;
 
 import java.util.ArrayList;
