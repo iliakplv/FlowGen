@@ -8,4 +8,6 @@ Initial configuration provided by cloud.json file. It contains information about
  - Cloud servers (hosts, ports, RabbitMQ service queues and routings keys);
  - List of all datapath in all cloud servers with all virtual devices and gateways connected to them.
 
-Application receives events of launching and destroying virtual machines in OpenStack cloud server. Then it generates and applies flows (OpenFlow flow table entries) used to control all VM's traffic by firewall running on specified VM.
+Application receives events of launching and destroying virtual machines in OpenStack cloud server.
+Then it generates and applies flows (OpenFlow flow table entries) used to control all VM's traffic
+by firewall running on specified VM.
